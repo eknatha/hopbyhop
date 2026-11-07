@@ -1,0 +1,1405 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hop by Hop — follow one packet, see every hop</title>
+<meta name="description" content="Follow one packet across the network. Real bytes, real checksums, every rewrite explained. Free, offline, single file.">
+<style>:root{
+  --bg:#0b1020;--plate:#111a35;--panel:#0f172f;--panel2:#15203f;--line:#243059;--text:#dbe5ff;--dim:#8193c4;
+  --accent:#ffb020;--ok:#3ddc97;--bad:#ff5d6c;--chg:#4cc9f0;
+  --eth:#8b9cff;--ipc:#4cc9f0;--l4:#c792ea;--pay:#3ddc97;
+  --s-top:#243a73;--s-lf:#1a2b5c;--s-rf:#13204a;--ink:#6f8cff;
+  --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Telugu","Noto Sans Devanagari",Arial,sans-serif;
+}
+:root[data-theme=light]{
+  --bg:#e9f0fb;--plate:#f6f9ff;--panel:#ffffff;--panel2:#eef3fd;--line:#c4d3f0;--text:#0e1f4d;--dim:#566a9a;
+  --accent:#c77700;--ok:#0b8f5c;--bad:#d1293d;--chg:#0a7fb0;
+  --eth:#4457d6;--ipc:#0a7fb0;--l4:#8a3fc0;--pay:#0b8f5c;
+  --s-top:#ffffff;--s-lf:#d7e3ff;--s-rf:#bdd0fb;--ink:#1f3f9f;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.45;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:44px 44px;background-position:-1px -1px;background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;background:var(--bg);opacity:.9;pointer-events:none;z-index:-1}
+a{color:var(--chg)}
+button,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+small{color:var(--dim)}
+.mono{font-family:var(--mono)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;position:relative}
+.card>h2,.h{margin:0 0 10px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand b{font-family:var(--mono);font-size:19px;letter-spacing:.06em}
+.brand b i{color:var(--accent);font-style:normal}
+.brand small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.blk{display:grid;gap:2px;min-width:130px}
+.blk small{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.blk b{font-family:var(--mono);font-size:13px;letter-spacing:.04em}
+.dots{display:flex;gap:3px;margin-top:2px}
+.dots i{width:16px;height:3px;background:var(--line);border-radius:2px}
+.dots i.on{background:var(--accent)}
+.seg{display:flex;gap:2px}
+.seg button,.btn{border:1px solid var(--line);background:var(--panel2);border-radius:4px;padding:3px 9px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+.seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn:hover,.seg button:hover{border-color:var(--accent);color:var(--text)}
+.btn.pri{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+.btn:disabled{opacity:.35;cursor:default}
+.pbar{display:flex;gap:2px;margin-top:3px}
+.pbar i{width:14px;height:6px;background:var(--line);border-radius:1px}
+.pbar i.done{background:var(--ok)}.pbar i.prog{background:var(--accent)}
+.hc{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+select{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:4px 8px;font-family:var(--mono);font-size:12px}
+.app{display:grid;grid-template-columns:268px minmax(0,1fr) 372px;gap:12px;padding:12px;align-items:start;max-width:1900px;margin:0 auto}
+.center{display:grid;gap:12px;min-width:0}
+.rail,.right{position:sticky;top:70px;max-height:calc(100vh - 82px);overflow:auto}
+.right{display:flex;flex-direction:column;padding:0}
+.right .tabs{display:flex;border-bottom:1px solid var(--line);overflow:auto}
+.right .tabs button{flex:1;border:0;background:transparent;padding:10px 6px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap}
+.right .tabs button.on{color:var(--text);border-color:var(--accent)}
+.right .body{padding:12px 14px;overflow:auto}
+@media(max-width:1280px){.app{grid-template-columns:240px minmax(0,1fr)}.right{grid-column:1/-1;position:static;max-height:none}}
+@media(max-width:860px){.app{grid-template-columns:1fr}.rail{position:static;max-height:none}.top{gap:10px}}
+/* rail */
+.rg{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:12px 0 6px}
+.rg:first-child{margin-top:0}
+.ri{display:grid;grid-template-columns:14px 1fr;column-gap:8px;width:100%;text-align:left;border:1px solid transparent;background:transparent;border-radius:4px;padding:7px 8px}
+.ri b{font-family:var(--mono);font-size:13px}
+.ri span{grid-column:2;color:var(--dim);font-size:12px}
+.ri:hover{background:var(--panel2)}
+.ri.act{background:var(--panel2);border-color:var(--accent)}
+.dot{width:9px;height:9px;border-radius:50%;border:2px solid var(--dim);margin-top:5px}
+.dot.prog{border-color:var(--accent);background:var(--accent)}.dot.done{border-color:var(--ok);background:var(--ok)}
+.steps{margin:2px 0 6px 14px;border-left:1px dashed var(--line);padding-left:8px;display:grid;gap:1px}
+.rs{display:grid;grid-template-columns:20px 1fr;text-align:left;border:0;background:transparent;border-radius:4px;padding:4px 6px}
+.rs i{font-style:normal;font-family:var(--mono);font-size:10px;width:16px;height:16px;border-radius:50%;background:var(--line);display:grid;place-items:center;color:var(--text)}
+.rs b{font-family:var(--mono);font-size:11px;font-weight:600}
+.rs span{grid-column:2;font-size:11px;color:var(--dim)}
+.rs.on{background:var(--panel2)}.rs.on i{background:var(--accent);color:#1a1100}
+/* diagram */
+.dtool{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.dtool .sp{flex:1}
+.stage{position:relative;height:clamp(360px,54vh,580px);border:1px solid var(--line);border-radius:4px;background:color-mix(in srgb,var(--plate) 70%,transparent);overflow:hidden}
+#map{width:100%;height:100%;display:block}
+#mini{position:absolute;right:8px;bottom:8px;width:150px;height:84px;background:var(--panel);border:1px solid var(--line);border-radius:4px;opacity:.92}
+#seq{display:none;height:clamp(360px,54vh,580px);overflow:auto;border:1px solid var(--line);border-radius:4px}
+svg text{font-family:var(--mono)}
+.zp.top{fill:color-mix(in srgb,var(--zc) 15%,var(--plate))}
+.zp.lf{fill:color-mix(in srgb,var(--zc) 28%,var(--s-lf))}
+.zp.rf{fill:color-mix(in srgb,var(--zc) 22%,var(--s-rf))}
+.zp{stroke:color-mix(in srgb,var(--zc) 55%,var(--ink))!important}
+.zl{fill:var(--dim);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.iso polygon,.iso ellipse,.iso path{stroke:var(--ink);stroke-width:1.1;stroke-linejoin:round}
+.iso .top{fill:var(--s-top)}.iso .lf{fill:var(--s-lf)}.iso .rf{fill:var(--s-rf)}
+.acc.top{fill:var(--accent)!important}.acc.lf{fill:color-mix(in srgb,var(--accent) 72%,#000)!important}.acc.rf{fill:color-mix(in srgb,var(--accent) 52%,#000)!important}
+.scr.top,.scr.lf,.scr.rf{fill:color-mix(in srgb,var(--chg) 55%,var(--s-top))!important}
+.led{fill:var(--ok);stroke:none!important}
+.ring{fill:none;stroke:var(--ink);stroke-dasharray:5 4}
+.node{cursor:pointer;transition:opacity .25s}
+.node.dim{opacity:.28}
+.node.future{opacity:.5}
+.node.cur .top{stroke:var(--accent);stroke-width:2}
+.node.cur .nglow{opacity:1}
+.nglow{fill:none;stroke:var(--accent);stroke-width:2;opacity:0}
+.nname{fill:var(--text);font-size:11.5px;font-weight:700;text-anchor:middle}
+.naddr{fill:var(--dim);font-size:9.5px;text-anchor:middle}
+.ncode{fill:var(--text);font-size:9px;font-weight:700;text-anchor:middle;opacity:.85}
+.lnk{stroke:var(--ink);stroke-width:3;opacity:.45;fill:none}
+.lnk.done{stroke:var(--accent);opacity:.95}
+.lnk.flow{stroke:var(--accent);stroke-dasharray:3 9;stroke-linecap:round;animation:flow 1s linear infinite;opacity:1;fill:none}
+@keyframes flow{to{stroke-dashoffset:-24}}
+.lbl{fill:var(--dim);font-size:9px;text-anchor:middle}
+.sl.top,.sl.lf,.sl.rf{stroke:var(--ink)}
+.sl-eth.top{fill:var(--eth)}.sl-eth.lf{fill:color-mix(in srgb,var(--eth) 70%,#000)}.sl-eth.rf{fill:color-mix(in srgb,var(--eth) 50%,#000)}
+.sl-ip.top{fill:var(--ipc)}.sl-ip.lf{fill:color-mix(in srgb,var(--ipc) 70%,#000)}.sl-ip.rf{fill:color-mix(in srgb,var(--ipc) 50%,#000)}
+.sl-l4.top{fill:var(--l4)}.sl-l4.lf{fill:color-mix(in srgb,var(--l4) 70%,#000)}.sl-l4.rf{fill:color-mix(in srgb,var(--l4) 50%,#000)}
+.sl-pay.top{fill:var(--pay)}.sl-pay.lf{fill:color-mix(in srgb,var(--pay) 70%,#000)}.sl-pay.rf{fill:color-mix(in srgb,var(--pay) 50%,#000)}
+.sl-out.top{fill:var(--accent)}.sl-out.lf{fill:color-mix(in srgb,var(--accent) 70%,#000)}.sl-out.rf{fill:color-mix(in srgb,var(--accent) 50%,#000)}
+.pk.ret .sl{opacity:.82}
+.flash{animation:flash .9s ease-out}
+@keyframes flash{0%{filter:brightness(2.2) drop-shadow(0 0 6px var(--accent))}100%{filter:none}}
+.ptxt{fill:var(--accent);font-size:11px;font-weight:700;text-anchor:middle}
+.tagbg{fill:var(--panel);stroke:var(--accent);stroke-width:1}
+.tagtx{fill:var(--text);font-size:9.5px}
+.tagwrap{animation:pop .35s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.xmark{stroke:var(--bad);stroke-width:4;stroke-linecap:round}
+.fring{fill:none;stroke:var(--bad);stroke-width:2;animation:pulse 1.2s ease-out infinite}
+@keyframes pulse{0%{opacity:1;stroke-width:2}100%{opacity:0;stroke-width:9}}
+.ftxt{fill:var(--bad);font-size:10px;font-weight:700;text-anchor:middle}
+.mn{fill:var(--dim)}.mn.on{fill:var(--accent)}
+.mv{fill:none;stroke:var(--accent);stroke-width:1.5}
+/* narration */
+.nar .top2{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.sdots{display:flex;gap:4px;flex-wrap:wrap}
+.sdots i{width:9px;height:9px;border-radius:50%;background:var(--line);cursor:pointer}
+.sdots i.on{background:var(--accent)}.sdots i.past{background:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.sdots i.r{border-radius:2px}
+.ctr{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ctr .btn{min-width:36px;height:30px}
+#scrub{flex:1;min-width:140px;accent-color:var(--accent)}
+.cap{font-size:14px;margin:6px 0 8px}
+.cap b{font-family:var(--mono);color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.doc{display:inline-flex;gap:6px;align-items:center;font-size:11.5px;text-decoration:none;border:1px solid var(--line);border-radius:12px;padding:1px 9px;color:var(--text);background:var(--panel2)}
+.doc:hover{border-color:var(--chg)}
+.doc em{font-style:normal;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--chg)}
+.doc.v em{color:var(--accent)}.doc.t em{color:var(--ok)}
+.faultbox{border:1px solid var(--bad);background:color-mix(in srgb,var(--bad) 9%,var(--panel));border-radius:6px;padding:12px 14px}
+.faultbox h3{margin:0 0 4px;font-size:14px;color:var(--bad);font-family:var(--mono)}
+.faultbox p{margin:0 0 8px}
+pre{margin:0;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px;font-family:var(--mono);font-size:12px;overflow:auto;white-space:pre}
+/* hop table */
+.tw{overflow:auto;max-height:290px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{position:sticky;top:0;background:var(--panel);font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-align:left;padding:4px 8px;font-weight:600}
+td{padding:5px 8px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;white-space:nowrap}
+td.info{white-space:normal;min-width:240px}
+tr.hr{cursor:pointer}
+tr.hr:hover td{background:var(--panel2)}
+tr.hr.on td{background:var(--panel2);box-shadow:inset 3px 0 0 var(--accent)}
+tr.hr.fut td{opacity:.45}
+.no{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px}
+.no.r{border-radius:4px;background:var(--l4)}
+.pt-tcp{color:var(--l4)}.pt-udp{color:var(--ipc)}.pt-icmp{color:var(--accent)}.pt-dns{color:var(--ok)}
+/* bytes */
+.lbar{display:flex;height:14px;border-radius:3px;overflow:hidden;margin-bottom:3px}
+.lbar i{display:block;height:100%}
+.lbl2{display:flex;font-size:10px;font-family:var(--mono);color:var(--dim);margin-bottom:10px}
+.lbl2 span{overflow:hidden;white-space:nowrap}
+.hexw{display:grid;grid-template-columns:1fr;font-family:var(--mono);font-size:12.5px;overflow:auto}
+.hrow{display:flex;gap:14px;white-space:nowrap}
+.hoff{color:var(--dim);width:36px}
+.hasc{color:var(--dim);letter-spacing:.04em;border-left:1px solid var(--line);padding-left:12px}
+.hb{display:inline-block;width:22px;text-align:center;border-radius:3px}
+.hb.eth{color:var(--eth)}.hb.ip{color:var(--ipc)}.hb.l4{color:var(--l4)}.hb.pay{color:var(--pay)}
+.hb.dim{opacity:.25}
+.hb.chg{background:color-mix(in srgb,var(--accent) 26%,transparent);box-shadow:inset 0 -2px 0 var(--accent);color:var(--text)}
+.hb.sel{background:var(--chg);color:#04121a;font-weight:700}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--dim);margin-top:8px;flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;background:currentColor}
+/* inspector */
+.stamp{display:inline-block;border:2.5px solid var(--accent);color:var(--accent);padding:5px 12px;border-radius:4px;transform:rotate(-2.5deg);font-family:var(--mono);font-weight:700;letter-spacing:.06em;margin:0 0 10px;box-shadow:inset 0 0 0 2px var(--panel),inset 0 0 0 3px var(--accent)}
+.stamp small{display:block;font-size:10px;letter-spacing:.16em;color:inherit;opacity:.85}
+.stamp.bad{border-color:var(--bad);color:var(--bad);box-shadow:inset 0 0 0 2px var(--panel),inset 0 0 0 3px var(--bad)}
+.does{margin:0 0 12px}
+.grp{border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+.gh{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:11.5px;font-weight:700;margin-bottom:4px}
+.gh small{font-weight:400}
+.lay{display:inline-block;font-size:10px;padding:0 5px;border-radius:3px;color:#06101f;font-weight:700}
+.L2{background:var(--eth)}.L3{background:var(--ipc)}.L4{background:var(--l4)}.L7{background:var(--pay)}
+.fr{display:grid;grid-template-columns:96px 1fr 1fr;gap:2px 8px;padding:5px 4px;border-radius:4px;cursor:pointer;font-size:12px}
+.fr:hover{background:var(--panel2)}
+.fr.sel{background:var(--panel2);box-shadow:inset 2px 0 0 var(--chg)}
+.fr .f{color:var(--dim);font-family:var(--sans)}
+.fr .o{font-family:var(--mono);color:var(--dim);word-break:break-all}
+.fr .n{font-family:var(--mono);word-break:break-all}
+.fr.chg .o{text-decoration:line-through}
+.fr.chg .n{color:var(--chg);font-weight:700}
+.fr.der .n{color:var(--dim)}
+.fr .note{grid-column:1/-1;color:var(--dim);font-size:11.5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.bg{font-family:var(--sans);font-size:9.5px;border:1px solid var(--chg);color:var(--chg);border-radius:9px;padding:0 6px;margin-left:6px;font-weight:400}
+.bg.d{border-color:var(--dim);color:var(--dim)}
+.bg.e{border-color:var(--accent);color:var(--accent)}
+.bg.x{border-color:var(--bad);color:var(--bad)}
+.hint{color:var(--dim);font-size:12px;margin-top:8px}
+.l7r{display:grid;grid-template-columns:140px 1fr;gap:3px 10px;font-family:var(--mono);font-size:12px;padding:4px 6px;border-radius:3px;word-break:break-all}
+.l7r.new{background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.l7r.chg{background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.l7r.del{background:color-mix(in srgb,var(--bad) 12%,transparent);text-decoration:line-through;opacity:.8}
+.l7r .k{color:var(--dim)}
+.blk2{border:1px solid var(--line);border-radius:4px;margin-bottom:10px}
+.blk2 .bh{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:6px 10px;border-bottom:1px solid var(--line);font-size:12px;font-weight:700}
+.blk2 pre{border:0;border-radius:0 0 4px 4px}
+.blk2 .bd{padding:6px 10px}
+.xt{width:100%;margin:6px 0}
+.xt td,.xt th{padding:4px 6px;font-size:11.5px}
+.xt tr.hit td{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--text);box-shadow:inset 0 0 0 0 transparent}
+.xt tr.hit td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.fl{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:6px 0}
+.fl span{border:1px solid var(--line);border-radius:4px;padding:2px 8px;font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+.fl span.hit{border-color:var(--accent);color:var(--text);background:color-mix(in srgb,var(--accent) 15%,transparent)}
+.fl i{font-style:normal;color:var(--dim)}
+.dl{display:grid;gap:6px}
+.dl a{display:grid;grid-template-columns:1fr auto;gap:2px 10px;border:1px solid var(--line);border-radius:4px;padding:7px 10px;text-decoration:none;color:var(--text)}
+.dl a:hover{border-color:var(--chg)}
+.dl a small{grid-column:1}
+.dl a em{font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--chg);align-self:start;grid-row:1;grid-column:2}
+/* trace tool */
+textarea{width:100%;min-height:200px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px;font-family:var(--mono);font-size:12.5px;resize:vertical}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.tile{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+.tile b{display:block;font-family:var(--mono);font-size:20px}
+.tile span{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.trow{display:grid;grid-template-columns:30px 200px minmax(120px,1fr) 80px;gap:10px;padding:9px 6px;border-top:1px solid var(--line);align-items:start}
+.trow .n{font-family:var(--mono);color:var(--dim)}
+.chip{display:inline-block;font-size:10px;border-radius:9px;padding:0 7px;margin-left:6px;border:1px solid var(--line);color:var(--dim)}
+.chip.cg{border-color:var(--accent);color:var(--accent)}.chip.priv{border-color:var(--eth);color:var(--eth)}.chip.pub{border-color:var(--ok);color:var(--ok)}
+.tbar{height:9px;background:var(--panel2);border-radius:5px;overflow:hidden;margin-top:5px}
+.tbar span{display:block;height:100%;background:var(--chg)}.tbar span.hot{background:var(--bad)}
+.note2{font-size:12.5px;margin:0 0 4px}
+.note2::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--dim)}
+.note2.warn::before{background:var(--accent)}.note2.bad::before{background:var(--bad)}.note2.ok::before{background:var(--ok)}.note2.info::before{background:var(--chg)}
+.tavg{font-family:var(--mono);text-align:right}
+@media(max-width:760px){.trow{grid-template-columns:26px 1fr 64px}.trow .bars{grid-column:1/-1;order:5}}
+footer{max-width:1900px;margin:0 auto;padding:4px 14px 28px;color:var(--dim);font-size:12px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--accent);color:#1a1100;padding:8px 14px;border-radius:6px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:50}
+.toast.on{opacity:1}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* layout patch: template-specific containers */
+body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0}
+.brand b span{color:var(--accent);margin:0 1px}
+.now{display:flex;flex-direction:column;gap:3px}.now b{font-size:14px}
+.ndots{display:flex;gap:3px}.ndots i{width:12px;height:4px;background:var(--line);border-radius:1px}.ndots i.on{background:var(--accent)}
+.prog{display:flex;flex-direction:column;margin-left:auto}.prog b{font-family:var(--mono);font-size:15px}.prog small{font-size:10.5px;color:var(--dim)}
+.seg{display:flex;gap:3px}
+.stagewrap{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+#stage{display:block}#map{display:block;width:100%;height:clamp(340px,52vh,560px)}
+#seq{background:var(--panel)}
+.ctl{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 12px}
+.ctl #scrub{flex:1;min-width:120px;accent-color:var(--accent)}
+.narr{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 14px;display:grid;gap:6px}
+.narr .ctr{font-family:var(--mono);font-size:12px;color:var(--dim)}.narr .cap{margin:0;line-height:1.5}
+.narr .cap b{color:var(--accent)}
+.tw,.bytes,.rail,.right,.tracepane{background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.tw{overflow:auto;max-height:300px}.bytes{padding:10px 14px;overflow:auto}
+.rail{padding:8px}.tracepane{grid-column:2/-1;padding:16px;display:grid;gap:10px;align-content:start}
+.tracepane[hidden],.center[hidden],.right[hidden]{display:none}
+#tin{width:100%;box-sizing:border-box;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:4px;padding:8px;font-family:var(--mono);font-size:12px}
+.itabs{display:flex;border-bottom:1px solid var(--line);overflow:auto}
+.itabs button{flex:1;border:0;background:transparent;padding:10px 6px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer}
+.itabs button.on{color:var(--text);border-color:var(--accent)}
+.ibody{padding:12px 14px;overflow:auto}
+.hint{font-size:12px;color:var(--dim);line-height:1.5}
+/* sequence view */
+.seq svg{color:var(--text);font-family:var(--mono)}
+.seq .life{stroke:var(--line);stroke-dasharray:3 4}.seq .sbox{fill:var(--panel2);stroke:var(--line)}
+.seq .sn{font-size:10.5px;text-anchor:middle;fill:var(--text);font-weight:700}.seq .sa2{font-size:9px;text-anchor:middle;fill:var(--dim)}
+.seq .sarr{cursor:pointer;color:var(--chg)}.seq .sarr line,.seq .sarr path{stroke:currentColor;stroke-width:1.6}
+.seq .sarr.r{color:var(--accent)}.seq .sarr.cur{color:var(--accent);font-weight:700}.seq .sarr.cur line{stroke-width:2.6}.seq .sarr.fut{opacity:.35}
+.seq .sl2{font-size:10px;fill:var(--text)}.seq .sl2.c{text-anchor:middle}
+.top .btn,.top select{white-space:nowrap}.top .prog{min-width:150px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>Hop<span>by</span>Hop</b><small>EknathaLabs</small></div>
+  <div class="now"><b id="nowTitle"></b><span id="nowDots" class="ndots"></span></div>
+  <div class="seg" id="layerSel" aria-label="Layer focus"></div>
+  <div class="seg" id="viewSel"></div>
+  <div class="seg" id="zoomSel"></div>
+  <select id="selF" aria-label="Fault"></select>
+  <div class="prog" title="Progress"><b id="progPct"></b><span id="progBar" class="pbar"></span><small id="progTxt"></small></div>
+  <button class="btn" id="bShare" data-i="share">Share</button>
+  <button class="btn" id="bExport" data-i="export">PNG</button>
+  <select id="lang" aria-label="Language"><option value="en">EN</option><option value="te">తెలుగు</option><option value="hi">हिन्दी</option></select>
+  <button class="btn" id="bTheme" aria-label="Toggle theme">◐</button>
+</header>
+<main class="app" id="app">
+  <nav class="rail" id="rail" aria-label="Journeys"></nav>
+  <section class="center" id="center">
+    <div class="stagewrap">
+      <div id="stage"><svg id="map" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Isometric packet path"></svg></div>
+      <div id="seq" class="seq" style="display:none"></div>
+      <svg id="mini" class="mini" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+    </div>
+    <div class="ctl">
+      <button class="btn" id="bFirst" aria-label="First">⏮</button>
+      <button class="btn" id="bPrev" aria-label="Previous">◀</button>
+      <button class="btn pri" id="bPlay">Play</button>
+      <button class="btn" id="bNext" aria-label="Next">▶</button>
+      <button class="btn" id="bLast" aria-label="Last">⏭</button>
+      <button class="btn" id="bReset" data-i="reset">Reset</button>
+      <input type="range" id="scrub" min="0" max="1" step="0.01" value="0" aria-label="Scrub">
+      <div class="seg" id="spdSel"><button data-v="0.5">0.5×</button><button data-v="1" class="on">1×</button><button data-v="2">2×</button><button data-v="3">3×</button></div>
+    </div>
+    <div class="narr">
+      <div class="sdots" id="sdots"></div><div class="ctr" id="stepTxt"></div>
+      <p id="cap" class="cap"></p><div class="chips" id="capDocs"></div>
+    </div>
+    <div id="faultBox"></div>
+    <div class="tw" id="hops"></div>
+    <div id="bytes" class="bytes"></div>
+  </section>
+  <aside class="right" id="right">
+    <div class="itabs" id="itabs"></div>
+    <div class="ibody" id="ibody"></div>
+  </aside>
+  <section class="tracepane" id="tracepane" hidden>
+    <h2 data-i="traceTool">Traceroute decoder</h2>
+    <p class="hint">Paste output from traceroute, tracert or mtr. Everything is parsed in your browser; nothing is uploaded.</p>
+    <textarea id="tin" spellcheck="false" rows="9"></textarea>
+    <div><button class="btn" id="tsample">Load sample</button></div>
+    <div class="tiles" id="ttiles"></div>
+    <div id="tout"></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script>"use strict";
+/* ================= official documentation registry =================
+   k: Standard | Vendor | Tool.  Only official sources are linked. scripts/check-links.js verifies every URL. */
+const R = n => 'https://www.rfc-editor.org/rfc/rfc' + n;
+const DOCS = {
+  rfc791:{l:'RFC 791 · IPv4',u:R(791),k:'Standard',s:'STD 5'},
+  rfc768:{l:'RFC 768 · UDP',u:R(768),k:'Standard',s:'STD 6'},
+  rfc9293:{l:'RFC 9293 · TCP',u:R(9293),k:'Standard',s:'STD 7'},
+  rfc792:{l:'RFC 792 · ICMP',u:R(792),k:'Standard',s:'STD 5'},
+  rfc826:{l:'RFC 826 · ARP',u:R(826),k:'Standard',s:'STD 37'},
+  rfc1071:{l:'RFC 1071 · Internet checksum',u:R(1071),k:'Standard',s:'Informational'},
+  rfc1812:{l:'RFC 1812 · IPv4 routers',u:R(1812),k:'Standard',s:'Proposed Standard'},
+  rfc1918:{l:'RFC 1918 · Private addresses',u:R(1918),k:'Standard',s:'BCP 5'},
+  rfc3022:{l:'RFC 3022 · Traditional NAT',u:R(3022),k:'Standard',s:'Informational'},
+  rfc6598:{l:'RFC 6598 · Shared address space',u:R(6598),k:'Standard',s:'BCP 153'},
+  rfc1191:{l:'RFC 1191 · Path MTU discovery',u:R(1191),k:'Standard',s:'Draft Standard'},
+  rfc4821:{l:'RFC 4821 · Packetization-layer PMTUD',u:R(4821),k:'Standard',s:'Proposed Standard'},
+  rfc7348:{l:'RFC 7348 · VXLAN',u:R(7348),k:'Standard',s:'Informational'},
+  rfc9110:{l:'RFC 9110 · HTTP semantics',u:R(9110),k:'Standard',s:'STD 97'},
+  rfc7239:{l:'RFC 7239 · Forwarded header',u:R(7239),k:'Standard',s:'Proposed Standard'},
+  rfc1035:{l:'RFC 1035 · DNS',u:R(1035),k:'Standard',s:'STD 13'},
+  rfc8446:{l:'RFC 8446 · TLS 1.3',u:R(8446),k:'Standard',s:'Proposed Standard'},
+  rfc6750:{l:'RFC 6750 · Bearer tokens',u:R(6750),k:'Standard',s:'Proposed Standard'},
+  rfc7519:{l:'RFC 7519 · JWT',u:R(7519),k:'Standard',s:'Proposed Standard'},
+  rfc8693:{l:'RFC 8693 · Token exchange',u:R(8693),k:'Standard',s:'Proposed Standard'},
+  w3tc:{l:'W3C Trace Context',u:'https://www.w3.org/TR/trace-context/',k:'Standard',s:'W3C Recommendation'},
+  k8svip:{l:'Kubernetes · Virtual IPs and service proxies',u:'https://kubernetes.io/docs/reference/networking/virtual-ips/',k:'Vendor'},
+  k8ssvc:{l:'Kubernetes · Service',u:'https://kubernetes.io/docs/concepts/services-networking/service/',k:'Vendor'},
+  k8snet:{l:'Kubernetes · Cluster networking',u:'https://kubernetes.io/docs/concepts/cluster-administration/networking/',k:'Vendor'},
+  k8spol:{l:'Kubernetes · Network policies',u:'https://kubernetes.io/docs/concepts/services-networking/network-policies/',k:'Vendor'},
+  nf:{l:'netfilter documentation',u:'https://www.netfilter.org/documentation/',k:'Tool'},
+  tcpdump:{l:'tcpdump manual',u:'https://www.tcpdump.org/manpages/tcpdump.1.html',k:'Tool'},
+  awsrt:{l:'AWS · Route tables',u:'https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html',k:'Vendor'},
+  awsnat:{l:'AWS · NAT gateways',u:'https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html',k:'Vendor'},
+  awsigw:{l:'AWS · Internet gateways',u:'https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html',k:'Vendor'},
+  awssg:{l:'AWS · Security groups',u:'https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html',k:'Vendor'},
+  awsacl:{l:'AWS · Network ACLs',u:'https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html',k:'Vendor'}
+};
+
+/* ================= field explanations (passport tree) ================= */
+const FINFO = {
+  ethDst:{l:'Eth dst MAC',n:'Next hop on this link. A new value at every L3 hop, found with ARP.',d:['rfc826'],eg:1},
+  ethSrc:{l:'Eth src MAC',n:'The interface that sent the frame on this link.',d:['rfc826'],eg:1},
+  ipSrc:{l:'IP source',n:'Original sender. Only NAT, proxies and tunnels change it.',d:['rfc791','rfc3022'],eg:1},
+  ipDst:{l:'IP destination',n:'Final target. Only DNAT, load balancers and proxies change it.',d:['rfc791'],eg:1},
+  ttl:{l:'TTL',n:'Hop limit. Each router subtracts 1; at 0 the packet is dropped and ICMP Time Exceeded is sent.',d:['rfc791','rfc1812','rfc792']},
+  ipCk:{l:'IP checksum',n:'Covers the IPv4 header only, so it is recomputed whenever TTL or an address changes.',d:['rfc1071'],der:1},
+  sport:{l:'Source port',n:'Chosen by the sender. NAT may remap it so replies can be told apart.',d:['rfc9293','rfc768'],eg:1},
+  dport:{l:'Dest port',n:'The service being addressed (443 = HTTPS, 53 = DNS). Only DNAT or a load balancer changes it.',d:['rfc9293','rfc768'],eg:1},
+  flags:{l:'TCP flags',n:'SYN opens a connection; SYN,ACK is the reply that completes the first half of the handshake.',d:['rfc9293']},
+  tcpCk:{l:'TCP checksum',n:'Covers the TCP segment plus a pseudo-header of the IP addresses, so any NAT forces a recompute.',d:['rfc9293','rfc1071'],der:1},
+  udpCk:{l:'UDP checksum',n:'Covers the datagram plus a pseudo-header of the IP addresses, so NAT forces a recompute.',d:['rfc768','rfc1071'],der:1},
+  icmpType:{l:'ICMP type',n:'8 = echo request, 0 = echo reply, 11 = time exceeded (TTL hit 0).',d:['rfc792']},
+  icmpId:{l:'Echo identifier',n:'Matches replies to the request. NAT treats it like a port and may rewrite it.',d:['rfc792'],eg:1},
+  icmpCk:{l:'ICMP checksum',n:'Covers the whole ICMP message.',d:['rfc792','rfc1071'],der:1}
+};
+
+/* ================= UI strings (English, Telugu, Hindi). TE/HI are drafts: please proofread. ================= */
+const I18N = {
+  en:{tagline:'Follow one packet. See every hop.',nowLearning:'Now learning',layerFocus:'Layer focus',all:'All',progress:'Learning progress',complete:'complete',inProgress:'in progress',
+    journeys:'Journeys',tools:'Tools',traceTool:'Traceroute decoder',map:'Map',sequence:'Sequence',fit:'Fit',follow:'Follow',breakIt:'Break it',noFault:'No fault (happy path)',
+    play:'Play',pause:'Pause',step:'Step',reset:'Reset',speed:'Speed',copyLink:'Copy link',export:'Export PNG',theme:'Theme',passport:'Passport',l7:'L7',how:'How',xray:'X-ray',docs:'Docs',
+    flow:'Packet flow',bytes:'Packet bytes',before:'Before',after:'After this hop',forward:'Forward',ret:'Return',hop:'Hop',no:'No.',time:'Time',device:'Device',src:'Source',dst:'Destination',proto:'Protocol',info:'Info',size:'Size',
+    loadSample:'Load sample',pasteHere:'Paste traceroute output',egNote:'an example value: it differs in every real capture',clickRow:'Click a row to find its bytes in the dump.',linkCopied:'Link copied',
+    rewritten:'rewritten',recomputed:'recomputed',added:'added',removed:'removed',changed:'changed',illus:'Addresses and MACs are illustrative sample values. Checksums are computed from the bytes shown.'},
+  te:{tagline:'ఒక ప్యాకెట్‌ను అనుసరించండి. ప్రతి హాప్‌ను చూడండి.',nowLearning:'ఇప్పుడు నేర్చుకుంటున్నది',layerFocus:'లేయర్',all:'అన్నీ',progress:'అభ్యాస పురోగతి',complete:'పూర్తి',inProgress:'కొనసాగుతోంది',
+    journeys:'ప్రయాణాలు',tools:'సాధనాలు',traceTool:'ట్రేస్‌రూట్ డీకోడర్',map:'మ్యాప్',sequence:'క్రమం',fit:'ఫిట్',follow:'అనుసరించు',breakIt:'లోపం చేర్చు',noFault:'లోపం లేదు',
+    play:'ప్లే',pause:'పాజ్',step:'స్టెప్',reset:'రీసెట్',speed:'వేగం',copyLink:'లింక్ కాపీ',export:'PNG ఎగుమతి',theme:'థీమ్',passport:'పాస్‌పోర్ట్',l7:'L7',how:'ఎలా',xray:'ఎక్స్-రే',docs:'డాక్స్',
+    flow:'ప్యాకెట్ ప్రవాహం',bytes:'ప్యాకెట్ బైట్లు',before:'ముందు',after:'ఈ హాప్ తర్వాత',forward:'ముందుకు',ret:'తిరుగు',hop:'హాప్',no:'సం.',time:'సమయం',device:'పరికరం',src:'మూలం',dst:'గమ్యం',proto:'ప్రోటోకాల్',info:'వివరం',size:'పరిమాణం',
+    loadSample:'నమూనా లోడ్',pasteHere:'ట్రేస్‌రూట్ అవుట్‌పుట్ అతికించండి',clickRow:'బైట్లను చూడటానికి వరుసను క్లిక్ చేయండి.',linkCopied:'లింక్ కాపీ అయింది'},
+  hi:{tagline:'एक पैकेट का पीछा करें। हर हॉप देखें।',nowLearning:'अभी सीख रहे हैं',layerFocus:'लेयर',all:'सभी',progress:'सीखने की प्रगति',complete:'पूर्ण',inProgress:'जारी',
+    journeys:'यात्राएँ',tools:'टूल',traceTool:'ट्रेसरूट डिकोडर',map:'मैप',sequence:'क्रम',fit:'फ़िट',follow:'अनुसरण',breakIt:'गड़बड़ी जोड़ें',noFault:'कोई गड़बड़ी नहीं',
+    play:'चलाएँ',pause:'रोकें',step:'स्टेप',reset:'रीसेट',speed:'गति',copyLink:'लिंक कॉपी',export:'PNG निर्यात',theme:'थीम',passport:'पासपोर्ट',l7:'L7',how:'कैसे',xray:'एक्स-रे',docs:'दस्तावेज़',
+    flow:'पैकेट प्रवाह',bytes:'पैकेट बाइट्स',before:'पहले',after:'इस हॉप के बाद',forward:'आगे',ret:'वापसी',hop:'हॉप',no:'क्र.',time:'समय',device:'डिवाइस',src:'स्रोत',dst:'गंतव्य',proto:'प्रोटोकॉल',info:'जानकारी',size:'आकार',
+    loadSample:'नमूना लोड करें',pasteHere:'ट्रेसरूट आउटपुट चिपकाएँ',clickRow:'बाइट्स देखने के लिए पंक्ति पर क्लिक करें।',linkCopied:'लिंक कॉपी हुआ'}
+};
+
+/* ================= payload helpers ================= */
+function dnsName(){const o=[];for(const l of ['www','example','com']){o.push(l.length);for(const ch of l)o.push(ch.charCodeAt(0));}o.push(0);return o;}
+const DNSQ=[0xb7,0xa1,0x01,0x00,0,1,0,0,0,0,0,0,...dnsName(),0,1,0,1];
+const DNSR=[0xb7,0xa1,0x81,0x80,0,1,0,1,0,0,0,0,...dnsName(),0,1,0,1,0xc0,0x0c,0,1,0,1,0,0,0x01,0x2c,0,4,203,0,113,10];
+const ECHO=[0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68];
+
+/* ================= journeys =================
+   node.set  = fields this device rewrites (cumulative)      node.router = decrements TTL      node.reset = terminates and re-originates (proxy)
+   node.nat  = {mode:'src'|'dst', a, b}                       node.l7ops / node.l7rops = header changes on the forward / return trip
+   node.x    = x-ray blocks                                    node.how  = "how it was computed" blocks
+   fault.type: ttl (ICMP Time Exceeded returns) | mtu | drop (no reply) | l7 (error response returns)                                     */
+const SC = {
+
+/* ---------------------------------------------------------------- 1. website */
+web:{
+  group:'Internet',short:'Website over the internet',sub:'TCP SYN :443 · NAT, CGNAT, LB',title:'Laptop → web server (TCP SYN to :443)',ttl:64,
+  base:{proto:'tcp',flags:0x02,seq:0x6e2f1a90,ack:0},reply:{flags:0x12,seq:0x2a4b8c10,ack:0x6e2f1a91},
+  l7:{title:'HTTP/1.1 request (sent after the TCP and TLS handshakes)',note:'On the wire this is encrypted by TLS. This tab shows what the application sends once the connection is up.',hdr:[['Host','www.example.com'],['User-Agent','Mozilla/5.0'],['Accept','text/html'],['Connection','keep-alive']]},
+  l7r:{title:'HTTP/1.1 200 OK',hdr:[['Content-Type','text/html; charset=utf-8'],['Content-Length','12800']]},
+  docs:['rfc9293','rfc791','rfc3022','rfc8446'],
+  nodes:[
+   {name:'Laptop',code:'PC',type:'host',zone:'Home',tag:'ORIGIN',ms:0,addr:'192.168.1.23',
+    does:'Builds the TCP SYN. It does not know the server\'s MAC, only its default gateway\'s, so the Ethernet frame is addressed to the router while the IP header names the far-away server.',
+    set:{ethSrc:'3C:22:FB:A1:09:23',ethDst:'F4:F2:6D:5E:11:A0',ipSrc:'192.168.1.23',ipDst:'142.250.195.46',sport:52144,dport:443},docs:['rfc9293','rfc826'],
+    how:[{t:'Why the frame goes to the router',c:'dst IP 142.250.195.46 is not in 192.168.1.0/24\n→ use default route via 192.168.1.1\nARP who-has 192.168.1.1 → F4:F2:6D:5E:11:A0\nframe dst MAC = gateway MAC, IP dst unchanged',d:['rfc826']}],
+    x:[{kind:'flow',title:'Host network stack',items:['connect()','TCP: build SYN','IP: route lookup','ARP: gateway MAC','NIC: frame out'],hit:[0,1,2,3,4]},
+       {kind:'table',title:'Routing table (longest prefix wins)',cols:['Destination','Gateway','Iface'],rows:[['192.168.1.0/24','—','wlan0'],['0.0.0.0/0','192.168.1.1','wlan0']],hit:[1],note:'142.250.195.46 matches only the default route, so the frame goes to the gateway.'}]},
+   {name:'Home router',code:'NAT',type:'nat',router:true,zone:'Home',tag:'SOURCE NAT',ms:2,addr:'192.168.1.1',
+    does:'Source NAT. The private source 192.168.1.23:52144 is replaced with the router\'s WAN address and a fresh port, and a translation entry is stored so replies can find their way back. TTL drops by one and both MACs are rewritten for the next link.',
+    set:{ethSrc:'F4:F2:6D:5E:11:A1',ethDst:'00:1B:54:C2:7A:01',ipSrc:'100.72.18.5',sport:40012},nat:{mode:'src',a:'192.168.1.23:52144',b:'100.72.18.5:40012'},docs:['rfc3022','rfc1918'],
+    x:[{kind:'table',title:'NAT table (conntrack)',cols:['Proto','Inside','Outside','State'],rows:[['tcp','192.168.1.23:52144','100.72.18.5:40012','SYN_SENT']],hit:[0],note:'Created by the first packet; the reply is matched against it.'}]},
+   {name:'ISP CGNAT',code:'CG',type:'nat',router:true,zone:'ISP',tag:'CGNAT · 2ND NAT',ms:9,addr:'100.72.0.1',
+    does:'The ISP translates again. Your "WAN" address was only 100.64.0.0/10 shared space, so the source is rewritten to a public IP shared with many subscribers. This is why inbound port-forwarding fails behind CGNAT.',
+    set:{ethSrc:'00:1B:54:C2:7A:02',ethDst:'00:1B:54:C2:7B:10',ipSrc:'117.200.45.9',sport:21877},nat:{mode:'src',a:'100.72.18.5:40012',b:'117.200.45.9:21877'},docs:['rfc6598','rfc3022'],
+    x:[{kind:'table',title:'CGNAT table (shared public IP)',cols:['Proto','Inside','Outside','State'],rows:[['tcp','100.72.18.5:40012','117.200.45.9:21877','SYN_SENT'],['tcp','100.72.31.9:51000','117.200.45.9:21878','ESTABLISHED']],hit:[0],note:'One public IP serves many subscribers; the port tells them apart.'}]},
+   {name:'Backbone',code:'R',type:'router',router:true,zone:'Transit',tag:'L3 FORWARD',ms:14,addr:'198.51.100.1',
+    does:'Pure routing. Longest-prefix match picks the next hop, TTL drops by one, the IP checksum is recomputed and both MACs change. Addresses and ports are untouched.',
+    set:{ethSrc:'A4:7B:2C:00:19:01',ethDst:'A4:7B:2C:00:19:77'},docs:['rfc1812','rfc791'],
+    how:[{t:'Longest-prefix match',c:'dst 142.250.195.46\n142.250.0.0/15  → matches (15 bits)\n0.0.0.0/0       → matches (0 bits)\n/15 wins → next hop 198.51.100.2 via ge-0/0/2\nARP next hop → new dst MAC; src MAC = ge-0/0/2',d:['rfc1812']}],
+    x:[{kind:'table',title:'Routing table',cols:['Prefix','Next hop','Iface'],rows:[['117.200.45.0/24','connected','ge-0/0/1'],['142.250.0.0/15','198.51.100.2','ge-0/0/2'],['0.0.0.0/0','198.51.100.9','ge-0/0/3']],hit:[1],note:'The /15 is the most specific match, so it beats the default route.'}]},
+   {name:'IX peering',code:'IX',type:'router',router:true,zone:'Transit',tag:'L3 FORWARD',ms:22,addr:'198.51.100.2',
+    does:'Hand-off between networks at an internet exchange. Same story as any router: new MAC pair, TTL minus one. Most long-haul latency has accumulated before this point.',
+    set:{ethSrc:'7C:AD:74:11:30:02',ethDst:'D8:C4:97:63:0A:05'},docs:['rfc1812']},
+   {name:'Edge LB',code:'LB',type:'lb',router:true,zone:'Destination',tag:'LB · DNAT',ms:24,addr:'142.250.195.46',
+    does:'A layer-4 load balancer picks a backend and rewrites the destination (DNAT) to the backend\'s private address and service port. Real edge fleets differ; this is a generic illustration.',
+    set:{ethSrc:'42:01:0A:80:04:01',ethDst:'42:01:0A:80:04:11',ipDst:'10.128.4.17',dport:8443},nat:{mode:'dst',a:'142.250.195.46:443',b:'10.128.4.17:8443'},docs:['rfc3022'],
+    x:[{kind:'table',title:'Backend pool',cols:['Backend','Health','Conns'],rows:[['10.128.4.16:8443','UP','412'],['10.128.4.17:8443','UP','397'],['10.128.4.18:8443','DOWN','0']],hit:[1],note:'Algorithm (illustrative): least connections among healthy backends.'}]},
+   {name:'Web server',code:'SRV',type:'server',zone:'Destination',tag:'DELIVERED',ms:25,addr:'10.128.4.17',
+    does:'The frame\'s MAC matches, the IP matches, the port is listening. The kernel answers with a SYN-ACK that retraces the path in reverse, translated back by each stored entry.',
+    set:{},docs:['rfc9293'],x:[{kind:'flow',title:'Server network stack',items:['NIC','IP: dst is me','TCP: port 8443 LISTEN','SYN-ACK queued'],hit:[0,1,2,3]}]}
+  ],
+  faults:[
+   {id:'ttl',at:3,type:'ttl',label:'TTL expires at Backbone',short:'TTL = 0',title:'TTL reached 0 at hop 3',
+    body:'The packet left the laptop with a TTL just large enough to die at the backbone router. The router discards it and returns ICMP Time Exceeded (type 11) to the sender, quoting the start of the original packet. This is exactly how traceroute discovers each hop: it sends probes with TTL 1, 2, 3… and listens for those replies. Step forward to watch the ICMP message travel back and get un-NATed.',
+    user:'$ traceroute -n 142.250.195.46\n 1  192.168.1.1    1.2 ms\n 2  100.72.0.1      6.8 ms\n 3  198.51.100.1    8.1 ms   <- ICMP Time Exceeded',d:['rfc792','rfc791','rfc1812']},
+   {id:'mtu',at:4,type:'mtu',label:'MTU black hole at IX',short:'MTU 1400',title:'Full-size packets vanish at hop 4',
+    body:'A link here has MTU 1400. Full 1500-byte segments with DF set must be dropped, and the router should return ICMP "Fragmentation needed". This network filters that ICMP, so the sender never learns and keeps retrying. Small packets (like this SYN) pass, which makes the fault confusing: the connection opens, then large responses stall.',
+    user:'$ curl -sv https://example.test\n* Connected to example.test\n* TLS handshake started ... (hangs)\n# small pages work, large responses stall',d:['rfc1191','rfc4821']},
+   {id:'drop',at:5,type:'drop',label:'Firewall DROP at Edge LB',short:'DROP',title:'Silently dropped at hop 5',
+    body:'A firewall rule uses DROP rather than REJECT, so nothing is sent back. The client waits and retransmits the SYN until it gives up. With REJECT you would get an instant TCP RST or ICMP unreachable, which is much easier to debug.',
+    user:'$ curl -m 5 https://example.test\ncurl: (28) Connection timed out after 5001 milliseconds\n$ traceroute -n -T -p 443 example.test\n 6  * * *\n 7  * * *',d:['rfc9293']}
+  ]
+},
+
+/* ---------------------------------------------------------------- 2. DNS */
+dns:{
+  group:'Internet',short:'DNS lookup',sub:'UDP :53 · query and answer',title:'Laptop → public resolver (DNS query over UDP)',ttl:64,
+  base:{proto:'udp',payload:DNSQ,payName:'DNS query'},reply:{payload:DNSR,payName:'DNS response'},
+  msg:{f:'Standard query A www.example.com',r:'Standard query response A 203.0.113.10'},
+  l7:{title:'DNS query',note:'DNS over UDP is cleartext: anyone on the path can read the name being looked up (see DoT/DoH for encrypted alternatives).',hdr:[['ID','0xb7a1'],['Flags','0x0100 (standard query, recursion desired)'],['Question','www.example.com IN A']]},
+  l7r:{title:'DNS response',hdr:[['ID','0xb7a1'],['Flags','0x8180 (response, recursion available)'],['Answer','www.example.com. 300 IN A 203.0.113.10']]},
+  docs:['rfc1035','rfc768','rfc3022'],
+  nodes:[
+   {name:'Laptop',code:'PC',type:'host',zone:'Home',tag:'ORIGIN',ms:0,addr:'192.168.1.23',
+    does:'The stub resolver builds a DNS query for www.example.com (type A) and sends it in a single UDP datagram to the configured resolver. UDP has no handshake: one datagram out, one back.',
+    set:{ethSrc:'3C:22:FB:A1:09:23',ethDst:'F4:F2:6D:5E:11:A0',ipSrc:'192.168.1.23',ipDst:'8.8.8.8',sport:41873,dport:53},docs:['rfc1035','rfc768'],
+    x:[{kind:'flow',title:'Stub resolver',items:['getaddrinfo()','cache miss','build query','UDP :53'],hit:[0,1,2,3]}]},
+   {name:'Home router',code:'NAT',type:'nat',router:true,zone:'Home',tag:'SOURCE NAT',ms:2,addr:'192.168.1.1',
+    does:'Many home routers advertise themselves as the DNS server; here the query is simply forwarded and source-NATed like any other UDP flow. The NAT entry is short-lived: UDP has no FIN to say the exchange is over, so it expires on a timer.',
+    set:{ethSrc:'F4:F2:6D:5E:11:A1',ethDst:'00:1B:54:C2:7A:01',ipSrc:'100.72.18.5',sport:33011},nat:{mode:'src',a:'192.168.1.23:41873',b:'100.72.18.5:33011'},docs:['rfc3022'],
+    x:[{kind:'table',title:'NAT table',cols:['Proto','Inside','Outside','Timeout'],rows:[['udp','192.168.1.23:41873','100.72.18.5:33011','30 s']],hit:[0],note:'UDP entries expire on a timer instead of at connection close.'}]},
+   {name:'ISP CGNAT',code:'CG',type:'nat',router:true,zone:'ISP',tag:'CGNAT · 2ND NAT',ms:9,addr:'100.72.0.1',
+    does:'Carrier-grade NAT translates the shared 100.64.0.0/10 address into a public one.',
+    set:{ethSrc:'00:1B:54:C2:7A:02',ethDst:'00:1B:54:C2:7B:10',ipSrc:'117.200.45.9',sport:21877},nat:{mode:'src',a:'100.72.18.5:33011',b:'117.200.45.9:21877'},docs:['rfc6598']},
+   {name:'Backbone',code:'R',type:'router',router:true,zone:'Transit',tag:'L3 FORWARD',ms:14,addr:'198.51.100.1',
+    does:'Routes towards the resolver\'s network: TTL minus one, new MAC pair, checksum recomputed.',set:{ethSrc:'A4:7B:2C:00:19:01',ethDst:'A4:7B:2C:00:19:77'},docs:['rfc1812']},
+   {name:'Public resolver',code:'DNS',type:'server',zone:'Resolver',tag:'RECURSIVE RESOLVER',ms:18,addr:'8.8.8.8',
+    does:'The recursive resolver checks its cache. On a miss it would walk root → .com TLD → authoritative servers; here it answers from cache with the A record 203.0.113.10 (TTL 300 s).',
+    set:{ethSrc:'42:01:0A:F0:00:01',ethDst:'42:01:0A:F0:00:09'},docs:['rfc1035'],
+    x:[{kind:'flow',title:'Recursive resolution',items:['cache lookup','miss → root','→ .com TLD','→ authoritative','answer cached'],hit:[0],note:'Highlighted: the cache hit this example takes. On a miss the other steps run.'}]}
+  ],
+  faults:[
+   {id:'drop',at:3,type:'drop',label:'UDP/53 filtered at Backbone',short:'DROP :53',title:'DNS datagrams silently dropped at hop 3',
+    body:'A filter drops DNS. UDP has no retransmission built in, so the stub resolver waits for its timeout (often 5 s), retries, then tries the next server. Users see slow page loads rather than a clean error, which is why DNS problems look like "the internet is slow".',
+    user:'$ dig @8.8.8.8 www.example.com +time=2 +tries=1\n;; communications error to 8.8.8.8#53: timed out',d:['rfc1035','rfc768']}
+  ]
+},
+
+/* ---------------------------------------------------------------- 3. ping */
+ping:{
+  group:'Internet',short:'Ping and traceroute',sub:'ICMP echo · TTL and ICMP errors',title:'Laptop → server (ICMP echo request)',ttl:64,
+  base:{proto:'icmp',type:8,code:0,id:0x1a2b,seq:1,payload:ECHO,payName:'Echo data'},reply:{type:0},
+  msg:{f:'Echo (ping) request',r:'Echo (ping) reply'},
+  l7:null,l7r:null,docs:['rfc792','rfc791','rfc1812'],
+  nodes:[
+   {name:'Laptop',code:'PC',type:'host',zone:'Home',tag:'ORIGIN',ms:0,addr:'192.168.1.23',
+    does:'ping builds an ICMP echo request (type 8) with an identifier and sequence number. ICMP rides directly on IP, with no ports, so NAT matches replies using the identifier instead.',
+    set:{ethSrc:'3C:22:FB:A1:09:23',ethDst:'F4:F2:6D:5E:11:A0',ipSrc:'192.168.1.23',ipDst:'203.0.113.10'},docs:['rfc792']},
+   {name:'Home router',code:'NAT',type:'nat',router:true,zone:'Home',tag:'SOURCE NAT',ms:2,addr:'192.168.1.1',
+    does:'Rewrites the source address and also the echo identifier, which plays the role of a port for ICMP. TTL minus one.',
+    set:{ethSrc:'F4:F2:6D:5E:11:A1',ethDst:'00:1B:54:C2:7A:01',ipSrc:'100.72.18.5',id:0x4c11},nat:{mode:'src',a:'192.168.1.23 id 0x1a2b',b:'100.72.18.5 id 0x4c11'},docs:['rfc3022']},
+   {name:'ISP CGNAT',code:'CG',type:'nat',router:true,zone:'ISP',tag:'CGNAT · 2ND NAT',ms:9,addr:'100.72.0.1',
+    does:'A second translation to a public address, again remapping the identifier.',
+    set:{ethSrc:'00:1B:54:C2:7A:02',ethDst:'00:1B:54:C2:7B:10',ipSrc:'117.200.45.9',id:0x5d02},nat:{mode:'src',a:'100.72.18.5 id 0x4c11',b:'117.200.45.9 id 0x5d02'},docs:['rfc6598']},
+   {name:'Backbone',code:'R',type:'router',router:true,zone:'Transit',tag:'L3 FORWARD',ms:14,addr:'198.51.100.1',
+    does:'Plain forwarding. This is hop 4 of the path: traceroute would show this router when it sends a probe with TTL 4.',set:{ethSrc:'A4:7B:2C:00:19:01',ethDst:'A4:7B:2C:00:19:77'},docs:['rfc1812']},
+   {name:'IX peering',code:'IX',type:'router',router:true,zone:'Transit',tag:'L3 FORWARD',ms:22,addr:'198.51.100.2',
+    does:'Another router hop towards the destination network.',set:{ethSrc:'7C:AD:74:11:30:02',ethDst:'D8:C4:97:63:0A:05'},docs:['rfc1812']},
+   {name:'Server',code:'SRV',type:'server',zone:'Destination',tag:'ECHO REPLY',ms:25,addr:'203.0.113.10',
+    does:'The kernel answers every echo request with an echo reply (type 0), copying the identifier, sequence number and data.',set:{ethSrc:'42:01:0A:80:04:01',ethDst:'42:01:0A:80:04:11'},docs:['rfc792']}
+  ],
+  faults:[
+   {id:'ttl',at:3,type:'ttl',label:'TTL expires at hop 4 (traceroute)',short:'TTL = 0',title:'TTL reached 0 at the Backbone router',
+    body:'Traceroute sends probes with increasing TTL. This one starts with a TTL that runs out at the Backbone router, which returns ICMP Time Exceeded. The source address of that error is what traceroute prints as the hop. Step forward to see it travel back.',
+    user:'$ traceroute -n -I 203.0.113.10\n 1  192.168.1.1    1.2 ms\n 2  100.72.0.1      6.8 ms\n 3  198.51.100.1    8.1 ms   <- this router',d:['rfc792','rfc791']},
+   {id:'drop',at:4,type:'drop',label:'ICMP echo blocked at IX',short:'DROP ICMP',title:'Echo requests dropped at hop 5',
+    body:'A firewall blocks ICMP echo. Ping shows 100% loss even though TCP connections to the same host may work, so "ping fails" does not always mean "host down". Test the real service port instead.',
+    user:'$ ping -c 3 203.0.113.10\n3 packets transmitted, 0 received, 100% packet loss\n$ curl -sI https://203.0.113.10   # works',d:['rfc792']}
+  ]
+},
+
+/* ---------------------------------------------------------------- 4. AWS */
+aws:{
+  group:'Cloud',short:'AWS: private subnet to internet',sub:'Route table · NAT gateway · IGW',title:'EC2 in a private subnet → internet (via NAT gateway)',ttl:64,
+  base:{proto:'tcp',flags:0x02,seq:0x7a1c0e44,ack:0},reply:{flags:0x12,seq:0x31d0aa05,ack:0x7a1c0e45},
+  l7:{title:'HTTPS request (encrypted in flight)',note:'Illustrative: the packet shown is the TCP SYN that precedes TLS.',hdr:[['Host','api.example.com'],['Accept','application/json']]},
+  l7r:{title:'HTTP/1.1 200 OK',hdr:[['Content-Type','application/json']]},
+  docs:['awsrt','awsnat','awsigw','awssg','awsacl'],
+  nodes:[
+   {name:'EC2 instance',code:'EC2',type:'host',zone:'Private subnet 10.0.1.0/24',tag:'ORIGIN',ms:0,addr:'10.0.1.25',
+    does:'The instance has only a private address. Its default route points at the subnet\'s VPC router, so the frame goes there first. The security group is stateful: allowing outbound 443 automatically allows the reply.',
+    set:{ethSrc:'0A:77:0E:A4:3D:10',ethDst:'0A:C3:5E:1B:90:01',ipSrc:'10.0.1.25',ipDst:'203.0.113.10',sport:50122,dport:443},docs:['awssg'],
+    x:[{kind:'table',title:'Security group (outbound)',cols:['Type','Destination','Action'],rows:[['HTTPS 443','0.0.0.0/0','ALLOW']],hit:[0],note:'Stateful: return traffic is allowed automatically.'}]},
+   {name:'VPC router',code:'RT',type:'router',router:true,zone:'Private subnet 10.0.1.0/24',tag:'ROUTE TABLE',ms:1,addr:'10.0.1.1',
+    does:'The VPC router consults the subnet\'s route table. The default route targets the NAT gateway, so the next hop is the NAT gateway\'s network interface. The subnet\'s network ACL is checked here too, and is stateless.',
+    set:{ethSrc:'0A:C3:5E:1B:90:01',ethDst:'0A:77:0E:A4:3D:12'},docs:['awsrt','awsacl'],
+    how:[{t:'Route table lookup',c:'dst 203.0.113.10\n10.0.0.0/16  local            (no match)\n0.0.0.0/0    nat-0a1b2c3d4e5f (match)\n→ forward to the NAT gateway interface',d:['awsrt']}],
+    x:[{kind:'table',title:'Route table (private subnet)',cols:['Destination','Target'],rows:[['10.0.0.0/16','local'],['0.0.0.0/0','nat-0a1b2c3d4e5f']],hit:[1],note:'The most specific match wins; only the default route matches the internet address.'},
+       {kind:'table',title:'Network ACL (outbound, stateless)',cols:['Rule','Action','Match'],rows:[['100','ALLOW','tcp 443 → 0.0.0.0/0'],['*','DENY','everything else']],hit:[0],note:'Stateless: the return path (ephemeral ports) needs its own inbound rule.'}]},
+   {name:'NAT gateway',code:'NAT',type:'nat',router:true,zone:'Public subnet 10.0.0.0/24',tag:'SOURCE NAT',ms:2,addr:'10.0.0.50',
+    does:'The NAT gateway replaces the instance\'s private source with its own private address and a new port, and remembers the mapping. Outside the VPC its Elastic IP will stand in for that address.',
+    set:{ethSrc:'0A:77:0E:A4:3D:12',ethDst:'0A:C3:5E:1B:90:02',ipSrc:'10.0.0.50',sport:1024},nat:{mode:'src',a:'10.0.1.25:50122',b:'10.0.0.50:1024'},docs:['awsnat']},
+   {name:'Internet gateway',code:'IGW',type:'nat',router:true,zone:'VPC edge',tag:'1:1 NAT TO EIP',ms:3,addr:'igw-0f1e2d3c',
+    does:'The internet gateway performs one-to-one NAT between a private address and its public (Elastic) IP, without changing ports. After this hop the source is the public address the internet sees.',
+    set:{ethSrc:'0A:C3:5E:1B:90:02',ethDst:'0A:C3:5E:1B:90:03',ipSrc:'198.51.100.77'},nat:{mode:'src',a:'10.0.0.50',b:'198.51.100.77 (Elastic IP)'},docs:['awsigw']},
+   {name:'Internet server',code:'SRV',type:'server',zone:'Internet',tag:'DELIVERED',ms:18,addr:'203.0.113.10',
+    does:'The server sees the NAT gateway\'s Elastic IP as the client. The reply goes to that address and is translated back at the IGW and the NAT gateway.',set:{ethSrc:'42:01:0A:80:00:01',ethDst:'42:01:0A:80:00:09'},docs:['rfc9293']}
+  ],
+  faults:[
+   {id:'noroute',at:1,type:'drop',label:'No route to the NAT gateway',short:'BLACKHOLE',title:'Route table blackhole at the VPC router',
+    body:'The private subnet\'s route table has no 0.0.0.0/0 entry (or it points at a deleted NAT gateway, shown as "blackhole"). Traffic to the internet has nowhere to go and is dropped. The instance just times out: there is no ICMP error.',
+    user:'$ curl -m 5 https://api.example.com\ncurl: (28) Connection timed out\n$ aws ec2 describe-route-tables ...   # 0.0.0.0/0  State: blackhole',d:['awsrt']},
+   {id:'noigw',at:2,type:'drop',label:'Public subnet has no route to IGW',short:'NO IGW ROUTE',title:'NAT gateway cannot reach the internet',
+    body:'The NAT gateway lives in a public subnet whose route table lacks 0.0.0.0/0 → internet gateway. The private instance\'s route and the NAT translation are fine, yet packets die after the NAT gateway. A very common mistake is putting the NAT gateway in a private subnet.',
+    user:'$ curl -m 5 https://api.example.com\ncurl: (28) Connection timed out\n# check: public subnet route table must contain 0.0.0.0/0 → igw-…',d:['awsnat','awsigw']}
+  ]
+},
+
+/* ---------------------------------------------------------------- 5. Kubernetes */
+k8s:{
+  group:'Kubernetes',short:'Pod → Service → Pod',sub:'kube-proxy DNAT · VXLAN overlay',title:'Pod → Service → Pod on another node (VXLAN overlay)',ttl:64,
+  base:{proto:'tcp',flags:0x02,seq:0x5c3a9e21,ack:0},reply:{flags:0x12,seq:0x1f6d7a30,ack:0x5c3a9e22},
+  l7:{title:'HTTP request (cleartext inside the cluster)',note:'Service traffic is usually plain HTTP unless a mesh adds mTLS.',hdr:[['Host','web-svc'],['User-Agent','curl/8.5.0'],['Accept','*/*']]},
+  l7r:{title:'HTTP/1.1 200 OK',hdr:[['Content-Type','application/json'],['Content-Length','42']]},
+  docs:['k8ssvc','k8svip','k8snet','rfc7348','nf'],
+  nodes:[
+   {name:'Pod web',code:'POD',type:'pod',zone:'Node 1',tag:'ORIGIN',ms:0,addr:'10.244.1.5',
+    does:'The app calls the Service name. DNS returns the ClusterIP 10.96.0.20, a virtual address that no interface owns. The frame goes to the node\'s bridge or veth peer.',
+    set:{ethSrc:'AA:3E:19:7C:42:05',ethDst:'B2:55:0C:98:11:01',ipSrc:'10.244.1.5',ipDst:'10.96.0.20',sport:48822,dport:80},docs:['k8ssvc'],
+    x:[{kind:'flow',title:'Inside the pod',items:['app','eth0 (veth)','host bridge / CNI'],hit:[0,1,2]}]},
+   {name:'Node 1 iptables',code:'NF',type:'nat',router:true,zone:'Node 1',tag:'KUBE-PROXY DNAT',ms:0.2,addr:'10.0.0.11',
+    does:'netfilter PREROUTING matches KUBE-SERVICES for 10.96.0.20:80, jumps to the Service chain, picks an endpoint at random and DNATs to the pod 10.244.2.9:8080. conntrack records the pairing so the reply is translated back.',
+    set:{ethSrc:'C6:90:4A:11:D3:08',ethDst:'7E:21:A4:CB:03:2F',ipDst:'10.244.2.9',dport:8080},nat:{mode:'dst',a:'10.96.0.20:80',b:'10.244.2.9:8080'},docs:['k8svip','nf'],
+    x:[{kind:'flow',title:'iptables chains traversed',items:['PREROUTING','KUBE-SERVICES','KUBE-SVC-XXXX','KUBE-SEP-YYYY (DNAT)','POSTROUTING'],hit:[0,1,2,3,4],note:'The Service chain picks one endpoint with a probability rule.'}]},
+   {name:'VXLAN encap',code:'VX',type:'tunnel',zone:'Node 1',tag:'ENCAPSULATED',ms:0.4,addr:'flannel.1',
+    does:'The overlay device wraps the entire original frame inside UDP/VXLAN addressed to Node 2\'s real IP. The inner packet is unchanged; the extra outer headers (about 50 bytes) are what the physical network will see.',
+    set:{outer:'10.0.0.11 → 10.0.0.12 · UDP 8472 · VNI 1  (+50 B)'},docs:['rfc7348','k8snet'],
+    x:[{kind:'table',title:'Outer headers added',cols:['Layer','Value'],rows:[['Outer Ethernet','Node 1 → fabric'],['Outer IPv4','10.0.0.11 → 10.0.0.12'],['Outer UDP','dst port 8472'],['VXLAN','VNI 1'],['Inner frame','as sent by the pod']],hit:[1,2,3],note:'50 bytes of overhead: why the pod MTU must be about 1450 on a 1500 underlay.'}]},
+   {name:'Underlay',code:'SW',type:'switch',zone:'Fabric',tag:'OUTER HEADERS ONLY',ms:0.7,addr:'ToR switch',
+    does:'The datacenter network forwards on the outer headers only. It cannot see pod IPs, so pod-level ACLs there do nothing, but it must allow UDP 8472 and carry the extra 50 bytes without fragmenting.',set:{},docs:['rfc7348']},
+   {name:'VXLAN decap',code:'VX',type:'tunnel',router:true,zone:'Node 2',tag:'DECAPSULATED',ms:1.0,addr:'flannel.1',
+    does:'Node 2 strips the outer headers, routes the inner packet to its local bridge and rewrites the MACs toward the destination pod. TTL drops once more.',
+    set:{outer:'',ethSrc:'0A:58:0A:F4:02:01',ethDst:'0A:58:0A:F4:02:09'},docs:['rfc7348']},
+   {name:'Pod api',code:'POD',type:'pod',zone:'Node 2',tag:'DELIVERED',ms:1.1,addr:'10.244.2.9',
+    does:'The pod sees the original source (10.244.1.5) and its own address and port. The reply is un-DNATed on Node 1 so the client still thinks it talked to 10.96.0.20:80.',set:{},docs:['k8ssvc']}
+  ],
+  faults:[
+   {id:'vxlan',at:3,type:'drop',label:'Underlay blocks UDP 8472',short:'DROP 8472',title:'VXLAN traffic dropped at the underlay',
+    body:'A firewall or cloud security group does not allow UDP 8472 between nodes. Pods on the same node talk fine, but every cross-node call times out. The Service looks healthy and kube-proxy rules are correct, which is what makes this fault expensive to find.',
+    user:'$ kubectl exec web -- curl -m 3 web-svc\ncurl: (28) Connection timed out\n$ kubectl exec web -- curl -m 3 10.244.1.8:8080   # same node\nok',d:['k8snet','rfc7348']},
+   {id:'mtu',at:3,type:'mtu',label:'Overlay MTU too big',short:'MTU',title:'Encapsulated packet exceeds the underlay MTU',
+    body:'Underlay MTU is 1500 but the pod interface also allows 1500. Adding 50 bytes of VXLAN overhead makes full-size packets 1550, so they are dropped or fragmented. Tiny requests work and large responses hang. Fix: set the CNI/pod MTU to about 1450.',
+    user:'$ kubectl exec web -- curl -s web-svc/health     # works\n$ kubectl exec web -- curl -s web-svc/big.json   # hangs\n$ ip link show flannel.1 | grep mtu\n... mtu 1500   <- should be 1450',d:['rfc7348','rfc1191']}
+  ]
+},
+
+/* ---------------------------------------------------------------- 6. API gateway (L7 lens) */
+api:{
+  group:'API & Auth',short:'API through CDN and gateway',sub:'L7 hop-by-hop headers · auth at the hop',title:'Client → CDN → WAF → API gateway → service',ttl:64,
+  base:{proto:'tcp',flags:0x02,seq:0x3b8f21c6,ack:0},reply:{flags:0x12,seq:0x6a02e1d9,ack:0x3b8f21c7},
+  l7:{title:'HTTP request headers at this hop',note:'Each proxy terminates the connection and opens a new one, so L2–L4 are rebuilt at every proxy while headers are added, stripped or rewritten.',
+      hdr:[['Host','api.example.com'],['Authorization','Bearer eyJhbGciOiJSUzI1NiJ9…'],['Cookie','sid=9f2c41…'],['Connection','keep-alive'],['Keep-Alive','timeout=5'],['Accept','application/json']]},
+  l7r:{title:'HTTP response headers at this hop',hdr:[['Content-Type','application/json'],['Cache-Control','no-store'],['Server','orders-svc/1.4']]},
+  docs:['rfc9110','rfc7239','w3tc','rfc8693','rfc6750','rfc7519'],
+  nodes:[
+   {name:'Client',code:'PC',type:'host',zone:'Home',tag:'ORIGIN',ms:0,addr:'192.168.1.23',
+    does:'The client opens a TCP connection to the CDN\'s anycast address and will send an HTTPS request carrying a bearer token and a session cookie. Connection and Keep-Alive are hop-by-hop headers: they describe this single connection only.',
+    set:{ethSrc:'3C:22:FB:A1:09:23',ethDst:'F4:F2:6D:5E:11:A0',ipSrc:'192.168.1.23',ipDst:'203.0.113.80',sport:52144,dport:443},docs:['rfc9110']},
+   {name:'Home router',code:'NAT',type:'nat',router:true,zone:'Home',tag:'SOURCE NAT',ms:2,addr:'192.168.1.1',
+    does:'Source NAT as before. Nothing at layer 7 changes: a NAT never reads or edits HTTP.',
+    set:{ethSrc:'F4:F2:6D:5E:11:A1',ethDst:'00:1B:54:C2:7A:01',ipSrc:'117.200.45.9',sport:40012},nat:{mode:'src',a:'192.168.1.23:52144',b:'117.200.45.9:40012'},docs:['rfc3022']},
+   {name:'CDN edge',code:'CDN',type:'proxy',reset:true,zone:'CDN',tag:'TLS TERMINATION · PROXY',ms:9,addr:'203.0.113.80',
+    does:'The CDN terminates TLS and the client\'s TCP connection, then opens a new one to the origin. It strips the hop-by-hop headers (Connection, Keep-Alive), records the client address in X-Forwarded-For and adds a Via header. Note the new source IP, ports and a fresh TTL.',
+    set:{ethSrc:'42:01:0A:E1:00:01',ethDst:'42:01:0A:E1:00:07',ipSrc:'203.0.113.81',ipDst:'198.51.100.20',sport:38201,dport:443},
+    l7ops:{del:['Connection','Keep-Alive'],add:[['X-Forwarded-For','117.200.45.9'],['Via','1.1 cdn-edge']]},l7rops:{add:[['Via','1.1 cdn-edge']]},docs:['rfc9110','rfc7239','rfc8446'],
+    x:[{kind:'table',title:'Header policy at the CDN',cols:['Header','Action'],rows:[['Connection, Keep-Alive','strip (hop-by-hop)'],['X-Forwarded-For','append client IP'],['Via','add'],['Authorization, Cookie','pass through']],hit:[0,1,2]}]},
+   {name:'WAF / LB',code:'WAF',type:'proxy',reset:true,zone:'Cloud edge',tag:'WAF · LOAD BALANCER',ms:14,addr:'198.51.100.20',
+    does:'The WAF inspects the request against its rules, assigns a request ID and propagates trace context so one request can be followed across services, then forwards to the API gateway on yet another connection.',
+    set:{ethSrc:'42:01:0A:80:00:14',ethDst:'42:01:0A:80:00:0A',ipSrc:'10.20.0.5',ipDst:'10.20.0.10',sport:44110,dport:8080},
+    l7ops:{add:[['X-Request-Id','7f3a91c2'],['traceparent','00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01']]},l7rops:{del:['Server']},docs:['w3tc','rfc9110'],
+    x:[{kind:'table',title:'WAF rule evaluation',cols:['Rule','Result'],rows:[['SQL injection signatures','pass'],['Request size < 1 MB','pass'],['Rate limit 100/min per IP','pass'],['Geo block list','pass']],hit:[0,1,2,3]}]},
+   {name:'API gateway',code:'GW',type:'proxy',reset:true,zone:'Platform',tag:'AUTHN · TOKEN EXCHANGE',ms:16,addr:'10.20.0.10',
+    does:'The gateway validates the JWT (signature, expiry, audience), then replaces the external token with a short-lived internal one (token exchange), drops the browser cookie and tells the service who the caller is. The network never sees these decisions: only the headers do.',
+    set:{ethSrc:'0A:20:00:0A:00:01',ethDst:'0A:20:01:0F:00:01',ipSrc:'10.20.0.10',ipDst:'10.20.1.15',sport:51022,dport:9000},
+    l7ops:{del:['Cookie'],mod:{Authorization:'Bearer <internal-token>'},add:[['X-User-Id','u-1842']]},l7rops:{add:[['X-RateLimit-Remaining','98']]},docs:['rfc7519','rfc8693','rfc6750'],
+    how:[{t:'JWT validation (RFC 7519)',c:'1. split token into header.payload.signature\n2. fetch the issuer\'s public key (kid)\n3. verify RS256 signature\n4. check exp > now, aud == api.example.com, iss trusted\n5. allow → exchange for internal token (RFC 8693)',d:['rfc7519','rfc8693']}],
+    x:[{kind:'flow',title:'Gateway pipeline',items:['TLS / mTLS','validate JWT','rate limit','token exchange','route to service'],hit:[1,3,4],note:'On failure the gateway answers 401 itself; the request never reaches the service.'}]},
+   {name:'Orders service',code:'SVC',type:'pod',zone:'Platform',tag:'DELIVERED',ms:17,addr:'10.20.1.15',
+    does:'The service receives a clean request: internal token, caller identity, trace context and no cookie. It never sees the client\'s address except through X-Forwarded-For, which is why logs must read that header and not the TCP source.',set:{},docs:['rfc7239','w3tc']}
+  ],
+  faults:[
+   {id:'jwt',at:4,type:'l7',label:'JWT rejected at the gateway',short:'401',title:'The gateway answers 401: nothing is wrong with the network',
+    resp:{title:'HTTP/1.1 401 Unauthorized',hdr:[['WWW-Authenticate','Bearer error="invalid_token"'],['Content-Type','application/json']]},
+    body:'Layer 2–4 look perfect and the packet reaches the gateway. The gateway checks the JWT (signature, exp, aud), finds it expired and answers 401 itself. A network-only view would show a healthy path, which is exactly why the L7 tab matters. Step forward to see the error travel back.',
+    user:'$ curl -i https://api.example.com/orders\nHTTP/2 401\nwww-authenticate: Bearer error="invalid_token", error_description="The token expired"',d:['rfc6750','rfc7519']},
+   {id:'waf',at:3,type:'drop',label:'WAF drops the request',short:'DROP',title:'WAF rule silently drops the request',
+    body:'A WAF rule matches and drops the connection without a response. The client sees a timeout or reset rather than an HTTP error, so application logs stay empty: check the WAF logs first.',
+    user:'$ curl -m 5 https://api.example.com/orders\ncurl: (28) Operation timed out\n# service logs: nothing. WAF logs: rule 942100 blocked',d:['rfc9110']}
+  ]
+}
+};
+
+"use strict";
+/* ================= helpers ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hx4 = n => '0x' + (n >>> 0).toString(16).padStart(4, '0');
+const h2 = n => n.toString(16).padStart(2, '0');
+const macB = s => s.split(':').map(x => parseInt(x, 16));
+const ipB = s => s.split('.').map(Number);
+const u32 = n => [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255];
+function cksum16(b){ let s = 0; for (let i = 0; i < b.length; i += 2) s += (b[i] << 8) | (b[i + 1] || 0); while (s >>> 16) s = (s & 0xffff) + (s >>> 16); return (~s) & 0xffff; }
+const PN = {tcp:6, udp:17, icmp:1};
+const ICMPN = {0:'Echo reply', 3:'Destination unreachable', 8:'Echo request', 11:'Time exceeded'};
+const LAYERS = {host:['L2','L3','L4','L7'], pod:['L2','L3','L4','L7'], server:['L2','L3','L4','L7'], router:['L2','L3'], switch:['L2'], nat:['L3','L4'], lb:['L3','L4','L7'], tunnel:['L2','L3'], proxy:['L3','L4','L7']};
+function flagsStr(f){ return [[1,'FIN'],[2,'SYN'],[4,'RST'],[8,'PSH'],[16,'ACK']].filter(x => f & x[0]).map(x => x[1]).join(',') || 'none'; }
+const t = k => (I18N[app.lang] && I18N[app.lang][k]) || I18N.en[k] || k;
+
+/* ================= application state ================= */
+const app = {j:'web', f:'none', s:0, t:0, speed:1, layer:'all', view:'map', itab:'passport', zoom:'fit', lang:'en', theme:'dark', playing:false, sel:null, page:'journey', prog:{}};
+const CACHE = new Map();
+const SCN = () => SC[app.j];
+const FLT = () => SCN().faults.find(f => f.id === app.f) || null;
+
+function geom(){
+  const S = SCN(), f = FLT(), N = S.nodes.length - 1, F = f ? f.at : N;
+  const kind = !f ? 'normal' : f.type === 'ttl' ? 'icmp' : f.type === 'l7' ? 'normal' : null;
+  return {S, f, N, F, R:F, kind, count: kind ? 2 * (F + 1) : F + 1};
+}
+const stepInfo = (s, g) => s <= g.F ? {dir:'f', j:s} : {dir:'r', j:2 * g.F + 1 - s};
+function nodePos(s, g){ return s <= g.F ? s : 2 * g.F + 1 - s; }
+
+/* ================= packet states ================= */
+function ttlNeeded(S, at){ let c = 0; for (let k = 1; k <= at; k++){ const n = S.nodes[k]; if (n.reset) c = 0; else if (n.router) c++; } return c; }
+function ttlFwd(S, f, i){
+  let t0 = f && f.type === 'ttl' ? ttlNeeded(S, f.at) : S.ttl;
+  for (let k = 1; k <= i; k++){ const n = S.nodes[k]; if (n.reset) t0 = S.ttl; else if (n.router) t0--; }
+  return Math.max(0, t0);
+}
+function ttlRet(S, R, j){ let t0 = 64; for (let k = R - 1; k >= j; k--){ const n = S.nodes[k]; if (n.reset) t0 = 64; else if (n.router) t0--; } return Math.max(0, t0); }
+function fwdState(S, f, i){
+  const st = Object.assign({}, S.base);
+  for (let k = 0; k <= i; k++) Object.assign(st, S.nodes[k].set || {});
+  st.ttl = ttlFwd(S, f, i); st.rev = false;
+  return st;
+}
+function swapOuter(o){ const m = o.match(/^(\S+) → (\S+)(.*)$/); return m ? `${m[2]} → ${m[1]}${m[3]}` : o; }
+function retState(S, f, g, j){
+  const link = fwdState(S, f, Math.max(0, j - 1));
+  const st = Object.assign({}, link);
+  st.ethSrc = link.ethDst; st.ethDst = link.ethSrc; st.ipSrc = link.ipDst; st.ipDst = link.ipSrc;
+  st.sport = link.dport; st.dport = link.sport;
+  if (link.outer) st.outer = swapOuter(link.outer);
+  if (g.kind === 'icmp'){
+    const lp = buildPacket(link);
+    Object.assign(st, {proto:'icmp', type:11, code:0, id:0, seq:0, payload:lp.bytes.slice(14, 42), payName:'Quoted original packet'});
+    st.ipSrc = S.nodes[g.R].addr;
+    delete st.sport; delete st.dport; delete st.flags;
+  } else Object.assign(st, S.reply || {});
+  st.ttl = ttlRet(S, g.R, j); st.rev = true;
+  return st;
+}
+
+/* ================= real packet bytes with real checksums ================= */
+function buildPacket(st){
+  const proto = st.proto, pay = st.payload || [];
+  const eth = [...macB(st.ethDst), ...macB(st.ethSrc), 0x08, 0x00];
+  const src = ipB(st.ipSrc), dst = ipB(st.ipDst);
+  let l4;
+  if (proto === 'tcp') l4 = [st.sport >> 8, st.sport & 255, st.dport >> 8, st.dport & 255, ...u32(st.seq), ...u32(st.ack), 0x50, st.flags, 0xfa, 0xf0, 0, 0, 0, 0];
+  else if (proto === 'udp'){ const len = 8 + pay.length; l4 = [st.sport >> 8, st.sport & 255, st.dport >> 8, st.dport & 255, len >> 8, len & 255, 0, 0]; }
+  else l4 = [st.type, st.code || 0, 0, 0, (st.id || 0) >> 8, (st.id || 0) & 255, (st.seq || 0) >> 8, (st.seq || 0) & 255];
+  const total = 20 + l4.length + pay.length;
+  const ip = [0x45, 0, total >> 8, total & 255, 0x1c, 0x46, 0x40, 0x00, st.ttl, PN[proto], 0, 0, ...src, ...dst];
+  const ic = cksum16(ip); ip[10] = ic >> 8; ip[11] = ic & 255;
+  const l4len = l4.length + pay.length;
+  const pseudo = [...src, ...dst, 0, PN[proto], l4len >> 8, l4len & 255];
+  let ck;
+  if (proto === 'tcp'){ ck = cksum16([...pseudo, ...l4, ...pay]); l4[16] = ck >> 8; l4[17] = ck & 255; }
+  else if (proto === 'udp'){ ck = cksum16([...pseudo, ...l4, ...pay]) || 0xffff; l4[6] = ck >> 8; l4[7] = ck & 255; }
+  else { ck = cksum16([...l4, ...pay]); l4[2] = ck >> 8; l4[3] = ck & 255; }
+  const bytes = [...eth, ...ip, ...l4, ...pay];
+  const l4n = proto === 'tcp' ? 'TCP' : proto === 'udp' ? 'UDP' : 'ICMP';
+  const regions = [{n:'Ethernet II', s:0, e:14, c:'eth', L:'L2'}, {n:'IPv4', s:14, e:34, c:'ip', L:'L3'}, {n:l4n, s:34, e:34 + l4.length, c:'l4', L:'L4'}];
+  if (pay.length) regions.push({n:st.payName || 'Data', s:34 + l4.length, e:bytes.length, c:'pay', L:'L7'});
+  const rng = {ethDst:[0,6], ethSrc:[6,12], ipSrc:[26,30], ipDst:[30,34], ttl:[22,23], ipCk:[24,26]};
+  const v = {ethDst:st.ethDst, ethSrc:st.ethSrc, ipSrc:st.ipSrc, ipDst:st.ipDst, ttl:String(st.ttl), ipCk:hx4(ic), outer:st.outer || ''};
+  if (proto === 'tcp'){ Object.assign(rng, {sport:[34,36], dport:[36,38], flags:[47,48], tcpCk:[50,52]}); Object.assign(v, {sport:String(st.sport), dport:String(st.dport), flags:flagsStr(st.flags), tcpCk:hx4(ck)}); }
+  else if (proto === 'udp'){ Object.assign(rng, {sport:[34,36], dport:[36,38], udpCk:[40,42]}); Object.assign(v, {sport:String(st.sport), dport:String(st.dport), udpCk:hx4(ck)}); }
+  else { Object.assign(rng, {icmpType:[34,35], icmpCk:[36,38], icmpId:[38,40]}); Object.assign(v, {icmpType:`${st.type} (${ICMPN[st.type] || '?'})`, icmpId:hx4(st.id || 0), icmpCk:hx4(ck)}); }
+  return {bytes, regions, rng, v, ipLen:total, ipCk:ic, l4Ck:ck};
+}
+
+function view(s){
+  const g = geom(), key = app.j + '|' + app.f + '|' + s;
+  if (CACHE.has(key)) return CACHE.get(key);
+  const info = stepInfo(s, g);
+  const st = info.dir === 'f' ? fwdState(g.S, g.f, info.j) : retState(g.S, g.f, g, info.j);
+  const o = {s, info, st, pk:buildPacket(st), g};
+  CACHE.set(key, o); return o;
+}
+
+function groupsFor(proto){
+  const gr = [{k:'eth', n:'Ethernet II', L:'L2', f:['ethDst','ethSrc']}, {k:'ip', n:'IPv4', L:'L3', f:['ipSrc','ipDst','ttl','ipCk']}];
+  if (proto === 'tcp') gr.push({k:'l4', n:'TCP', L:'L4', f:['sport','dport','flags','tcpCk']});
+  else if (proto === 'udp') gr.push({k:'l4', n:'UDP', L:'L4', f:['sport','dport','udpCk']});
+  else gr.push({k:'l4', n:'ICMP', L:'L4', f:['icmpType','icmpId','icmpCk']});
+  return gr;
+}
+
+/* ================= text for tables, tags and narration ================= */
+function whatText(o){
+  const S = o.g.S, st = o.st, d = o.info.dir === 'f' ? 'f' : 'r';
+  if (st.proto === 'icmp' && st.type === 11) return 'ICMP Time exceeded (TTL expired in transit)';
+  if (st.proto === 'tcp') return `${st.sport} → ${st.dport} [${flagsStr(st.flags)}]`;
+  if (st.proto === 'udp') return (S.msg && S.msg[d]) || 'UDP datagram';
+  return `${(S.msg && S.msg[d]) || ICMPN[st.type]} id=${hx4(st.id || 0)} seq=${st.seq || 0}`;
+}
+function protoName(st){ return st.proto === 'tcp' ? 'TCP' : st.proto === 'udp' ? ((st.dport === 53 || st.sport === 53) ? 'DNS' : 'UDP') : 'ICMP'; }
+function changes(a, b){
+  const out = [];
+  [['ipSrc','src IP'], ['ipDst','dst IP'], ['sport','src port'], ['dport','dst port'], ['icmpId','id']].forEach(([k, l]) => {
+    if (a.pk.v[k] !== undefined && b.pk.v[k] !== undefined && a.pk.v[k] !== b.pk.v[k]) out.push(`${l} ${a.pk.v[k]} → ${b.pk.v[k]}`);
+  });
+  if (a.pk.v.outer !== b.pk.v.outer) out.push(b.pk.v.outer ? 'tunnel headers added' : 'tunnel headers removed');
+  return out;
+}
+function infoText(s){
+  const o = view(s); if (s === 0) return 'Packet created: ' + whatText(o);
+  const p = view(s - 1);
+  if (o.info.dir === 'r' && p.info.dir === 'f') return (o.g.kind === 'icmp' ? 'Generated here: ' : 'Reply: ') + whatText(o);
+  const ch = changes(p, o);
+  const ttlC = p.pk.v.ttl !== o.pk.v.ttl, macC = p.pk.v.ethDst !== o.pk.v.ethDst;
+  if (ttlC) ch.push(`TTL ${p.pk.v.ttl} → ${o.pk.v.ttl}`);
+  if (!ch.length) return macC ? 'forwarded: new MAC pair' : (o.info.dir === 'r' ? 'delivered to the sender' : 'delivered');
+  if (macC) ch.push('MACs rewritten');
+  return ch.join('; ');
+}
+function tagText(s){
+  if (s === 0) return null;
+  const o = view(s), p = view(s - 1);
+  if (o.info.dir === 'r' && p.info.dir === 'f') return null;
+  const ch = changes(p, o).slice(0, 2);
+  if (!ch.length && p.pk.v.ttl !== o.pk.v.ttl) ch.push(`TTL ${p.pk.v.ttl} → ${o.pk.v.ttl}`);
+  return ch.length ? ch : null;
+}
+function defaultRet(o){
+  const nd = o.g.S.nodes[o.info.j], g = o.g, first = o.s === g.F + 1;
+  if (first){
+    if (g.kind === 'icmp') return 'The TTL reached 0 here, so this router drops the packet and originates an ICMP Time Exceeded message addressed to the original sender, quoting the start of the packet that died.';
+    if (g.f && g.f.type === 'l7') return 'The gateway rejects the request and sends the error response back along the same connections. The packets are fine; the decision was made at layer 7.';
+    return 'The server answers with the mirror image of the request: source and destination swapped, and a fresh TTL.';
+  }
+  if (o.info.j === 0) return 'The reply arrives. Its addresses match the original request, so the application never sees any of the translations that happened on the way.';
+  if (nd.type === 'nat' || nd.type === 'lb') return 'Reverse translation: the stored entry maps the reply back, so the sender sees the address it originally used.';
+  if (nd.type === 'proxy') return 'Relays the response on the client-side connection, adding or removing headers on the way (see the L7 tab).';
+  if (nd.type === 'tunnel') return 'Re-wraps or unwraps the tunnel headers for the return trip.';
+  if (nd.type === 'router' || nd.type === 'switch') return 'Forwards the reply toward the source: TTL minus one, a new MAC pair and a recomputed checksum.';
+  return 'Passes the reply along.';
+}
+function narration(s){ const o = view(s), nd = o.g.S.nodes[o.info.j]; return o.info.dir === 'f' ? nd.does : (nd.rdoes || defaultRet(o)); }
+
+/* ================= layer 7 ================= */
+function foldL7(list, ops){
+  let out = list.map(x => [x[0], x[1]]); if (!ops) return out;
+  (ops.del || []).forEach(k => { out = out.filter(x => x[0] !== k); });
+  Object.entries(ops.mod || {}).forEach(([k, v]) => out.forEach(x => { if (x[0] === k) x[1] = v; }));
+  (ops.add || []).forEach(a => out.push([a[0], a[1]]));
+  return out;
+}
+function l7Of(s){
+  const o = view(s), S = o.g.S, g = o.g;
+  if (o.info.dir === 'f'){
+    if (!S.l7) return null;
+    let l = S.l7.hdr; for (let k = 0; k <= o.info.j; k++) l = foldL7(l, S.nodes[k].l7ops);
+    return {title:S.l7.title, note:S.l7.note, rows:l, dir:'f'};
+  }
+  if (g.kind === 'icmp') return {none:'icmp'};
+  const base = g.f && g.f.type === 'l7' ? g.f.resp : S.l7r; if (!base) return null;
+  let l = base.hdr; for (let k = g.R - 1; k >= o.info.j; k--) l = foldL7(l, S.nodes[k].l7rops);
+  return {title:base.title, rows:l, dir:'r'};
+}
+function l7Diff(s){
+  const cur = l7Of(s); if (!cur || !cur.rows) return cur;
+  const prev = s > 0 ? l7Of(s - 1) : null;
+  const pr = prev && prev.rows && prev.dir === cur.dir ? prev.rows : null;
+  const rows = cur.rows.map(([k, v]) => { const m = pr && pr.find(x => x[0] === k); return {k, v, st:!pr ? '' : !m ? 'new' : m[1] !== v ? 'chg' : '', old:m && m[1] !== v ? m[1] : null}; });
+  if (pr) pr.forEach(([k, v]) => { if (!cur.rows.find(x => x[0] === k)) rows.push({k, v, st:'del'}); });
+  return Object.assign({}, cur, {rows});
+}
+
+/* ================= how it was computed (auto + authored) ================= */
+function cksumBlock(o, p){
+  const b = o.pk.bytes.slice(14, 34); b[10] = 0; b[11] = 0;
+  const words = []; for (let i = 0; i < 20; i += 2) words.push((b[i] << 8) | b[i + 1]);
+  const sum = words.reduce((a, c) => a + c, 0); let fold = sum; while (fold >>> 16) fold = (fold & 0xffff) + (fold >>> 16);
+  const res = (~fold) & 0xffff;
+  const changed = p && p.pk.ipCk !== o.pk.ipCk;
+  return {t:changed ? 'IP header checksum (recomputed)' : 'IP header checksum', d:['rfc1071'],
+    c:`words (checksum field = 0000):\n${words.map(w => w.toString(16).padStart(4, '0')).join(' ')}\nsum   = 0x${sum.toString(16)}\nfold  = 0x${fold.toString(16).padStart(4, '0')}   (carry added back in)\n~fold = ${hx4(res)}   ← written into the header${res === o.pk.ipCk ? '' : '  (MISMATCH)'}`};
+}
+function howBlocks(s){
+  const o = view(s), nd = o.g.S.nodes[o.info.j], p = s > 0 ? view(s - 1) : null, out = [];
+  if (o.info.dir === 'f'){
+    (nd.how || []).forEach(b => out.push(b));
+    if (nd.nat){ const n = nd.nat; out.push({t:(n.mode === 'dst' ? 'Destination' : 'Source') + ' NAT entry', c:`${n.mode === 'dst' ? 'DNAT' : 'SNAT'}: ${n.a}  →  ${n.b}\nstored so the reply can be translated back`, d:(nd.docs || []).slice(0, 1)}); }
+  } else if (nd.nat){
+    const n = nd.nat;
+    out.push({t:'Reverse translation', c:n.mode === 'dst' ? `reply src ${n.b}\nlookup → entry found\nrewrite src to ${n.a}` : `reply dst ${n.b}\nlookup → entry found\nrewrite dst to ${n.a}`});
+  }
+  if (p && p.info.dir === o.info.dir && Number(o.pk.v.ttl) === Number(p.pk.v.ttl) - 1)
+    out.push({t:'TTL decrement', c:`TTL out = TTL in − 1 = ${p.pk.v.ttl} − 1 = ${o.pk.v.ttl}\nat 0 the router drops the packet and sends ICMP Time Exceeded`, d:['rfc791', 'rfc792']});
+  out.push(cksumBlock(o, p && p.info.dir === o.info.dir ? p : null));
+  const k4 = o.st.proto === 'tcp' ? 'tcpCk' : o.st.proto === 'udp' ? 'udpCk' : 'icmpCk';
+  if (p && p.pk.v[k4] !== undefined && p.pk.v[k4] !== o.pk.v[k4])
+    out.push({t:o.st.proto.toUpperCase() + ' checksum (recomputed)', d:o.st.proto === 'icmp' ? ['rfc792'] : [o.st.proto === 'tcp' ? 'rfc9293' : 'rfc768'], c:o.st.proto === 'icmp' ? `ones-complement sum over the ICMP message\nresult ${o.pk.v[k4]}` : `ones-complement sum over:\n  pseudo-header (src ${o.st.ipSrc}, dst ${o.st.ipDst}, proto ${PN[o.st.proto]}, length ${o.pk.bytes.length - 34})\n  ${o.st.proto.toUpperCase()} header + payload\nresult ${o.pk.v[k4]}`});
+  return out;
+}
+function docsFor(s){
+  const o = view(s), nd = o.g.S.nodes[o.info.j], ids = [...(nd.docs || [])];
+  if (o.g.f && s >= o.g.F) ids.push(...(o.g.f.d || []));
+  ids.push(...(o.g.S.docs || []));
+  groupsFor(o.st.proto).forEach(gr => gr.f.forEach(k => ids.push(...((FINFO[k] || {}).d || []))));
+  return [...new Set(ids)].filter(id => DOCS[id]);
+}
+const docChip = id => { const d = DOCS[id]; return d ? `<a class="doc ${d.k === 'Vendor' ? 'v' : d.k === 'Tool' ? 't' : ''}" href="${d.u}" target="_blank" rel="noopener" title="${esc(d.s || d.k)}"><em>${d.k === 'Standard' ? 'RFC' : d.k}</em>${esc(d.l.replace(/^RFC \d+ · /, ''))} ↗</a>` : ''; };
+
+/* ================= progress (localStorage, optional) ================= */
+function loadProg(){ try{ app.prog = JSON.parse(localStorage.getItem('hbh-progress') || '{}') || {}; }catch(_){ app.prog = {}; } }
+function saveProg(){ try{ localStorage.setItem('hbh-progress', JSON.stringify(app.prog)); }catch(_){} }
+function markProg(){
+  const g = geom(), p = app.prog[app.j] || {max:0, done:false};
+  p.max = Math.max(p.max, app.s);
+  if (!g.f && app.s >= g.count - 1) p.done = true;
+  app.prog[app.j] = p; saveProg();
+}
+
+"use strict";
+/* ================= isometric scene ================= */
+const K = 0.866, NS = 'http://www.w3.org/2000/svg';
+const Pj = (x, y, z = 0) => [(x - y) * K, (x + y) * 0.5 - z];
+const SV = (tag, a = {}, p) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ZC = ['#4cc9f0', '#ffb020', '#c792ea', '#3ddc97', '#ff7a90', '#8b9cff'];
+const TOPH = {host:32, pod:26, server:30, router:36, switch:14, nat:20, lb:24, proxy:24, tunnel:18};
+const PZ = 52;
+let scene = null, raf = null, lastT = 0, playTimer = null;
+
+function boxAt(p, cx, cy, w, d, h, z0, cls){
+  const x0 = cx - w / 2, x1 = cx + w / 2, y0 = cy - d / 2, y1 = cy + d / 2, za = z0, zb = z0 + h;
+  const mk = (pts, c) => SV('polygon', {points:pts.map(q => q.map(n => n.toFixed(1)).join(',')).join(' '), class:c + ' ' + cls}, p);
+  mk([Pj(x0, y1, za), Pj(x1, y1, za), Pj(x1, y1, zb), Pj(x0, y1, zb)], 'lf');
+  mk([Pj(x1, y0, za), Pj(x1, y1, za), Pj(x1, y1, zb), Pj(x1, y0, zb)], 'rf');
+  mk([Pj(x0, y0, zb), Pj(x1, y0, zb), Pj(x1, y1, zb), Pj(x0, y1, zb)], 'top');
+}
+function cylAt(p, cx, cy, rx, ry, h, z0){
+  const [sx, sy] = Pj(cx, cy, z0);
+  SV('path', {d:`M${sx - rx},${sy} L${sx - rx},${sy - h} A${rx},${ry} 0 0 0 ${sx + rx},${sy - h} L${sx + rx},${sy} A${rx},${ry} 0 0 1 ${sx - rx},${sy} Z`, class:'lf'}, p);
+  SV('ellipse', {cx:sx, cy:sy - h, rx, ry, class:'top'}, p);
+  SV('ellipse', {cx:sx, cy:sy - h, rx:rx * 0.5, ry:ry * 0.5, class:'top acc'}, p);
+}
+function device(p, type, gx, gy){
+  const b = (w, d, h, z, c = '') => boxAt(p, gx, gy, w, d, h, z, c);
+  if (type === 'host'){ b(34, 26, 6, 0); boxAt(p, gx, gy - 9, 32, 3, 24, 6, 'scr'); }
+  else if (type === 'router'){ b(36, 36, 12, 0); const [x0, y0] = Pj(gx, gy, 12), [x1, y1] = Pj(gx, gy, 32); SV('line', {x1:x0, y1:y0, x2:x1, y2:y1}, p); SV('circle', {cx:x1, cy:y1, r:3, class:'acc top', style:'stroke:var(--ink)'}, p); }
+  else if (type === 'switch'){ b(46, 28, 8, 0); for (let i = -2; i <= 2; i++){ const [x, y] = Pj(gx + i * 7, gy + 14, 4); SV('circle', {cx:x, cy:y, r:1.6, class:'led'}, p); } }
+  else if (type === 'nat'){ b(36, 36, 12, 0); boxAt(p, gx, gy, 22, 22, 4, 12, 'acc'); }
+  else if (type === 'lb'){ b(40, 40, 12, 0); [-11, 0, 11].forEach(dx => boxAt(p, gx + dx, gy, 6, 6, 10, 12, 'acc')); }
+  else if (type === 'proxy'){ b(40, 32, 18, 0); boxAt(p, gx, gy, 26, 18, 4, 18, 'acc'); }
+  else if (type === 'server'){ [0, 9, 18].forEach(z => { b(30, 26, 7, z); const [x, y] = Pj(gx + 9, gy + 13, z + 3.5); SV('circle', {cx:x, cy:y, r:1.7, class:'led'}, p); }); }
+  else if (type === 'pod'){ cylAt(p, gx, gy, 17, 10, 18, 0); }
+  else if (type === 'tunnel'){ const [x, y] = Pj(gx, gy, 0); SV('ellipse', {cx:x, cy:y, rx:34, ry:19.5, class:'ring'}, p); b(18, 18, 14, 0, 'acc'); }
+}
+
+function drawMap(){
+  const g = geom(), S = g.S, svg = $('#map'); svg.innerHTML = '';
+  const A = 92, B = 30, PADZ = 40, n = S.nodes.length;
+  const pts = S.nodes.map((_, i) => ({gx:i * A, gy:-i * B}));
+  const zones = []; let i = 0;
+  while (i < n){ let j = i; while (j + 1 < n && S.nodes[j + 1].zone === S.nodes[i].zone) j++; zones.push({name:S.nodes[i].zone, i, j, x0:pts[i].gx - PADZ, x1:pts[j].gx + PADZ, y0:pts[j].gy - PADZ, y1:pts[i].gy + PADZ}); i = j + 1; }
+  let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+  zones.forEach(z => [[z.x0, z.y0], [z.x1, z.y0], [z.x1, z.y1], [z.x0, z.y1]].forEach(([x, y]) => { const [sx, sy] = Pj(x, y, -6); minX = Math.min(minX, sx); maxX = Math.max(maxX, sx); minY = Math.min(minY, sy); maxY = Math.max(maxY, sy); }));
+  const fit = {x:minX - 34, y:minY - 104, w:maxX - minX + 68, h:maxY - minY + 104 + 70};
+  const scr = pts.map(p => Pj(p.gx, p.gy, 0));
+  const root = SV('g', {class:'iso'}, svg);
+  zones.forEach((z, zi) => {
+    const zg = SV('g', {style:`--zc:${ZC[zi % ZC.length]}`}, root);
+    boxAt(zg, (z.x0 + z.x1) / 2, (z.y0 + z.y1) / 2, z.x1 - z.x0, z.y1 - z.y0, 6, -6, 'zp');
+    const [lx, ly] = Pj(z.x0, z.y1, 0); const tx = SV('text', {x:lx + 16, y:ly - 6, class:'zl'}, zg); tx.textContent = z.name;
+  });
+  const maxD = Math.max(...S.nodes.map((nd, k) => k ? nd.ms - S.nodes[k - 1].ms : 0), 1);
+  for (let k = 0; k < n - 1; k++){
+    const [x0, y0] = scr[k], [x1, y1] = scr[k + 1], dm = S.nodes[k + 1].ms - S.nodes[k].ms;
+    SV('line', {x1:x0, y1:y0 - 2, x2:x1, y2:y1 - 2, class:'lnk', id:'L' + k, 'stroke-width':(2 + 3.5 * dm / maxD).toFixed(1)}, root);
+    SV('line', {x1:x0, y1:y0 - 2, x2:x1, y2:y1 - 2, class:'lnk flow', id:'F' + k, style:'display:none'}, root);
+    const lb = SV('text', {x:(x0 + x1) / 2, y:(y0 + y1) / 2 - 8, class:'lbl'}, root); lb.textContent = '+' + (Math.round(dm * 10) / 10) + ' ms';
+  }
+  S.nodes.forEach((nd, k) => {
+    const ng = SV('g', {class:'node', id:'nd' + k, tabindex:0, role:'button', 'aria-label':`Hop ${k}: ${nd.name}`}, root);
+    SV('ellipse', {cx:scr[k][0], cy:scr[k][1], rx:36, ry:20.5, class:'nglow'}, ng);
+    device(ng, nd.type, pts[k].gx, pts[k].gy);
+    const [sx, sy] = scr[k];
+    const c = SV('text', {x:sx, y:sy - TOPH[nd.type] - 6, class:'ncode'}, ng); c.textContent = nd.code;
+    const nm = SV('text', {x:sx, y:sy + 36, class:'nname'}, ng); nm.textContent = nd.name;
+    const ad = SV('text', {x:sx, y:sy + 49, class:'naddr'}, ng); ad.textContent = nd.addr || '';
+    ng.addEventListener('click', () => goto(nodeFirstStep(k)));
+    ng.addEventListener('keydown', e => { if (e.key === 'Enter') goto(nodeFirstStep(k)); });
+  });
+  SV('g', {id:'fx'}, svg); SV('g', {id:'tag'}, svg);
+  const pk = SV('g', {id:'pkt'}, svg); SV('g', {id:'pbody', class:'pk'}, pk); SV('text', {id:'ptxt', class:'ptxt', x:0, y:-4}, pk);
+  scene = {pts, scr, zones, fit, vb:Object.assign({}, fit)};
+  svg.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`);
+  // minimap
+  const mi = $('#mini'); mi.innerHTML = ''; mi.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`);
+  scr.forEach((s, k) => SV('circle', {cx:s[0], cy:s[1], r:9, class:'mn', id:'mn' + k}, mi));
+  SV('rect', {id:'mv', class:'mv', x:fit.x, y:fit.y, width:fit.w, height:fit.h}, mi);
+}
+const nodeFirstStep = k => k <= geom().F ? k : 0;
+
+function drawPacketBody(o, prev){
+  const pb = $('#pbody'); pb.innerHTML = '';
+  const v = o.pk.v, pv = prev && prev.info.dir === o.info.dir ? prev.pk.v : null;
+  const chg = {
+    eth: pv && (pv.ethDst !== v.ethDst || pv.ethSrc !== v.ethSrc),
+    ip: pv && (pv.ipSrc !== v.ipSrc || pv.ipDst !== v.ipDst || pv.ttl !== v.ttl),
+    l4: pv && (pv.sport !== v.sport || pv.dport !== v.dport || pv.flags !== v.flags || pv.icmpType !== v.icmpType || pv.icmpId !== v.icmpId),
+    out: pv && pv.outer !== v.outer
+  };
+  const layers = [];
+  if (v.outer) layers.push({c:'sl-out', w:36, d:24, L:'L2', f:chg.out});
+  layers.push({c:'sl-eth', w:28, d:20, L:'L2', f:chg.eth}, {c:'sl-ip', w:28, d:20, L:'L3', f:chg.ip}, {c:'sl-l4', w:28, d:20, L:'L4', f:chg.l4});
+  if ((o.st.payload || []).length) layers.push({c:'sl-pay', w:28, d:20, L:'L7', f:false});
+  let z = 0;
+  layers.forEach(l => {
+    const gg = SV('g', {opacity:app.layer === 'all' || app.layer === l.L ? 1 : 0.28}, pb);
+    boxAt(gg, 0, 0, l.w, l.d, 4.5, z, 'sl ' + l.c + (l.f ? ' flash' : '')); z += 5.5;
+  });
+  $('#ptxt').setAttribute('y', -(z + 8)); $('#ptxt').textContent = (o.info.dir === 'r' ? '↩ ' : '') + 'TTL ' + v.ttl;
+  pb.setAttribute('class', 'pk' + (o.info.dir === 'r' ? ' ret' : ''));
+}
+
+function placePacket(){
+  if (!scene) return;
+  const g = geom(), t0 = Math.max(0, Math.min(g.count - 1, app.t)), s0 = Math.floor(t0), s1 = Math.min(g.count - 1, s0 + 1), fr = t0 - s0;
+  const a = scene.scr[nodePos(s0, g)], b = scene.scr[nodePos(s1, g)];
+  const rev = Math.round(t0) > g.F, x = a[0] + (b[0] - a[0]) * fr + (rev ? 10 : 0), y = a[1] + (b[1] - a[1]) * fr - PZ + (rev ? 12 : 0);
+  $('#pkt').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+  const f = scene.fit; let vb = f;
+  if (app.zoom === 'follow'){ const w = f.w * 0.46, h = f.h * 0.46; vb = {x:Math.max(f.x, Math.min(f.x + f.w - w, x - w / 2)), y:Math.max(f.y, Math.min(f.y + f.h - h, y + 30 - h / 2)), w, h}; }
+  $('#map').setAttribute('viewBox', `${vb.x.toFixed(1)} ${vb.y.toFixed(1)} ${vb.w.toFixed(1)} ${vb.h.toFixed(1)}`);
+  const mv = $('#mv'); if (mv){ mv.setAttribute('x', vb.x); mv.setAttribute('y', vb.y); mv.setAttribute('width', vb.w); mv.setAttribute('height', vb.h); }
+  $('#scrub').value = t0;
+}
+
+function updateMap(animate){
+  const g = geom(), o = view(app.s), prev = app.s > 0 ? view(app.s - 1) : null, pos = nodePos(app.s, g);
+  g.S.nodes.forEach((nd, k) => {
+    const e = $('#nd' + k); if (!e) return;
+    e.classList.toggle('cur', k === pos); e.classList.toggle('future', k > g.F);
+    e.classList.toggle('dim', app.layer !== 'all' && !LAYERS[nd.type].includes(app.layer));
+    $('#mn' + k) && $('#mn' + k).classList.toggle('on', k === pos);
+  });
+  for (let k = 0; k < g.S.nodes.length - 1; k++){
+    const fwdDone = o.info.dir === 'f' ? k < pos : k < g.F;
+    $('#L' + k).classList.toggle('done', fwdDone);
+    const fl = $('#F' + k); const showFlow = o.info.dir === 'r' && k >= pos && k < g.F;
+    fl.style.display = showFlow ? '' : 'none'; fl.classList.toggle('rv', showFlow);
+  }
+  // fault marker
+  const fx = $('#fx'); fx.innerHTML = '';
+  if (g.f && app.s >= g.F){
+    const [x, y] = scene.scr[g.F];
+    SV('ellipse', {cx:x, cy:y, rx:36, ry:20.5, class:'fring'}, fx);
+    if (g.f.type !== 'l7'){ SV('line', {x1:x - 11, y1:y - 52, x2:x + 11, y2:y - 30, class:'xmark'}, fx); SV('line', {x1:x + 11, y1:y - 52, x2:x - 11, y2:y - 30, class:'xmark'}, fx); }
+    const ft = SV('text', {x, y:y + 62, class:'ftxt'}, fx); ft.textContent = g.f.short;
+  }
+  // change tag
+  const tg = $('#tag'); tg.innerHTML = '';
+  const tx = tagText(app.s);
+  if (tx){
+    const [x, y] = scene.scr[pos], wd = Math.max(...tx.map(l => l.length)) * 5.6 + 14, h = 8 + tx.length * 12, ty = y - PZ - 64 - tx.length * 2;
+    const w = SV('g', {class:'tagwrap'}, tg);
+    SV('rect', {x:x - wd / 2, y:ty, width:wd, height:h, rx:3, class:'tagbg'}, w);
+    tx.forEach((l, i) => { const e = SV('text', {x:x - wd / 2 + 7, y:ty + 14 + i * 12, class:'tagtx'}, w); e.textContent = l; });
+  }
+  drawPacketBody(o, prev);
+  if (animate) kick(); else { app.t = app.s; placePacket(); }
+}
+function stepAnim(now){
+  const dt = Math.min(50, now - (lastT || now)); lastT = now;
+  const d = app.s - app.t;
+  if (Math.abs(d) < 0.002){ app.t = app.s; placePacket(); raf = null; lastT = 0; return; }
+  app.t += Math.sign(d) * Math.min(Math.abs(d), dt * Math.max(1, Math.abs(d)) * app.speed / 550);
+  placePacket(); raf = requestAnimationFrame(stepAnim);
+}
+function kick(){ if (reduced){ app.t = app.s; placePacket(); return; } if (!raf){ lastT = 0; raf = requestAnimationFrame(stepAnim); } }
+
+/* ================= sequence view ================= */
+function drawSeq(){
+  const g = geom(), S = g.S, n = S.nodes.length, dx = 112, W = 40 + n * dx, rowH = 34, H = 96 + g.count * rowH;
+  const X = i => 40 + dx / 2 + i * dx;
+  let h = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Sequence diagram"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>`;
+  S.nodes.forEach((nd, i) => {
+    h += `<line x1="${X(i)}" y1="64" x2="${X(i)}" y2="${H - 10}" class="life"/>`;
+    h += `<rect x="${X(i) - 46}" y="14" width="92" height="40" rx="4" class="sbox"/><text x="${X(i)}" y="31" class="sn">${esc(nd.name)}</text><text x="${X(i)}" y="46" class="sa2">${esc(nd.addr || '')}</text>`;
+  });
+  for (let s = 1; s < g.count; s++){
+    const o = view(s), y = 84 + s * rowH, x1 = X(nodePos(s - 1, g)), x2 = X(nodePos(s, g));
+    const cls = 'sarr' + (s === app.s ? ' cur' : '') + (s > app.s ? ' fut' : '') + (o.info.dir === 'r' ? ' r' : '');
+    let txt = infoText(s); if (txt.length > 46) txt = txt.slice(0, 44) + '…';
+    if (x1 === x2){ h += `<g class="${cls}" data-s="${s}"><path d="M${x1} ${y - 10} h26 v20 h-26" fill="none" marker-end="url(#ah)"/><text x="${x1 + 32}" y="${y + 4}" class="sl2">${esc(txt)}</text></g>`; }
+    else h += `<g class="${cls}" data-s="${s}"><line x1="${x1}" y1="${y}" x2="${x2 + (x2 > x1 ? -3 : 3)}" y2="${y}" marker-end="url(#ah)"/><text x="${(x1 + x2) / 2}" y="${y - 7}" class="sl2 c">${esc(txt)}</text></g>`;
+  }
+  $('#seq').innerHTML = h + '</svg>';
+  $$('#seq g[data-s]').forEach(e => e.addEventListener('click', () => goto(+e.dataset.s)));
+}
+
+/* ================= panels ================= */
+function drawNarration(){
+  const g = geom(), o = view(app.s), nd = g.S.nodes[o.info.j];
+  $('#sdots').innerHTML = Array.from({length:g.count}, (_, s) => `<i class="${s === app.s ? 'on' : s < app.s ? 'past' : ''}${s > g.F ? ' r' : ''}" data-s="${s}" title="${esc(infoText(s))}"></i>`).join('');
+  $('#stepTxt').textContent = `${app.s + 1} / ${g.count} · ${o.info.dir === 'f' ? t('forward') : t('ret')} · ${nd.name}`;
+  $('#cap').innerHTML = `<b>${esc(nd.name)}</b> — ${esc(narration(app.s))}`;
+  $('#capDocs').innerHTML = docsFor(app.s).slice(0, 6).map(docChip).join('');
+  $('#bPrev').disabled = $('#bFirst').disabled = app.s <= 0; $('#bNext').disabled = $('#bLast').disabled = app.s >= g.count - 1;
+  $('#bPlay').textContent = app.playing ? t('pause') : t('play');
+  $('#scrub').max = g.count - 1;
+  $$('#spdSel button').forEach(b => b.classList.toggle('on', +b.dataset.v === app.speed));
+}
+function drawFault(){
+  const g = geom(), el = $('#faultBox');
+  if (!g.f){ el.innerHTML = ''; return; }
+  if (app.s < g.F){ el.innerHTML = `<div class="faultbox"><h3>⚠ ${esc(g.f.label)}</h3><p style="margin:0;color:var(--dim)">Fault armed at hop ${g.F}. Step forward to see what happens there.</p></div>`; return; }
+  el.innerHTML = `<div class="faultbox"><h3>${esc(g.f.title)}</h3><p>${esc(g.f.body)}</p><pre>${esc(g.f.user)}</pre><div class="chips" style="margin-top:8px">${(g.f.d || []).map(docChip).join('')}</div></div>`;
+}
+const badge = (c, s) => `<span class="bg ${c}">${s}</span>`;
+function drawPassport(){
+  const g = geom(), o = view(app.s), p = app.s > 0 ? view(app.s - 1) : null, nd = g.S.nodes[o.info.j];
+  const dead = g.f && app.s === g.F, dir = o.info.dir === 'f' ? t('forward') : t('ret');
+  const why = !dead ? esc(nd.tag) : g.f.type === 'ttl' ? 'DROPPED · TTL EXPIRED' : g.f.type === 'mtu' ? 'DROPPED · MTU EXCEEDED' : g.f.type === 'l7' ? 'REJECTED · ' + esc(g.f.short) : 'DROPPED · FILTERED';
+  let h = `<div class="stamp ${dead ? 'bad' : ''}">${t('hop').toUpperCase()} ${o.info.j} · ${esc(nd.name.toUpperCase())}<small>${dir.toUpperCase()} · ${why}</small></div><p class="does">${esc(dead ? g.f.title : narration(app.s))}</p>`;
+  const sizes = {}; o.pk.regions.forEach(r => { sizes[r.c] = r.e - r.s; });
+  let shown = 0;
+  groupsFor(o.st.proto).forEach(gr => {
+    if (app.layer !== 'all' && app.layer !== gr.L) return; shown++;
+    h += `<div class="grp"><div class="gh"><span class="lay ${gr.L}">${gr.L}</span>${gr.n}<small>${sizes[gr.k] || ''} bytes</small></div>`;
+    gr.f.forEach(k => {
+      const F = FINFO[k], now = o.pk.v[k], was = p ? (p.pk.v[k] === undefined ? '—' : p.pk.v[k]) : '', ch = p && was !== now;
+      const cls = ['fr']; if (ch) cls.push(F.der ? 'der' : 'chg'); if (app.sel === k) cls.push('sel');
+      h += `<div class="${cls.join(' ')}" data-k="${k}"><span class="f">${F.l}</span><span class="o">${ch ? esc(was) : ''}</span><span class="n">${esc(now)}</span>
+        <div class="note">${esc(F.n)} ${F.eg ? badge('e', 'E.G.') : ''}${ch ? (F.der ? badge('d', t('recomputed')) : badge('', t('rewritten'))) : ''}${ch || app.sel === k ? F.d.map(docChip).join('') : ''}</div></div>`;
+    });
+    h += '</div>';
+  });
+  if (o.pk.v.outer || (p && p.pk.v.outer)){
+    const was = p ? (p.pk.v.outer || 'none') : '', now = o.pk.v.outer || 'none', ch = p && was !== now;
+    h += `<div class="grp"><div class="gh"><span class="lay L2">+</span>Tunnel (outer headers)</div><div class="fr ${ch ? 'chg' : ''}"><span class="f">Outer</span><span class="o">${ch ? esc(was) : ''}</span><span class="n">${esc(now)}</span><div class="note">Wrapped around the whole original frame. The network between the tunnel ends sees only these. ${ch ? badge('', now === 'none' ? t('removed') : t('added')) : ''}${(nd.docs || []).includes('rfc7348') ? docChip('rfc7348') : ''}</div></div></div>`;
+  }
+  if (!shown) h += `<p class="hint">Layer 7 has no fixed header fields: open the L7 tab.</p>`;
+  else h += `<p class="hint">${t('clickRow')}</p>`;
+  return h;
+}
+function drawL7(){
+  const d = l7Diff(app.s);
+  if (!d) return `<p class="hint">This journey has no application-layer message. ICMP and many network tools work below layer 7.</p>`;
+  if (d.none) return `<p class="hint">ICMP carries no application data. The quoted start of the original packet is in the bytes view below.</p>`;
+  let h = `<div class="gh"><span class="lay L7">L7</span>${esc(d.title)}</div>${d.note ? `<p class="hint" style="margin:0 0 8px">${esc(d.note)}</p>` : ''}`;
+  d.rows.forEach(r => { h += `<div class="l7r ${r.st}"><span class="k">${esc(r.k)}</span><span>${esc(r.v)}${r.old ? ` <small>(was ${esc(r.old)})</small>` : ''}${r.st === 'new' ? ' ' + badge('', t('added')) : r.st === 'chg' ? ' ' + badge('e', t('changed')) : r.st === 'del' ? ' ' + badge('x', t('removed')) : ''}</span></div>`; });
+  const g = geom(); if (g.S.id !== 'api' && app.j === 'api') h += '';
+  h += `<p class="hint">${app.j === 'api' ? 'Hop-by-hop headers (Connection, Keep-Alive) apply to one connection only, so every proxy removes them. End-to-end headers travel on.' : ''}</p>${[ 'rfc9110' ].map(docChip).join('')}`;
+  return h;
+}
+function drawHow(){
+  const bl = howBlocks(app.s);
+  return bl.map((b, i) => `<div class="blk2"><div class="bh"><span>${esc(b.t)}</span><button class="btn" data-copy="${i}">Copy</button></div><pre>${esc(b.c)}</pre>${(b.d || []).length ? `<div class="bd chips">${b.d.map(docChip).join('')}</div>` : ''}</div>`).join('');
+}
+function drawXray(){
+  const nd = geom().S.nodes[view(app.s).info.j];
+  if (!nd.x) return `<p class="hint">No internals are modeled for ${esc(nd.name)}: it only forwards the packet. Devices with tables or rules (routers, NAT, load balancers, gateways) have an X-ray view.</p>`;
+  return `<div class="gh">${esc(nd.name)} <small>${esc(nd.addr || '')}</small></div>` + nd.x.map(b => {
+    let h = `<div class="blk2"><div class="bh"><span>${esc(b.title)}</span></div><div class="bd">`;
+    if (b.kind === 'table') h += `<table class="xt"><thead><tr>${b.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${b.rows.map((r, i) => `<tr class="${(b.hit || []).includes(i) ? 'hit' : ''}">${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    else h += `<div class="fl">${b.items.map((it, i) => `<span class="${(b.hit || []).includes(i) ? 'hit' : ''}">${esc(it)}</span>`).join('<i>→</i>')}</div>`;
+    if (b.note) h += `<div class="hint" style="margin:4px 0 0">${esc(b.note)}</div>`;
+    return h + '</div></div>';
+  }).join('');
+}
+function drawDocsTab(){
+  const ids = docsFor(app.s);
+  return `<p class="hint" style="margin:0 0 8px">Only official sources are linked: standards bodies, project and cloud-vendor documentation.</p><div class="dl">${ids.map(id => { const d = DOCS[id]; return `<a href="${d.u}" target="_blank" rel="noopener"><span>${esc(d.l)}</span><em>${d.k}</em><small>${esc(d.s ? d.s + ' · ' : '')}${esc(d.u.replace(/^https?:\/\//, ''))}</small></a>`; }).join('')}</div>`;
+}
+function drawInspector(){
+  const tabs = [['passport', t('passport')], ['l7', t('l7')], ['how', t('how')], ['xray', t('xray')], ['docs', t('docs')]];
+  $('#itabs').innerHTML = tabs.map(([k, l]) => `<button data-t="${k}" class="${app.itab === k ? 'on' : ''}">${esc(l)}</button>`).join('');
+  $('#ibody').innerHTML = app.itab === 'passport' ? drawPassport() : app.itab === 'l7' ? drawL7() : app.itab === 'how' ? drawHow() : app.itab === 'xray' ? drawXray() : drawDocsTab();
+}
+function drawHops(){
+  const g = geom(); let h = `<table><thead><tr><th>${t('no')}</th><th>${t('time')}</th><th>${t('device')}</th><th>${t('src')}</th><th>${t('dst')}</th><th>${t('proto')}</th><th>${t('info')}</th><th>${t('size')}</th></tr></thead><tbody>`;
+  for (let s = 0; s < g.count; s++){
+    const o = view(s), nd = g.S.nodes[o.info.j], st = o.st, ms = o.info.dir === 'f' ? nd.ms : g.S.nodes[g.R].ms + (g.S.nodes[g.R].ms - nd.ms);
+    const pn = protoName(st), pc = pn === 'DNS' ? 'dns' : st.proto;
+    const ep = (ip, pt) => pt !== undefined && st.proto !== 'icmp' ? `${ip}:${pt}` : ip;
+    h += `<tr class="hr ${s === app.s ? 'on' : ''} ${s > app.s ? 'fut' : ''}" data-s="${s}"><td><span class="no ${o.info.dir === 'r' ? 'r' : ''}">${s + 1}</span></td><td>${ms.toFixed(1)} ms</td><td>${esc(nd.name)}${o.info.dir === 'r' ? ' ↩' : ''}</td><td>${esc(ep(st.ipSrc, st.sport))}</td><td>${esc(ep(st.ipDst, st.dport))}</td><td class="pt-${pc}">${pn}</td><td class="info">${esc(infoText(s))}</td><td>${14 + o.pk.ipLen} B</td></tr>`;
+  }
+  $('#hops').innerHTML = h + '</tbody></table>';
+  const on = $('#hops tr.on'); if (on && on.scrollIntoView && false) on.scrollIntoView({block:'nearest'});
+}
+function asciiOf(b){ return b >= 32 && b < 127 ? String.fromCharCode(b) : '·'; }
+function drawBytes(){
+  const o = view(app.s), p = app.s > 0 ? view(app.s - 1) : null, pk = o.pk, sameLen = p && p.pk.bytes.length === pk.bytes.length && p.info.dir === o.info.dir;
+  const tot = pk.bytes.length, colors = {eth:'var(--eth)', ip:'var(--ipc)', l4:'var(--l4)', pay:'var(--pay)'};
+  let h = `<div class="lbar">${pk.regions.map(r => `<i style="width:${(r.e - r.s) / tot * 100}%;background:${colors[r.c]};opacity:${app.layer === 'all' || app.layer === r.L ? 1 : .25}"></i>`).join('')}</div>`;
+  h += `<div class="lbl2">${pk.regions.map(r => `<span style="width:${(r.e - r.s) / tot * 100}%">${esc(r.n)} ${r.e - r.s}</span>`).join('')}</div>`;
+  const F = FINFO[app.sel] && pk.rng[app.sel] ? pk.rng[app.sel] : null;
+  const names = new Array(tot).fill(''); pk.regions.forEach(r => { for (let i = r.s; i < r.e; i++) names[i] = r.n; });
+  Object.entries(pk.rng).forEach(([k, [a, b]]) => { for (let i = a; i < b; i++) names[i] = (FINFO[k] || {}).l || k; });
+  h += '<div class="hexw">';
+  for (let r = 0; r < tot; r += 16){
+    h += `<div class="hrow"><span class="hoff">${r.toString(16).padStart(4, '0')}</span><span>`;
+    let asc = '';
+    for (let k = r; k < Math.min(r + 16, tot); k++){
+      const reg = pk.regions.find(x => k >= x.s && k < x.e), ch = sameLen && p.pk.bytes[k] !== pk.bytes[k], sel = F && k >= F[0] && k < F[1], dim = app.layer !== 'all' && reg.L !== app.layer;
+      h += `<span class="hb ${reg.c}${ch ? ' chg' : ''}${sel ? ' sel' : ''}${dim ? ' dim' : ''}" title="${esc(names[k])}">${h2(pk.bytes[k])}</span>`; asc += asciiOf(pk.bytes[k]);
+    }
+    h += `</span><span class="hasc">${esc(asc)}</span></div>`;
+  }
+  h += `</div><div class="legend"><span style="color:var(--eth)">Ethernet</span><span style="color:var(--ipc)">IPv4</span><span style="color:var(--l4)">${pk.regions[2].n}</span>${pk.regions[3] ? `<span style="color:var(--pay)">${esc(pk.regions[3].n)}</span>` : ''}<span style="color:var(--accent)">bytes rewritten at this hop</span></div>`;
+  $('#bytes').innerHTML = h;
+}
+
+/* ================= header / rail ================= */
+function drawHeader(){
+  const g = geom(), pos = nodePos(app.s, g);
+  $('#nowTitle').textContent = g.S.short;
+  $('#nowDots').innerHTML = g.S.nodes.map((_, i) => `<i class="${i <= pos ? 'on' : ''}"></i>`).join('');
+  $('#layerSel').innerHTML = ['all', 'L2', 'L3', 'L4', 'L7'].map(l => `<button data-l="${l}" class="${app.layer === l ? 'on' : ''}">${l === 'all' ? t('all') : l}</button>`).join('');
+  const keys = Object.keys(SC), done = keys.filter(k => (app.prog[k] || {}).done).length, prog = keys.filter(k => !(app.prog[k] || {}).done && (app.prog[k] || {}).max > 0).length;
+  $('#progPct').textContent = Math.round(done / keys.length * 100) + '%';
+  $('#progBar').innerHTML = keys.map(k => `<i class="${(app.prog[k] || {}).done ? 'done' : (app.prog[k] || {}).max > 0 ? 'prog' : ''}"></i>`).join('');
+  $('#progTxt').textContent = `${done}/${keys.length} ${t('complete')} · ${prog} ${t('inProgress')}`;
+  $('#viewSel').innerHTML = [['map', t('map')], ['seq', t('sequence')]].map(([k, l]) => `<button data-v="${k}" class="${app.view === k ? 'on' : ''}">${l}</button>`).join('');
+  $('#zoomSel').innerHTML = [['fit', t('fit')], ['follow', t('follow')]].map(([k, l]) => `<button data-z="${k}" class="${app.zoom === k ? 'on' : ''}">${l}</button>`).join('');
+  $('#zoomSel').style.visibility = app.view === 'map' ? 'visible' : 'hidden';
+  $('#stage').style.display = app.view === 'map' ? '' : 'none'; $('#seq').style.display = app.view === 'seq' ? 'block' : 'none';
+  $('#mini').style.display = app.view === 'map' && app.zoom === 'follow' ? '' : 'none';
+  const sf = $('#selF'); sf.innerHTML = `<option value="none">${t('noFault')}</option>` + g.S.faults.map(f => `<option value="${f.id}">${esc(f.label)}</option>`).join(''); sf.value = app.f;
+}
+function drawRail(){
+  const cur = nodePos(app.s, geom()); let h = '';
+  [...new Set(Object.values(SC).map(s => s.group))].forEach(gr => {
+    h += `<div class="rg">${esc(gr)}</div>`;
+    Object.entries(SC).filter(([, s]) => s.group === gr).forEach(([k, s]) => {
+      const pr = app.prog[k] || {}, dot = pr.done ? 'done' : pr.max > 0 ? 'prog' : '', act = k === app.j && app.page === 'journey';
+      h += `<button class="ri ${act ? 'act' : ''}" data-j="${k}"><i class="dot ${dot}"></i><b>${esc(s.short)}</b><span>${esc(s.sub)}</span></button>`;
+      if (act) h += '<div class="steps">' + s.nodes.map((n, i) => `<button class="rs ${i === cur ? 'on' : ''}" data-n="${i}"><i>${i + 1}</i><b>${esc(n.name)}</b><span>${esc(n.tag)}</span></button>`).join('') + '</div>';
+    });
+  });
+  h += `<div class="rg">${t('tools')}</div><button class="ri ${app.page === 'trace' ? 'act' : ''}" data-page="trace"><i class="dot"></i><b>${t('traceTool')}</b><span>Paste output, get annotated hops</span></button>`;
+  $('#rail').innerHTML = h;
+}
+function applyI18n(){
+  $$('[data-i]').forEach(e => { e.textContent = t(e.dataset.i); });
+  document.documentElement.lang = app.lang; document.documentElement.dir = 'ltr';
+}
+
+/* ================= render orchestration ================= */
+function syncHash(){
+  const p = new URLSearchParams({p:app.page, j:app.j, s:app.s, f:app.f, v:app.view, l:app.layer, i:app.itab, z:app.zoom, g:app.lang});
+  try{ history.replaceState(null, '', '#' + p.toString()); }catch(_){}
+}
+function renderPanels(){
+  drawHeader(); drawRail(); drawNarration(); drawFault(); drawInspector(); drawHops(); drawBytes();
+  if (app.view === 'seq') drawSeq();
+  syncHash();
+}
+function renderAll(animate){
+  $('#app').classList.toggle('trace', app.page === 'trace');
+  $('#center').hidden = $('#right').hidden = app.page === 'trace'; $('#tracepane').hidden = app.page !== 'trace';
+  applyI18n();
+  if (app.page === 'trace'){ drawHeader(); drawRail(); syncHash(); return; }
+  renderPanels(); updateMap(animate);
+}
+function goto(s){ const g = geom(); app.s = Math.max(0, Math.min(g.count - 1, s)); markProg(); renderAll(true); }
+function stopPlay(){ app.playing = false; clearTimeout(playTimer); if (app.page === 'journey') drawNarration(); }
+function playTick(){ if (!app.playing) return; const g = geom(); if (app.s >= g.count - 1){ stopPlay(); return; } goto(app.s + 1); playTimer = setTimeout(playTick, 1800 / app.speed); }
+function startPlay(){ const g = geom(); if (app.s >= g.count - 1){ app.s = 0; app.t = 0; } app.playing = true; playTick(); }
+function setJourney(j){ stopPlay(); app.j = j; app.f = 'none'; app.s = 0; app.t = 0; app.sel = null; app.page = 'journey'; CACHE.clear(); drawMap(); markProg(); renderAll(false); }
+function setFault(f){ stopPlay(); app.f = f; const g = geom(); app.s = f === 'none' ? 0 : Math.min(g.F, app.s); CACHE.clear(); drawMap(); renderAll(false); if (f !== 'none') goto(g.F); }
+
+/* ================= export PNG ================= */
+function exportPNG(){
+  const svg = $('#map'), vb = svg.getAttribute('viewBox').split(' ').map(Number), clone = svg.cloneNode(true);
+  const src = [...svg.querySelectorAll('*')], dst = [...clone.querySelectorAll('*')];
+  const props = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linejoin', 'stroke-linecap', 'opacity', 'font-size', 'font-family', 'font-weight', 'text-anchor', 'letter-spacing'];
+  src.forEach((e, i) => { const cs = getComputedStyle(e); dst[i].setAttribute('style', props.map(p => `${p}:${cs.getPropertyValue(p)}`).join(';') + (e.style.display === 'none' ? ';display:none' : '')); dst[i].removeAttribute('class'); });
+  const W = 1800, H = Math.round(W * vb[3] / vb[2]);
+  clone.setAttribute('xmlns', NS); clone.setAttribute('width', W); clone.setAttribute('height', H);
+  const bg = document.createElementNS(NS, 'rect'); ['x', 'y'].forEach((a, i) => bg.setAttribute(a, vb[i])); bg.setAttribute('width', vb[2]); bg.setAttribute('height', vb[3]); bg.setAttribute('fill', getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0b1020');
+  clone.insertBefore(bg, clone.firstChild);
+  const img = new Image();
+  img.onload = () => { const c = document.createElement('canvas'); c.width = W; c.height = H; c.getContext('2d').drawImage(img, 0, 0); c.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `hopbyhop-${app.j}-step${app.s + 1}.png`; a.click(); toast('PNG saved'); window.__lastPng = b.size; }); };
+  img.onerror = () => toast('Export failed in this browser');
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone));
+}
+function toast(m){ const e = $('#toast'); e.textContent = m; e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 1600); }
+
+/* ================= traceroute decoder ================= */
+const SAMPLE_TR = `traceroute to 142.250.195.46 (142.250.195.46), 30 hops max, 60 byte packets
+ 1  192.168.1.1  1.204 ms  1.118 ms  1.390 ms
+ 2  100.72.0.1  6.842 ms  6.911 ms  7.003 ms
+ 3  117.200.45.1  8.120 ms  8.301 ms  8.044 ms
+ 4  * * *
+ 5  125.17.28.69  14.552 ms  14.610 ms  14.488 ms
+ 6  182.79.153.88  58.311 ms  58.402 ms  58.290 ms
+ 7  72.14.205.110  59.020 ms  58.980 ms  59.112 ms
+ 8  142.250.195.46  59.455 ms  59.301 ms  59.388 ms`;
+function parseTrace(txt){
+  const hops = [];
+  for (const line of txt.split('\n')){
+    const m = line.match(/^\s*(\d+)\s+(.*)$/); if (!m) continue;
+    const rest = m[2], ips = [...new Set(rest.match(/\b\d{1,3}(?:\.\d{1,3}){3}\b/g) || [])], rtts = [...rest.matchAll(/([\d.]+)\s*ms/g)].map(x => parseFloat(x[1]));
+    hops.push({n:+m[1], ip:ips[0] || null, avg:rtts.length ? rtts.reduce((a, b) => a + b, 0) / rtts.length : null});
+  }
+  return hops;
+}
+function classify(ip){
+  if (!ip) return null; const [a, b] = ip.split('.').map(Number);
+  if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) return {t:'private', c:'priv'};
+  if (a === 100 && b >= 64 && b <= 127) return {t:'CGNAT', c:'cg'};
+  if (a === 169 && b === 254) return {t:'link-local', c:'priv'};
+  return {t:'public', c:'pub'};
+}
+function annotate(hops){
+  let prev = null, last = -1; hops.forEach((h, i) => { if (h.ip) last = i; });
+  const out = hops.map((h, i) => {
+    const notes = [], c = classify(h.ip);
+    if (!h.ip) notes.push({k:'warn', t:'No reply (* * *). The router ignores or rate-limits probes. Harmless if later hops answer.'});
+    else {
+      if (i === 0 && c.c === 'priv') notes.push({k:'info', t:'Your default gateway (home or office router).'});
+      else if (c.c === 'cg') notes.push({k:'info', t:'ISP carrier-grade NAT. You share a public IP, so inbound port-forwarding will not work.'});
+      else if (c.c === 'priv') notes.push({k:'info', t:'Private address mid-path: ISP internal network or a tunnel.'});
+      if (prev != null && h.avg != null){
+        const d = h.avg - prev;
+        if (d >= 25 && h.avg >= 2 * prev) notes.push({k:'bad', hot:true, t:`Latency jumps +${d.toFixed(0)} ms here: long-haul or undersea link, or congestion. Check whether later hops stay high.`});
+        else if (d < -5) notes.push({k:'info', t:`RTT is ${Math.abs(d).toFixed(0)} ms lower than the previous hop. That router answers ICMP slowly. Not a real problem.`});
+      }
+      if (i === last && i === hops.length - 1) notes.push({k:'ok', t:'Last hop answered: most likely the destination.'});
+    }
+    if (h.avg != null) prev = h.avg;
+    return Object.assign({}, h, {c, notes});
+  });
+  if (hops.length && last < hops.length - 1) out[out.length - 1].notes.push({k:'bad', t:'Trace ends in stars. The destination filters probes, or packets die here. Try a TCP trace: traceroute -T -p 443 <host>.'});
+  return out;
+}
+function drawTrace(){
+  const hops = annotate(parseTrace($('#tin').value)), T = $('#ttiles'), O = $('#tout'); T.innerHTML = ''; O.innerHTML = '';
+  if (!hops.length){ O.innerHTML = '<p class="hint">Paste traceroute output above.</p>'; return; }
+  const resp = hops.filter(h => h.avg != null), mx = Math.max(...resp.map(h => h.avg), 1);
+  let jump = 0, jh = null, pv = null; resp.forEach(h => { if (pv != null && h.avg - pv > jump){ jump = h.avg - pv; jh = h.n; } pv = h.avg; });
+  [[hops.length, 'hops'], [resp.length ? resp[resp.length - 1].avg.toFixed(1) + ' ms' : '—', 'final RTT'], [jump > 0 ? '+' + jump.toFixed(0) + ' ms' : '—', jh ? `biggest jump (hop ${jh})` : 'biggest jump'], [hops.filter(h => !h.ip).length, 'silent hops'], [hops.filter(h => h.c && h.c.c !== 'pub').length, 'private / CGNAT hops']]
+    .forEach(([v, l]) => { const d = document.createElement('div'); d.className = 'tile'; d.innerHTML = `<b>${esc(v)}</b><span>${esc(l)}</span>`; T.appendChild(d); });
+  hops.forEach(h => {
+    const hot = h.notes.some(n => n.hot), r = document.createElement('div'); r.className = 'trow';
+    r.innerHTML = `<span class="n">${h.n}</span><div><span class="mono">${h.ip ? esc(h.ip) : '* * *'}</span>${h.c ? `<span class="chip ${h.c.c}">${h.c.t}</span>` : ''}</div>
+      <div class="bars">${h.notes.map(n => `<p class="note2 ${n.k}">${esc(n.t)}</p>`).join('')}${h.avg != null ? `<div class="tbar"><span class="${hot ? 'hot' : ''}" style="width:${Math.max(2, h.avg / mx * 100)}%"></span></div>` : ''}</div><span class="tavg">${h.avg != null ? h.avg.toFixed(1) + ' ms' : '—'}</span>`;
+    O.appendChild(r);
+  });
+}
+
+/* ================= events ================= */
+function bind(){
+  $('#rail').addEventListener('click', e => {
+    const j = e.target.closest('[data-j]'), n = e.target.closest('[data-n]'), pg = e.target.closest('[data-page]');
+    if (j){ if (j.dataset.j === app.j && app.page === 'journey') return; setJourney(j.dataset.j); }
+    else if (n){ stopPlay(); goto(nodeFirstStep(+n.dataset.n)); }
+    else if (pg){ stopPlay(); app.page = 'trace'; renderAll(false); drawTrace(); }
+  });
+  $('#layerSel').addEventListener('click', e => { const b = e.target.closest('[data-l]'); if (!b) return; app.layer = b.dataset.l; if (app.layer === 'L7') app.itab = 'l7'; else if (app.itab === 'l7' && app.layer !== 'all') app.itab = 'passport'; if (app.page === 'journey'){ renderPanels(); updateMap(false); } else renderAll(false); });
+  $('#viewSel').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; app.view = b.dataset.v; renderPanels(); if (app.view === 'map') updateMap(false); });
+  $('#zoomSel').addEventListener('click', e => { const b = e.target.closest('[data-z]'); if (!b) return; app.zoom = b.dataset.z; renderPanels(); placePacket(); });
+  $('#selF').addEventListener('change', e => setFault(e.target.value));
+  $('#itabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; app.itab = b.dataset.t; drawInspector(); syncHash(); });
+  $('#ibody').addEventListener('click', e => {
+    const fr = e.target.closest('.fr[data-k]'); if (fr && !e.target.closest('a')){ app.sel = app.sel === fr.dataset.k ? null : fr.dataset.k; drawInspector(); drawBytes(); return; }
+    const cp = e.target.closest('[data-copy]'); if (cp){ const b = howBlocks(app.s)[+cp.dataset.copy]; try{ navigator.clipboard.writeText(b.c); toast('Copied'); }catch(_){ toast('Copy not available'); } }
+  });
+  $('#hops').addEventListener('click', e => { const r = e.target.closest('tr[data-s]'); if (r){ stopPlay(); goto(+r.dataset.s); } });
+  $('#sdots').addEventListener('click', e => { const d = e.target.closest('[data-s]'); if (d){ stopPlay(); goto(+d.dataset.s); } });
+  $('#bFirst').addEventListener('click', () => { stopPlay(); goto(0); });
+  $('#bPrev').addEventListener('click', () => { stopPlay(); goto(app.s - 1); });
+  $('#bNext').addEventListener('click', () => { stopPlay(); goto(app.s + 1); });
+  $('#bLast').addEventListener('click', () => { stopPlay(); goto(geom().count - 1); });
+  $('#bReset').addEventListener('click', () => { stopPlay(); goto(0); });
+  $('#bPlay').addEventListener('click', () => { if (app.playing) stopPlay(); else startPlay(); });
+  $('#spdSel').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; app.speed = +b.dataset.v; drawNarration(); });
+  $('#scrub').addEventListener('input', e => { stopPlay(); cancelAnimationFrame(raf); raf = null; app.t = +e.target.value; const s = Math.round(app.t); if (s !== app.s){ app.s = s; markProg(); renderPanels(); updateMap(false); app.t = +e.target.value; } placePacket(); });
+  $('#bShare').addEventListener('click', async () => { syncHash(); try{ await navigator.clipboard.writeText(location.href); toast(t('linkCopied')); }catch(_){ toast('Copy the address bar link'); } });
+  $('#bExport').addEventListener('click', () => { if (app.page === 'journey' && app.view === 'map') exportPNG(); else toast('Switch to the Map view to export'); });
+  $('#bTheme').addEventListener('click', () => { app.theme = app.theme === 'light' ? 'dark' : 'light'; document.documentElement.dataset.theme = app.theme; try{ localStorage.setItem('hbh-theme', app.theme); }catch(_){} });
+  $('#lang').addEventListener('change', e => { app.lang = e.target.value; try{ localStorage.setItem('hbh-lang', app.lang); }catch(_){} renderAll(false); });
+  $('#tin').addEventListener('input', drawTrace);
+  $('#tsample').addEventListener('click', () => { $('#tin').value = SAMPLE_TR; drawTrace(); });
+  document.addEventListener('keydown', e => {
+    if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || app.page !== 'journey') return;
+    if (e.key === 'ArrowRight'){ stopPlay(); goto(app.s + 1); } else if (e.key === 'ArrowLeft'){ stopPlay(); goto(app.s - 1); }
+    else if (e.key === 'Home'){ stopPlay(); goto(0); } else if (e.key === 'End'){ stopPlay(); goto(geom().count - 1); }
+    else if (e.key === ' '){ e.preventDefault(); if (app.playing) stopPlay(); else startPlay(); }
+    else if (e.key.toLowerCase() === 'x'){ app.itab = 'xray'; drawInspector(); }
+  });
+}
+
+/* ================= boot ================= */
+(function init(){
+  const q = new URLSearchParams(location.hash.slice(1));
+  try{ app.theme = localStorage.getItem('hbh-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); app.lang = localStorage.getItem('hbh-lang') || 'en'; }catch(_){}
+  document.documentElement.dataset.theme = app.theme;
+  loadProg();
+  if (SC[q.get('j')]) app.j = q.get('j');
+  if (I18N[q.get('g')]) app.lang = q.get('g');
+  if (SCN().faults.some(f => f.id === q.get('f'))) app.f = q.get('f');
+  if (['map', 'seq'].includes(q.get('v'))) app.view = q.get('v');
+  if (['all', 'L2', 'L3', 'L4', 'L7'].includes(q.get('l'))) app.layer = q.get('l');
+  if (['passport', 'l7', 'how', 'xray', 'docs'].includes(q.get('i'))) app.itab = q.get('i');
+  if (['fit', 'follow'].includes(q.get('z'))) app.zoom = q.get('z');
+  if (q.get('p') === 'trace') app.page = 'trace';
+  $('#lang').value = app.lang; $('#tin').value = SAMPLE_TR;
+  bind(); drawMap();
+  app.s = Math.max(0, Math.min(geom().count - 1, parseInt(q.get('s') || '0', 10) || 0)); app.t = app.s;
+  markProg(); renderAll(false); drawTrace();
+  window.__hbh = {app, geom, view, infoText, howBlocks, l7Of, buildPacket, cksum16, goto, setJourney, setFault, SC, drawSeq, exportPNG};
+})();
+</script>
+</body>
+</html>

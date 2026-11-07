@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hop by Hop — follow one packet, see every hop</title>
+<meta name="description" content="Follow one packet across the network. Real bytes, real checksums, every rewrite explained. Free, offline, single file.">
+<style>/*CSS*/</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>Hop<span>by</span>Hop</b><small>EknathaLabs</small></div>
+  <div class="now"><b id="nowTitle"></b><span id="nowDots" class="ndots"></span></div>
+  <div class="seg" id="layerSel" aria-label="Layer focus"></div>
+  <div class="seg" id="viewSel"></div>
+  <div class="seg" id="zoomSel"></div>
+  <select id="selF" aria-label="Fault"></select>
+  <div class="prog" title="Progress"><b id="progPct"></b><span id="progBar" class="pbar"></span><small id="progTxt"></small></div>
+  <button class="btn" id="bShare" data-i="share">Share</button>
+  <button class="btn" id="bExport" data-i="export">PNG</button>
+  <select id="lang" aria-label="Language"><option value="en">EN</option><option value="te">తెలుగు</option><option value="hi">हिन्दी</option></select>
+  <button class="btn" id="bTheme" aria-label="Toggle theme">◐</button>
+</header>
+<main class="app" id="app">
+  <nav class="rail" id="rail" aria-label="Journeys"></nav>
+  <section class="center" id="center">
+    <div class="stagewrap">
+      <div id="stage"><svg id="map" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Isometric packet path"></svg></div>
+      <div id="seq" class="seq" style="display:none"></div>
+      <svg id="mini" class="mini" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+    </div>
+    <div class="ctl">
+      <button class="btn" id="bFirst" aria-label="First">⏮</button>
+      <button class="btn" id="bPrev" aria-label="Previous">◀</button>
+      <button class="btn pri" id="bPlay">Play</button>
+      <button class="btn" id="bNext" aria-label="Next">▶</button>
+      <button class="btn" id="bLast" aria-label="Last">⏭</button>
+      <button class="btn" id="bReset" data-i="reset">Reset</button>
+      <input type="range" id="scrub" min="0" max="1" step="0.01" value="0" aria-label="Scrub">
+      <div class="seg" id="spdSel"><button data-v="0.5">0.5×</button><button data-v="1" class="on">1×</button><button data-v="2">2×</button><button data-v="3">3×</button></div>
+    </div>
+    <div class="narr">
+      <div class="sdots" id="sdots"></div><div class="ctr" id="stepTxt"></div>
+      <p id="cap" class="cap"></p><div class="chips" id="capDocs"></div>
+    </div>
+    <div id="faultBox"></div>
+    <div class="tw" id="hops"></div>
+    <div id="bytes" class="bytes"></div>
+  </section>
+  <aside class="right" id="right">
+    <div class="itabs" id="itabs"></div>
+    <div class="ibody" id="ibody"></div>
+  </aside>
+  <section class="tracepane" id="tracepane" hidden>
+    <h2 data-i="traceTool">Traceroute decoder</h2>
+    <p class="hint">Paste output from traceroute, tracert or mtr. Everything is parsed in your browser; nothing is uploaded.</p>
+    <textarea id="tin" spellcheck="false" rows="9"></textarea>
+    <div><button class="btn" id="tsample">Load sample</button></div>
+    <div class="tiles" id="ttiles"></div>
+    <div id="tout"></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script>/*JS*/</script>
+</body>
+</html>
