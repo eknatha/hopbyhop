@@ -190,11 +190,12 @@ function drawNarration(){
   $('#scrub').max = g.count - 1;
   $$('#spdSel button').forEach(b => b.classList.toggle('on', +b.dataset.v === app.speed));
 }
+function faultCmds(g){ return ((FMETA[app.j + '/' + (g.f && g.f.id)] || {}).cmd) || []; }
 function drawFault(){
-  const g = geom(), el = $('#faultBox');
-  if (!g.f){ el.innerHTML = ''; return; }
-  if (app.s < g.F){ el.innerHTML = `<div class="faultbox"><h3>⚠ ${esc(g.f.label)}</h3><p style="margin:0;color:var(--dim)">Fault armed at hop ${g.F}. Step forward to see what happens there.</p></div>`; return; }
-  el.innerHTML = `<div class="faultbox"><h3>${esc(g.f.title)}</h3><p>${esc(g.f.body)}</p><pre>${esc(g.f.user)}</pre><div class="chips" style="margin-top:8px">${(g.f.d || []).map(docChip).join('')}</div></div>`;
+  const g = geom(), el = $('#faultBox'), bn = g.S.banner ? `<div class="banner">${esc(g.S.banner)}</div>` : '';
+  if (!g.f){ el.innerHTML = bn; return; }
+  if (app.s < g.F){ el.innerHTML = bn + `<div class="faultbox"><h3>⚠ ${esc(g.f.label)}</h3><p style="margin:0;color:var(--dim)">Fault armed at hop ${g.F}. Step forward to see what happens there.</p></div>`; return; }
+  el.innerHTML = bn + `<div class="faultbox"><h3>${esc(g.f.title)}</h3><p>${esc(g.f.body)}</p><pre>${esc(g.f.user)}</pre>${cmdBlock(faultCmds(g))}<div class="chips" style="margin-top:8px">${(g.f.d || []).map(docChip).join('')}</div></div>`;
 }
 const badge = (c, s) => `<span class="bg ${c}">${s}</span>`;
 function drawPassport(){
@@ -237,13 +238,14 @@ function drawHow(){
   const bl = howBlocks(app.s);
   return bl.map((b, i) => `<div class="blk2"><div class="bh"><span>${esc(b.t)}</span><button class="btn" data-copy="${i}">Copy</button></div><pre>${esc(b.c)}</pre>${(b.d || []).length ? `<div class="bd chips">${b.d.map(docChip).join('')}</div>` : ''}</div>`).join('');
 }
+const hitOf = b => (b.hitF && b.hitF[app.f] !== undefined) ? b.hitF[app.f] : (b.hit || []);
 function drawXray(){
   const nd = geom().S.nodes[view(app.s).info.j];
   if (!nd.x) return `<p class="hint">No internals are modeled for ${esc(nd.name)}: it only forwards the packet. Devices with tables or rules (routers, NAT, load balancers, gateways) have an X-ray view.</p>`;
   return `<div class="gh">${esc(nd.name)} <small>${esc(nd.addr || '')}</small></div>` + nd.x.map(b => {
     let h = `<div class="blk2"><div class="bh"><span>${esc(b.title)}</span></div><div class="bd">`;
-    if (b.kind === 'table') h += `<table class="xt"><thead><tr>${b.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${b.rows.map((r, i) => `<tr class="${(b.hit || []).includes(i) ? 'hit' : ''}">${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-    else h += `<div class="fl">${b.items.map((it, i) => `<span class="${(b.hit || []).includes(i) ? 'hit' : ''}">${esc(it)}</span>`).join('<i>→</i>')}</div>`;
+    if (b.kind === 'table') h += `<table class="xt"><thead><tr>${b.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${b.rows.map((r, i) => `<tr class="${hitOf(b).includes(i) ? 'hit' : ''}">${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    else h += `<div class="fl">${b.items.map((it, i) => `<span class="${hitOf(b).includes(i) ? 'hit' : ''}">${esc(it)}</span>`).join('<i>→</i>')}</div>`;
     if (b.note) h += `<div class="hint" style="margin:4px 0 0">${esc(b.note)}</div>`;
     return h + '</div></div>';
   }).join('');
@@ -318,7 +320,7 @@ function drawRail(){
       if (act) h += '<div class="steps">' + s.nodes.map((n, i) => `<button class="rs ${i === cur ? 'on' : ''}" data-n="${i}"><i>${i + 1}</i><b>${esc(n.name)}</b><span>${esc(n.tag)}</span></button>`).join('') + '</div>';
     });
   });
-  h += `<div class="rg">${t('tools')}</div><button class="ri ${app.page === 'trace' ? 'act' : ''}" data-page="trace"><i class="dot"></i><b>${t('traceTool')}</b><span>Paste output, get annotated hops</span></button>`;
+  h += `<div class="rg">${t('tools')}</div>` + [['why', 'Why is it failing?', 'Symptom → fault, with commands'], ['pcap', 'PCAP viewer', 'Open a capture, decode locally'], ['trace', t('traceTool'), 'Paste output, get annotated hops']].map(([k, n, d]) => `<button class="ri ${app.page === k ? 'act' : ''}" data-page="${k}"><i class="dot"></i><b>${esc(n)}</b><span>${esc(d)}</span></button>`).join('');
   $('#rail').innerHTML = h;
 }
 function applyI18n(){
@@ -336,11 +338,18 @@ function renderPanels(){
   if (app.view === 'seq') drawSeq();
   syncHash();
 }
+const PAGES = {why:'Why is it failing?', pcap:'PCAP viewer', trace:'Traceroute decoder'};
 function renderAll(animate){
-  $('#app').classList.toggle('trace', app.page === 'trace');
-  $('#center').hidden = $('#right').hidden = app.page === 'trace'; $('#tracepane').hidden = app.page !== 'trace';
+  const pg = app.page, jr = pg === 'journey';
+  $('#app').classList.toggle('trace', !jr);
+  $('#center').hidden = $('#right').hidden = !jr;
+  ['trace', 'why', 'pcap'].forEach(k => { $('#' + k + 'pane').hidden = pg !== k; });
   applyI18n();
-  if (app.page === 'trace'){ drawHeader(); drawRail(); syncHash(); return; }
+  if (!jr){
+    drawHeader(); drawRail(); $('#nowTitle').textContent = PAGES[pg];
+    if (pg === 'why') $('#whypane').innerHTML = drawWhy(); else if (pg === 'pcap') drawPcap(); else drawTrace();
+    syncHash(); return;
+  }
   renderPanels(); updateMap(animate);
 }
 function goto(s){ const g = geom(); app.s = Math.max(0, Math.min(g.count - 1, s)); markProg(); renderAll(true); }
@@ -365,6 +374,7 @@ function exportPNG(){
   img.onerror = () => toast('Export failed in this browser');
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone));
 }
+function closeMenu(){ $('#rail').classList.remove('open'); }
 function toast(m){ const e = $('#toast'); e.textContent = m; e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 1600); }
 
 /* ================= traceroute decoder ================= */
@@ -434,9 +444,9 @@ function drawTrace(){
 function bind(){
   $('#rail').addEventListener('click', e => {
     const j = e.target.closest('[data-j]'), n = e.target.closest('[data-n]'), pg = e.target.closest('[data-page]');
-    if (j){ if (j.dataset.j === app.j && app.page === 'journey') return; setJourney(j.dataset.j); }
-    else if (n){ stopPlay(); goto(nodeFirstStep(+n.dataset.n)); }
-    else if (pg){ stopPlay(); app.page = 'trace'; renderAll(false); drawTrace(); }
+    if (j){ closeMenu(); if (j.dataset.j === app.j && app.page === 'journey') return; setJourney(j.dataset.j); }
+    else if (n){ stopPlay(); goto(nodeFirstStep(+n.dataset.n)); closeMenu(); }
+    else if (pg){ stopPlay(); app.page = pg.dataset.page; renderAll(false); closeMenu(); }
   });
   $('#layerSel').addEventListener('click', e => { const b = e.target.closest('[data-l]'); if (!b) return; app.layer = b.dataset.l; if (app.layer === 'L7') app.itab = 'l7'; else if (app.itab === 'l7' && app.layer !== 'all') app.itab = 'passport'; if (app.page === 'journey'){ renderPanels(); updateMap(false); } else renderAll(false); });
   $('#viewSel').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; app.view = b.dataset.v; renderPanels(); if (app.view === 'map') updateMap(false); });
@@ -462,6 +472,14 @@ function bind(){
   $('#bTheme').addEventListener('click', () => { app.theme = app.theme === 'light' ? 'dark' : 'light'; document.documentElement.dataset.theme = app.theme; try{ localStorage.setItem('hbh-theme', app.theme); }catch(_){} });
   $('#lang').addEventListener('change', e => { app.lang = e.target.value; try{ localStorage.setItem('hbh-lang', app.lang); }catch(_){} renderAll(false); });
   $('#tin').addEventListener('input', drawTrace);
+  bindPcap();
+  $('#bMenu').addEventListener('click', () => $('#rail').classList.toggle('open'));
+  $('#whypane').addEventListener('click', e => {
+    const sy = e.target.closest('[data-sym]'), rj = e.target.closest('[data-rj]');
+    if (sy){ WHY.sym = sy.dataset.sym || null; $('#whypane').innerHTML = drawWhy(); }
+    else if (rj){ setJourney(rj.dataset.rj); setFault(rj.dataset.rf); closeMenu(); }
+  });
+  document.addEventListener('click', e => { const c = e.target.closest('[data-cmd]'); if (!c) return; try{ navigator.clipboard.writeText(c.dataset.cmd); toast('Copied'); }catch(_){ toast('Copy not available'); } });
   $('#tsample').addEventListener('click', () => { $('#tin').value = SAMPLE_TR; drawTrace(); });
   document.addEventListener('keydown', e => {
     if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || app.page !== 'journey') return;
@@ -485,10 +503,11 @@ function bind(){
   if (['all', 'L2', 'L3', 'L4', 'L7'].includes(q.get('l'))) app.layer = q.get('l');
   if (['passport', 'l7', 'how', 'xray', 'docs'].includes(q.get('i'))) app.itab = q.get('i');
   if (['fit', 'follow'].includes(q.get('z'))) app.zoom = q.get('z');
-  if (q.get('p') === 'trace') app.page = 'trace';
+  if (['trace', 'why', 'pcap'].includes(q.get('p'))) app.page = q.get('p');
+  if (!q.get('z') && matchMedia('(max-width:860px)').matches) app.zoom = 'follow';
   $('#lang').value = app.lang; $('#tin').value = SAMPLE_TR;
   bind(); drawMap();
   app.s = Math.max(0, Math.min(geom().count - 1, parseInt(q.get('s') || '0', 10) || 0)); app.t = app.s;
-  markProg(); renderAll(false); drawTrace();
-  window.__hbh = {app, geom, view, infoText, howBlocks, l7Of, buildPacket, cksum16, goto, setJourney, setFault, SC, drawSeq, exportPNG};
+  markProg(); renderAll(false);
+  window.__hbh = {PC, parsePcap, decodePkt, pcapLoad, samplePcap, drawPcap, drawWhy, app, geom, view, infoText, howBlocks, l7Of, buildPacket, cksum16, goto, setJourney, setFault, SC, drawSeq, exportPNG};
 })();

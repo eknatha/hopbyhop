@@ -285,15 +285,60 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0}
 .seq .sarr.r{color:var(--accent)}.seq .sarr.cur{color:var(--accent);font-weight:700}.seq .sarr.cur line{stroke-width:2.6}.seq .sarr.fut{opacity:.35}
 .seq .sl2{font-size:10px;fill:var(--text)}.seq .sl2.c{text-anchor:middle}
 .top .btn,.top select{white-space:nowrap}.top .prog{min-width:150px}
+/* why / pcap / footer / banner / mobile */
+.symrow{display:flex;flex-wrap:wrap;gap:8px}.sym{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:999px;padding:6px 12px;font-size:12.5px;cursor:pointer}
+.sym.on{background:var(--ink);color:#fff;border-color:var(--ink)}.symhint{margin:4px 0 0;padding:8px 12px;border-left:3px solid var(--accent);background:var(--panel2);font-size:13px}
+.fcount{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.fcard{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.fcard .fh{display:flex;flex-direction:column;gap:2px}.fcard .fh small{color:var(--dim);font-size:11px}.fcard p{margin:0;font-size:13px;line-height:1.45}.fa{margin-top:auto;padding-top:6px}
+.cmds{margin-top:10px}.cmds h4{margin:0 0 6px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.cmd{display:flex;gap:8px;align-items:center;margin-bottom:5px}.cmd code{flex:1;min-width:0;overflow:auto;white-space:pre;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:5px 8px;font-family:var(--mono);font-size:12px}
+.banner{background:color-mix(in srgb,var(--accent) 14%,var(--panel));border:1px solid var(--accent);border-radius:6px;padding:8px 12px;font-size:12.5px}
+.drop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:2px dashed var(--line);border-radius:6px;padding:14px}.drop.over{border-color:var(--accent);background:var(--panel2)}.drop span{color:var(--dim);font-size:12px}
+#pfilter{width:100%;box-sizing:border-box;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:4px;padding:8px;font-family:var(--mono);font-size:12px}
+.pcmain{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}.pcmain .tw{max-height:460px}.pside{display:grid;gap:10px;min-width:0}
+.lad{color:var(--text);font-family:var(--mono)}.lad .life{stroke:var(--line);stroke-dasharray:3 4}.lad .ln{font-size:11px;text-anchor:middle;fill:var(--text);font-weight:700}
+.lad .lar{color:var(--chg);cursor:pointer}.lad .lar.r{color:var(--accent)}.lad .lar line{stroke:currentColor;stroke-width:1.6}.lad .ll{font-size:10.5px;text-anchor:middle;fill:var(--text)}
+.foot{max-width:1900px;margin:6px auto 24px;padding:0 14px;font-size:12px;color:var(--dim);line-height:1.5}.foot b{color:var(--text)}
+.menu{display:none}
+@media(max-width:1100px){.pcmain{grid-template-columns:1fr}}
+@media(max-width:860px){
+  .top{position:static;padding:8px 10px;gap:8px}.menu{display:inline-block}
+  .brand small,.top .prog,.now .ndots{display:none}.now{flex:1 1 100%;order:5}
+  .top .seg{flex-wrap:wrap}.btn,.seg button,select{min-height:36px}
+  .app{padding:8px;gap:8px}
+  .rail{position:fixed;left:0;top:0;bottom:0;width:min(86vw,320px);z-index:40;max-height:none;transform:translateX(-105%);transition:transform .2s;box-shadow:4px 0 24px rgba(0,0,0,.4)}
+  .rail.open{transform:none}
+  #map{height:clamp(260px,44vh,380px);touch-action:pan-y}
+  .stagewrap #mini{width:110px;height:62px}
+  .ctl{position:sticky;bottom:0;z-index:15;gap:5px;padding:6px 8px}.ctl #scrub{flex:1 1 100%;order:9}
+  .tw{max-height:240px}.tw table{font-size:11.5px}
+  .right{position:static;max-height:none}.tracepane{grid-column:1/-1;padding:12px}
+  .fgrid{grid-template-columns:1fr}.cmd{flex-direction:column;align-items:stretch}
+  .hexw{font-size:11px}.hb{width:19px}
+}
+@media(prefers-reduced-motion:reduce){.rail{transition:none}}
+.app>*,.center>*,.pcmain>*,.pside>*{min-width:0}
+.center{grid-template-columns:minmax(0,1fr)}
+.tracepane{min-width:0;overflow:hidden}.pside{overflow:hidden}.pside .hexw{overflow:auto}
+.hgrp{display:contents}
+@media(max-width:860px){
+  .hgrp{display:flex;gap:8px;flex:1 1 100%;overflow-x:auto;padding-bottom:2px}.hgrp .seg{flex:0 0 auto;flex-wrap:nowrap}
+  #selF{flex:1 1 100%;max-width:100%}.top #bExport,.ctl #bReset{display:none}
+  .top .btn,.top select{min-height:32px;padding:2px 8px;font-size:11.5px}.seg button{min-height:32px;padding:2px 8px}
+  .now{order:6}.now b{font-size:13px}
+}
 </style>
 </head>
 <body>
 <header class="top">
+  <button class="btn menu" id="bMenu" aria-label="Journeys menu">☰ Journeys</button>
   <div class="brand"><b>Hop<span>by</span>Hop</b><small>EknathaLabs</small></div>
   <div class="now"><b id="nowTitle"></b><span id="nowDots" class="ndots"></span></div>
-  <div class="seg" id="layerSel" aria-label="Layer focus"></div>
+  <div class="hgrp"><div class="seg" id="layerSel" aria-label="Layer focus"></div>
   <div class="seg" id="viewSel"></div>
-  <div class="seg" id="zoomSel"></div>
+  <div class="seg" id="zoomSel"></div></div>
   <select id="selF" aria-label="Fault"></select>
   <div class="prog" title="Progress"><b id="progPct"></b><span id="progBar" class="pbar"></span><small id="progTxt"></small></div>
   <button class="btn" id="bShare" data-i="share">Share</button>
@@ -339,7 +384,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0}
     <div class="tiles" id="ttiles"></div>
     <div id="tout"></div>
   </section>
+  <section class="tracepane" id="whypane" hidden></section>
+  <section class="tracepane" id="pcappane" hidden>
+    <h2>PCAP viewer</h2>
+    <p class="hint">Open a .pcap or .pcapng capture (Ethernet, up to 25 MB). Decoding, checksum checks and the ladder diagram all run in your browser: the file is never uploaded.</p>
+    <div class="drop" id="pdrop"><label class="btn pri" for="pfile">Choose a capture</label><input type="file" id="pfile" accept=".pcap,.pcapng,.cap" hidden><span>or drop it here</span><button class="btn" id="psample">Load sample</button><b id="pname"></b></div>
+    <div class="tiles" id="ptiles"></div>
+    <input type="search" id="pfilter" placeholder="Filter: address, protocol or text in Info (e.g. 443, dns, syn)" aria-label="Filter packets">
+    <div class="pcmain"><div class="tw" id="ptable"></div><div class="pside"><div id="pdecode"></div><div id="phex"></div></div></div>
+    <div class="tw" id="pconvs"></div><div id="pladder"></div>
+  </section>
 </main>
+<footer class="foot"><b>Private by design.</b> Everything runs in your browser. Nothing you paste or open (traceroute output, captures) is uploaded, and there are no cookies or analytics. Only your theme, language and progress are saved on this device. Journeys are simplified teaching models: real devices vary.</footer>
 <div class="toast" id="toast" role="status"></div>
 <script>"use strict";
 /* ================= official documentation registry =================
@@ -671,6 +727,311 @@ api:{
 };
 
 "use strict";
+/* ============ extra docs (official sources only) ============ */
+Object.assign(DOCS, {
+  rfc4271:{l:'RFC 4271 · BGP-4',u:R(4271),k:'Standard',s:'Draft Standard'},
+  rfc7908:{l:'RFC 7908 · BGP route leaks',u:R(7908),k:'Standard',s:'Informational'},
+  rfc7454:{l:'RFC 7454 · BGP operations and security',u:R(7454),k:'Standard',s:'BCP 194'},
+  rfc4301:{l:'RFC 4301 · IPsec architecture',u:R(4301),k:'Standard',s:'Proposed Standard'},
+  rfc4303:{l:'RFC 4303 · IPsec ESP',u:R(4303),k:'Standard',s:'Proposed Standard'},
+  rfc4987:{l:'RFC 4987 · TCP SYN flooding and mitigations',u:R(4987),k:'Standard',s:'Informational'},
+  rfc2827:{l:'RFC 2827 · Network ingress filtering (BCP 38)',u:R(2827),k:'Standard',s:'BCP 38'},
+  rfc5452:{l:'RFC 5452 · DNS resilience against forged answers',u:R(5452),k:'Standard',s:'Proposed Standard'},
+  rfc8767:{l:'RFC 8767 · Serving stale data in DNS',u:R(8767),k:'Standard',s:'Proposed Standard'},
+  rfc1034:{l:'RFC 1034 · DNS concepts',u:R(1034),k:'Standard',s:'STD 13'},
+  rfc2923:{l:'RFC 2923 · TCP problems with PMTU discovery',u:R(2923),k:'Standard',s:'Informational'},
+  k8sing:{l:'Kubernetes · Ingress',u:'https://kubernetes.io/docs/concepts/services-networking/ingress/',k:'Vendor'},
+  awstgw:{l:'AWS · Transit gateways',u:'https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html',k:'Vendor'},
+  awstgwp:{l:'AWS · Transit gateway peering',u:'https://docs.aws.amazon.com/vpc/latest/tgw/tgw-peering.html',k:'Vendor'},
+  awspeer:{l:'AWS · VPC peering',u:'https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html',k:'Vendor'},
+  awspl:{l:'AWS · PrivateLink',u:'https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html',k:'Vendor'},
+  awsalb:{l:'AWS · Application Load Balancer',u:'https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html',k:'Vendor'},
+  awsvpn:{l:'AWS · Site-to-Site VPN',u:'https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html',k:'Vendor'}
+});
+
+/* ============ builders ============ */
+const MKM = n => ['02', '00', '5E', (n * 37 + 11) & 255, (n * 91 + 5) & 255, (n * 13 + 7) & 255].map(v => typeof v === 'string' ? v : v.toString(16).toUpperCase().padStart(2, '0')).join(':');
+const N = (name, code, type, zone, tag, ms, addr, does, o) => Object.assign({name, code, type, zone, tag, ms, addr, does, set:{}, docs:[]}, o || {});
+function fillL2(list){
+  list.forEach((n, i) => {
+    if (n.type === 'switch' || i === list.length - 1) return;
+    n.set = Object.assign({ethSrc:MKM(2 * i + 10), ethDst:MKM(2 * i + 11)}, n.set);
+  });
+  return list;
+}
+const TCP = {base:{proto:'tcp', flags:0x02, seq:0x4a7c0e91, ack:0}, reply:{flags:0x12, seq:0x2b90de10, ack:0x4a7c0e92}};
+const HTTPQ = h => ({title:'HTTP request (illustrative: the packet shown is the TCP SYN)', note:'TLS would encrypt this in practice; shown in clear to explain what proxies can read.', hdr:h});
+function J(group, short, sub, title, docs, nodes, faults, o){
+  return Object.assign({group, short, sub, title, ttl:64, docs}, TCP, {l7:HTTPQ([['Host','app.example.com'], ['Accept','*/*']]), l7r:{title:'HTTP/1.1 200 OK', hdr:[['Content-Type','application/json']]}}, o || {}, {nodes:fillL2(nodes), faults});
+}
+const TBL = (title, cols, rows, hit, note, hitF) => ({kind:'table', title, cols, rows, hit, note, hitF});
+
+Object.assign(SC, {
+
+/* ================================================================ Kubernetes extras */
+k8snp: J('Kubernetes', 'NodePort from outside', 'Node port · DNAT + SNAT', 'Internet client → NodePort → Pod', ['k8ssvc', 'k8svip', 'nf'], [
+  N('Client', 'PC', 'host', 'Internet', 'ORIGIN', 0, '203.0.113.50', 'A client outside the cluster calls a node\'s public address on the NodePort (30080). Every node opens this port for the Service, whether or not a pod runs there.',
+    {set:{ipSrc:'203.0.113.50', ipDst:'198.51.100.40', sport:51200, dport:30080}, docs:['k8ssvc']}),
+  N('Cloud firewall', 'SG', 'switch', 'Cloud edge', 'FIREWALL', 4, 'security group', 'The cloud firewall must allow the NodePort range (30000-32767) from the client. Kubernetes cannot open this for you: it is outside the cluster.',
+    {x:[TBL('Inbound rules', ['Port', 'Source', 'Action'], [['30080 (NodePort)', '0.0.0.0/0', 'ALLOW'], ['22', 'office /32', 'ALLOW']], [0], 'Rule is missing = silent drop.', {sg:[]})], docs:['awssg']}),
+  N('Node 2', 'NF', 'nat', 'Node 2', 'NODEPORT DNAT + SNAT', 5, '198.51.100.40', 'kube-proxy matches the NodePort, picks a pod and DNATs to its address. Because the pod may be on another node, the source is also masqueraded to this node\'s address so the reply comes back through the same node (externalTrafficPolicy: Cluster). The client IP is lost to the pod.',
+    {router:true, set:{ipDst:'10.244.1.9', dport:8080, ipSrc:'10.0.0.12'}, nat:{mode:'dst', a:'198.51.100.40:30080', b:'10.244.1.9:8080'}, docs:['k8svip', 'nf'],
+     x:[{kind:'flow', title:'iptables chains', items:['PREROUTING', 'KUBE-NODEPORTS', 'KUBE-SVC-XXXX', 'KUBE-SEP-YYYY (DNAT)', 'KUBE-POSTROUTING (MASQUERADE)'], hit:[0, 1, 2, 3, 4], note:'With externalTrafficPolicy: Local the masquerade is skipped and the client IP is preserved, but only nodes with a local pod answer.'}]}),
+  N('Pod web', 'POD', 'pod', 'Node 1', 'DELIVERED', 6, '10.244.1.9', 'The pod sees the node\'s address as the client. To log real client IPs use externalTrafficPolicy: Local or a Layer 7 proxy that adds X-Forwarded-For.', {docs:['k8ssvc']})
+], [
+  {id:'sg', at:1, type:'drop', label:'Cloud firewall blocks the NodePort', short:'DROP 30080', title:'The NodePort is closed at the cloud firewall', body:'The Service is fine and kube-proxy rules exist, but the security group or firewall does not allow 30000-32767. Curl from inside the VPC works; from the internet it times out.', user:'$ curl -m 5 http://198.51.100.40:30080\ncurl: (28) Connection timed out after 5001 milliseconds\n$ kubectl get svc web   # PORT(S) 80:30080/TCP', d:['k8ssvc', 'awssg']},
+  {id:'noep', at:2, type:'drop', label:'Service has no ready endpoints', short:'REJECT', title:'No endpoints: kube-proxy rejects the connection', body:'The selector matches no Ready pods, so there is no DNAT target. kube-proxy installs a REJECT rule: the client gets an immediate refusal, not a timeout. That difference (instant vs slow) is a useful clue.', user:'$ curl http://198.51.100.40:30080\ncurl: (7) Failed to connect: Connection refused\n$ kubectl get endpoints web   # <none>', d:['k8ssvc', 'k8svip']}
+]),
+
+k8sing: J('Kubernetes', 'Ingress (Layer 7)', 'Host and path routing', 'Internet → cloud LB → Ingress controller → Pod', ['k8sing', 'rfc9110', 'rfc7239', 'k8ssvc'], [
+  N('Client', 'PC', 'host', 'Internet', 'ORIGIN', 0, '203.0.113.50', 'The browser requests shop.example.com/cart. DNS points the name at the cloud load balancer.',
+    {set:{ipSrc:'203.0.113.50', ipDst:'198.51.100.60', sport:52330, dport:443}, docs:['rfc9110']}),
+  N('Cloud LB', 'LB', 'lb', 'Cloud edge', 'L4 LOAD BALANCER', 6, '198.51.100.60', 'A Layer 4 load balancer picks a node running the ingress controller and forwards the connection, rewriting only the destination address and port.',
+    {router:true, set:{ipDst:'10.244.3.4', dport:8443}, nat:{mode:'dst', a:'198.51.100.60:443', b:'10.244.3.4:8443'}, docs:['k8ssvc']}),
+  N('Ingress controller', 'ING', 'proxy', 'Cluster', 'TLS END · HOST/PATH ROUTE', 7, '10.244.3.4', 'The controller (for example NGINX) terminates TLS, reads Host and path, matches an Ingress rule and opens a new connection straight to a pod. It adds X-Forwarded-* headers because the pod will see the controller as the client.',
+    {router:true, reset:true, set:{ipSrc:'10.244.3.4', ipDst:'10.244.1.9', sport:41822, dport:8080}, l7ops:{del:['Connection'], add:[['X-Forwarded-For', '203.0.113.50'], ['X-Forwarded-Proto', 'https'], ['X-Request-ID', 'b1e0c4f2']]}, l7rops:{del:['Server']}, docs:['k8sing', 'rfc7239'],
+     x:[TBL('Ingress rules', ['Host', 'Path', 'Backend'], [['shop.example.com', '/cart', 'cart-svc:80'], ['shop.example.com', '/', 'web-svc:80']], [0], 'Most specific path wins. No match = default backend (404).', {notfound:[], noep:[0]})]}),
+  N('Pod cart', 'POD', 'pod', 'Node 1', 'DELIVERED', 8, '10.244.1.9', 'The pod receives a plain HTTP request from the controller, with the real client in X-Forwarded-For.', {docs:['k8ssvc']})
+], [
+  {id:'notfound', at:2, type:'l7', label:'No Ingress rule matches (404)', short:'404', title:'The controller answers 404: no rule for this host or path', resp:{title:'HTTP/1.1 404 Not Found', hdr:[['Server', 'nginx'], ['Content-Type', 'text/html']]}, body:'Everything below layer 7 works: DNS, the load balancer and TLS all succeed and the controller replies. The Host header or path did not match any Ingress rule, so the default backend answers. Typical causes: wrong host, missing ingressClassName, path type mismatch.', user:'$ curl -i https://shop.example.com/cart\nHTTP/2 404\nserver: nginx\n$ kubectl describe ingress shop', d:['k8sing', 'rfc9110']},
+  {id:'noep', at:2, type:'l7', label:'No ready pods behind the Service (503)', short:'503', title:'The controller answers 503: the rule matches but nothing is ready', resp:{title:'HTTP/1.1 503 Service Temporarily Unavailable', hdr:[['Server', 'nginx'], ['Content-Type', 'text/html']]}, body:'The Ingress rule matched, but the Service has no Ready endpoints (readiness probe failing, or a selector typo). The controller has nowhere to send the request and returns 503 itself.', user:'$ curl -i https://shop.example.com/cart\nHTTP/2 503\n$ kubectl get endpoints cart-svc   # <none>', d:['k8sing', 'k8ssvc']}
+]),
+
+k8spol: J('Kubernetes', 'NetworkPolicy deny', 'Ingress and egress rules', 'Pod frontend → Pod db (with NetworkPolicy)', ['k8spol', 'k8snet'], [
+  N('Pod frontend', 'POD', 'pod', 'Node 1 · ns frontend', 'ORIGIN', 0, '10.244.1.5', 'The frontend pod connects to the database pod on 5432. Policies are enforced by the CNI plugin (Calico, Cilium and so on), not by Kubernetes itself.',
+    {set:{ipSrc:'10.244.1.5', ipDst:'10.244.2.8', sport:47110, dport:5432}, docs:['k8spol']}),
+  N('Egress policy', 'POL', 'switch', 'Node 1', 'EGRESS CHECK', 0.2, 'CNI on Node 1', 'If the namespace has a default-deny egress policy, the packet is allowed only when a rule permits this destination and port.',
+    {x:[TBL('Egress policies for pod frontend', ['Rule', 'To', 'Port', 'Result'], [['default-deny', 'all', 'all', 'deny'], ['allow-db', 'ns db / app=postgres', '5432', 'allow']], [1], 'Egress is open when no policy selects the pod.', {egress:[0]})], docs:['k8spol']}),
+  N('Cluster routing', 'RT', 'router', 'Fabric', 'ROUTED', 0.5, 'CNI routes', 'Between nodes the CNI routes pod CIDRs (or tunnels them). TTL drops by one.', {router:true, docs:['k8snet']}),
+  N('Ingress policy', 'POL', 'switch', 'Node 2', 'INGRESS CHECK', 0.8, 'CNI on Node 2', 'The receiving node checks ingress policies for the db pod. The source namespace must carry the label the policy selects.',
+    {x:[TBL('Ingress policies for pod postgres', ['From', 'Port', 'Result'], [['ns with label team=shop', '5432', 'allow'], ['everything else', 'all', 'deny']], [0], 'namespaceSelector matches labels on the namespace, not its name.', {deny:[1]})], docs:['k8spol']}),
+  N('Pod postgres', 'POD', 'pod', 'Node 2 · ns db', 'DELIVERED', 0.9, '10.244.2.8', 'The database sees a normal connection from the frontend pod.', {docs:['k8spol']})
+], [
+  {id:'egress', at:1, type:'drop', label:'Default-deny egress blocks the call', short:'EGRESS DENY', title:'Egress policy denies the connection', body:'A default-deny egress policy selects the frontend pod and no rule allows the database. Remember to allow DNS (UDP/TCP 53 to kube-dns) too, or name lookups fail first and the symptom looks like a DNS problem.', user:'$ kubectl exec frontend -- nc -vz 10.244.2.8 5432\nnc: connect to 10.244.2.8 port 5432 (tcp) timed out\n$ kubectl get netpol -A', d:['k8spol']},
+  {id:'deny', at:3, type:'drop', label:'Ingress policy denies the source', short:'INGRESS DENY', title:'Ingress policy on the database drops the packet', body:'The db namespace allows ingress only from namespaces labelled team=shop. The frontend namespace lacks that label, so packets are silently dropped. Pods on the same node behave the same, which rules out the network fabric.', user:'$ kubectl exec frontend -- nc -vz postgres.db 5432\ntimed out\n$ kubectl get ns frontend --show-labels', d:['k8spol']}
+]),
+
+/* ================================================================ AWS extras */
+awstgw: J('Cloud', 'AWS: Transit Gateway', 'Hub and spoke VPC routing', 'EC2 in VPC A → Transit Gateway → EC2 in VPC B', ['awstgw', 'awsrt', 'awssg'], [
+  N('EC2 in VPC A', 'EC2', 'host', 'VPC A 10.1.0.0/16', 'ORIGIN', 0, '10.1.1.10', 'The instance calls a private address in VPC B. The route table sends 10.2.0.0/16 to the Transit Gateway attachment.',
+    {set:{ipSrc:'10.1.1.10', ipDst:'10.2.1.20', sport:50410, dport:8443}, docs:['awsrt']}),
+  N('VPC A router', 'RT', 'router', 'VPC A', 'ROUTE TABLE', 0.5, '10.1.1.1', 'The subnet route table has a route for the other VPC pointing at the TGW attachment.',
+    {router:true, docs:['awsrt'], x:[TBL('Subnet route table (VPC A)', ['Destination', 'Target'], [['10.1.0.0/16', 'local'], ['10.2.0.0/16', 'tgw-0abc123']], [1], 'Both directions need routes: VPC B needs one back to 10.1.0.0/16.')]}),
+  N('Transit Gateway', 'TGW', 'router', 'AWS network', 'TGW ROUTE TABLE', 1.2, 'tgw-0abc123', 'The TGW looks up its own route table (separate from the VPC ones). Routes arrive by propagation from attachments or are added statically.',
+    {router:true, docs:['awstgw'], x:[TBL('TGW route table', ['CIDR', 'Attachment', 'Type'], [['10.1.0.0/16', 'vpc-a', 'propagated'], ['10.2.0.0/16', 'vpc-b', 'propagated']], [1], 'No match = blackhole: the packet is dropped without an ICMP error.', {noprop:[]})]}),
+  N('VPC B router', 'RT', 'router', 'VPC B 10.2.0.0/16', 'LOCAL DELIVERY', 1.8, '10.2.1.1', 'The TGW ENI in VPC B hands the packet to the VPC router, which delivers it locally. Return traffic needs the matching route back to the TGW.', {router:true, docs:['awsrt']}),
+  N('EC2 in VPC B', 'EC2', 'server', 'VPC B', 'DELIVERED', 2, '10.2.1.20', 'The security group must allow the source CIDR of VPC A on port 8443.',
+    {docs:['awssg'], x:[TBL('Security group (inbound)', ['Port', 'Source', 'Result'], [['8443', '10.1.0.0/16', 'ALLOW']], [0], '', {sg:[]})]})
+], [
+  {id:'noprop', at:2, type:'drop', label:'TGW has no route to VPC B', short:'BLACKHOLE', title:'Transit Gateway route table has no matching route', body:'The VPC B attachment is not associated or propagated into the route table this attachment uses, so the TGW drops the packet. Ping and TCP simply hang. Check the association and propagation of both attachments.', user:'$ curl -m 5 http://10.2.1.20:8443\ncurl: (28) Connection timed out', d:['awstgw']},
+  {id:'sg', at:4, type:'drop', label:'Security group blocks VPC A', short:'SG DROP', title:'Destination security group has no rule for VPC A', body:'Routing is perfect and the packet arrives, but the instance\'s security group allows only its own VPC. Security groups drop silently, so it looks like a routing fault.', user:'$ curl -m 5 http://10.2.1.20:8443\ncurl: (28) Connection timed out\n# VPC Reachability Analyzer: Blocked by security group', d:['awssg']}
+]),
+
+awspeer: J('Cloud', 'AWS: VPC peering', 'Direct, non-transitive link', 'EC2 in VPC A → peering → EC2 in VPC B', ['awspeer', 'awsrt', 'awssg'], [
+  N('EC2 in VPC A', 'EC2', 'host', 'VPC A 10.1.0.0/16', 'ORIGIN', 0, '10.1.1.10', 'The instance talks to a private address in the peered VPC.', {set:{ipSrc:'10.1.1.10', ipDst:'10.2.1.20', sport:50510, dport:5432}, docs:['awspeer']}),
+  N('VPC A router', 'RT', 'router', 'VPC A', 'ROUTE TABLE', 0.4, '10.1.1.1', 'A peering connection does nothing until both route tables point the other CIDR at it.',
+    {router:true, docs:['awsrt'], x:[TBL('Route table (VPC A)', ['Destination', 'Target'], [['10.1.0.0/16', 'local'], ['10.2.0.0/16', 'pcx-0a1b2c']], [1], 'CIDR blocks of peered VPCs must not overlap.', {overlap:[0]})]}),
+  N('Peering connection', 'PCX', 'switch', 'AWS network', 'ONE-TO-ONE LINK', 0.9, 'pcx-0a1b2c', 'Traffic crosses AWS\'s private network with no gateway or appliance. Peering is not transitive: a VPC reachable only through B is not reachable from A.', {docs:['awspeer'], x:[TBL('Peering rules', ['Property', 'Value'], [['Transitive routing', 'no'], ['Overlapping CIDRs', 'not allowed'], ['Edge-to-edge (VPN, IGW)', 'not supported']], [0], 'Use Transit Gateway for hub-and-spoke.', {transit:[0]})]}),
+  N('EC2 in VPC B', 'DB', 'server', 'VPC B 10.2.0.0/16', 'DELIVERED', 1, '10.2.1.20', 'Delivered after the security group allows VPC A\'s CIDR.', {docs:['awssg']})
+], [
+  {id:'overlap', at:1, type:'drop', label:'Overlapping CIDRs', short:'OVERLAP', title:'Overlapping CIDR blocks: the route cannot exist', body:'Both VPCs use 10.1.0.0/16. A peering cannot be created between overlapping ranges, and a route for the other VPC would be shadowed by the local route. Fix by renumbering, or use PrivateLink, which does not care about overlap.', user:'$ aws ec2 create-vpc-peering-connection ...\nInvalidParameterValue: overlapping CIDR blocks', d:['awspeer']},
+  {id:'transit', at:2, type:'drop', label:'Destination is in a third VPC (transit)', short:'NOT TRANSITIVE', title:'Peering does not forward to a third VPC', body:'A peers with B and B peers with C. A cannot reach C through B: packets arriving over a peering connection can only be delivered to that VPC\'s own resources. Use a Transit Gateway.', user:'$ curl -m 5 http://10.3.1.30   # VPC C via B\ntimed out', d:['awspeer', 'awstgw']}
+]),
+
+awspl: J('Cloud', 'AWS: PrivateLink', 'Interface endpoint to a service', 'Consumer EC2 → interface endpoint → provider service', ['awspl', 'awssg', 'awsrt'], [
+  N('Consumer EC2', 'EC2', 'host', 'Consumer VPC', 'ORIGIN', 0, '10.0.1.25', 'The instance resolves the service name to the endpoint\'s private address (private DNS) and connects as if it were local.', {set:{ipSrc:'10.0.1.25', ipDst:'10.0.1.80', sport:50330, dport:443}, docs:['awspl']}),
+  N('VPC router', 'RT', 'router', 'Consumer VPC', 'LOCAL ROUTE', 0.3, '10.0.1.1', 'The endpoint address is inside the consumer\'s own subnet, so the local route is enough. No peering, route or gateway is needed, which is why PrivateLink works with overlapping CIDRs.', {router:true, docs:['awsrt']}),
+  N('Interface endpoint', 'VPCE', 'nat', 'Consumer VPC', 'PRIVATELINK NAT', 0.6, '10.0.1.80', 'The endpoint ENI hands the connection to the provider. The provider never sees the consumer\'s address: it sees an address owned by the service network. Proxy Protocol v2 can pass the original source.',
+    {router:true, set:{ipSrc:'10.9.3.14', ipDst:'10.9.2.50'}, nat:{mode:'src', a:'10.0.1.25', b:'10.9.3.14 (PrivateLink)'}, docs:['awspl'], x:[TBL('Endpoint security group (inbound)', ['Port', 'Source', 'Result'], [['443', '10.0.0.0/16', 'ALLOW']], [0], 'The endpoint has its own security group.', {sg:[]})]}),
+  N('Provider NLB', 'NLB', 'lb', 'Provider VPC', 'NETWORK LOAD BALANCER', 1.1, '10.9.2.50', 'The provider\'s NLB forwards to a healthy target. Targets must pass health checks or the NLB has nowhere to send traffic.',
+    {router:true, set:{ipDst:'10.9.4.8', dport:8443}, nat:{mode:'dst', a:'10.9.2.50:443', b:'10.9.4.8:8443'}, docs:['awspl'], x:[TBL('Target group health', ['Target', 'Port', 'Health'], [['10.9.4.8', '8443', 'healthy'], ['10.9.4.9', '8443', 'unhealthy']], [0], '', {unhealthy:[]})]}),
+  N('Provider target', 'SRV', 'server', 'Provider VPC', 'DELIVERED', 1.4, '10.9.4.8', 'The service answers. The reply retraces the same translations.', {docs:['awspl']})
+], [
+  {id:'sg', at:2, type:'drop', label:'Endpoint security group blocks 443', short:'SG DROP', title:'Interface endpoint security group denies the consumer', body:'The endpoint ENI has its own security group. If it does not allow the consumer\'s CIDR on 443, connections time out even though DNS and routing are right.', user:'$ curl -m 5 https://vpce-0abc.example.vpce.amazonaws.com\ncurl: (28) Connection timed out', d:['awspl', 'awssg']},
+  {id:'unhealthy', at:3, type:'drop', label:'NLB has no healthy targets', short:'NO HEALTHY TARGET', title:'Provider NLB has nothing healthy to forward to', body:'All targets fail health checks (wrong port, security group, app down). The NLB cannot forward, and the consumer sees a hang or reset. Only the provider can fix this, which is why consumers should ask for health status.', user:'$ curl -m 5 https://svc.internal\ncurl: (28) Connection timed out', d:['awspl']}
+]),
+
+awsalb: J('Cloud', 'AWS: Application Load Balancer', 'Layer 7 · target health', 'Internet → IGW → ALB → EC2 target', ['awsalb', 'awsigw', 'awssg', 'rfc9110'], [
+  N('Client', 'PC', 'host', 'Internet', 'ORIGIN', 0, '203.0.113.50', 'The client connects to the ALB\'s DNS name, which resolves to one public address per Availability Zone.', {set:{ipSrc:'203.0.113.50', ipDst:'198.51.100.30', sport:51720, dport:443}, docs:['awsalb']}),
+  N('Internet gateway', 'IGW', 'nat', 'VPC edge', '1:1 NAT TO ALB ENI', 8, 'igw-0f1e2d3c', 'The IGW translates the ALB\'s public address to the private address of its network interface in the subnet.', {router:true, set:{ipDst:'10.0.0.21'}, nat:{mode:'dst', a:'198.51.100.30', b:'10.0.0.21'}, docs:['awsigw']}),
+  N('Application LB', 'ALB', 'proxy', 'Public subnets', 'TLS END · RULES · TARGETS', 9, '10.0.0.21', 'The ALB terminates TLS, evaluates listener rules and opens a new connection to a healthy target. It adds X-Forwarded-For and X-Amzn-Trace-Id. Its source address is the ALB\'s, so target security groups should reference the ALB\'s security group.',
+    {router:true, reset:true, set:{ipSrc:'10.0.0.21', ipDst:'10.0.2.30', sport:44012, dport:8080}, l7ops:{add:[['X-Forwarded-For', '203.0.113.50'], ['X-Forwarded-Proto', 'https'], ['X-Amzn-Trace-Id', 'Root=1-6740a1b2-3f9c']]}, docs:['awsalb', 'rfc9110'], x:[TBL('Target group', ['Target', 'Health check', 'State'], [['10.0.2.30:8080', 'GET /health → 200', 'healthy'], ['10.0.2.31:8080', 'GET /health → 500', 'unhealthy']], [0], 'Only healthy targets receive traffic. With none healthy the ALB returns 503.', {unhealthy:[], slow:[0]})]}),
+  N('EC2 target', 'EC2', 'server', 'Private subnet', 'DELIVERED', 10, '10.0.2.30', 'The target\'s security group must allow port 8080 from the ALB\'s security group. The app sees the ALB as the client.', {docs:['awssg'], x:[TBL('Security group (inbound)', ['Port', 'Source', 'Result'], [['8080', 'sg-alb', 'ALLOW']], [0], '', {sg:[]})]})
+], [
+  {id:'unhealthy', at:2, type:'l7', label:'No healthy targets (503)', short:'503', title:'The ALB answers 503: every target failed its health check', resp:{title:'HTTP/1.1 503 Service Temporarily Unavailable', hdr:[['Server', 'awselb/2.0'], ['Content-Type', 'text/html']]}, body:'The ALB itself is fine and responds, but the health check fails (wrong path or port, app down, or security group blocking the ALB). With zero healthy targets it returns 503. Look at the target group health reason code.', user:'$ curl -i https://app.example.com\nHTTP/2 503\nserver: awselb/2.0\n$ aws elbv2 describe-target-health --target-group-arn ...', d:['awsalb']},
+  {id:'slow', at:2, type:'l7', label:'Target too slow (504)', short:'504', title:'The ALB answers 504: the target did not respond in time', resp:{title:'HTTP/1.1 504 Gateway Time-out', hdr:[['Server', 'awselb/2.0'], ['Content-Type', 'text/html']]}, body:'The connection to the target opened but no response arrived within the idle timeout (60 seconds by default). The network is fine; the application is slow or stuck. Compare the ALB idle timeout with the app\'s keep-alive timeout.', user:'$ curl -i https://app.example.com/report\nHTTP/2 504\n$ # CloudWatch: TargetResponseTime high, HTTPCode_ELB_504_Count', d:['awsalb', 'rfc9110']},
+  {id:'sg', at:3, type:'drop', label:'Target security group blocks the ALB', short:'SG DROP', title:'The target never receives the ALB\'s connection', body:'The target\'s security group does not allow the ALB. Health checks fail, the target goes unhealthy, and clients see 503 (or 504 until the first checks complete).', user:'$ aws elbv2 describe-target-health ...\nState: unhealthy  Reason: Target.Timeout', d:['awssg', 'awsalb']}
+]),
+
+/* ================================================================ Security / firewall */
+sgnacl: J('Security', 'Firewall rule trace', 'Security group vs network ACL', 'Internet → IGW → NACL → security group → EC2', ['awsacl', 'awssg', 'awsigw'], [
+  N('Client', 'PC', 'host', 'Internet', 'ORIGIN', 0, '203.0.113.50', 'A client connects to a public instance on port 8443.', {set:{ipSrc:'203.0.113.50', ipDst:'198.51.100.77', sport:51920, dport:8443}, docs:['awssg']}),
+  N('Internet gateway', 'IGW', 'nat', 'VPC edge', '1:1 NAT TO EIP', 6, 'igw-0f1e2d3c', 'The IGW translates the Elastic IP to the instance\'s private address.', {router:true, set:{ipDst:'10.0.1.25'}, nat:{mode:'dst', a:'198.51.100.77', b:'10.0.1.25'}, docs:['awsigw']}),
+  N('Network ACL', 'NACL', 'switch', 'Subnet boundary', 'STATELESS · FIRST MATCH', 6.1, 'acl-0a1b2c', 'The NACL checks rules in numeric order and stops at the first match. It is stateless: the reply needs its own outbound rule, including ephemeral ports 1024-65535.',
+    {docs:['awsacl'], x:[TBL('NACL inbound', ['Rule', 'Match', 'Action'], [['90', 'tcp 8443 from 203.0.113.0/24', 'DENY'], ['100', 'tcp 8443 from 0.0.0.0/0', 'ALLOW'], ['*', 'all', 'DENY']], [1], 'Lowest rule number wins. A DENY at 90 beats the ALLOW at 100.', {nacl:[0]}), TBL('NACL outbound (reply path)', ['Rule', 'Match', 'Action'], [['100', 'tcp 1024-65535 to 0.0.0.0/0', 'ALLOW']], [0], 'Forgetting this rule breaks replies even though inbound is open.')]}),
+  N('Security group', 'SG', 'switch', 'Instance', 'STATEFUL · ALLOW ONLY', 6.2, 'sg-0d4e5f', 'The security group has only allow rules and is stateful: a permitted request automatically permits its reply. Nothing matches means deny.',
+    {docs:['awssg'], x:[TBL('Security group inbound', ['Port', 'Source', 'Action'], [['443', '0.0.0.0/0', 'ALLOW'], ['8443', '10.0.0.0/8', 'ALLOW']], [1], 'Source 10.0.0.0/8 does not include a public client.', {sgdeny:[]})]}),
+  N('EC2 instance', 'EC2', 'server', 'Public subnet', 'DELIVERED', 6.5, '10.0.1.25', 'After both layers allow the packet, the application receives it. The reply skips the security group check (stateful) but is evaluated by the NACL (stateless).', {docs:['awssg']})
+], [
+  {id:'nacl', at:2, type:'drop', label:'NACL rule 90 denies the client', short:'NACL DENY', title:'An earlier NACL rule denies the packet', body:'Rule 90 denies a range that includes the client, and evaluation stops there, so rule 100 never runs. NACLs have explicit deny, security groups do not. VPC Flow Logs show the packet as REJECT.', user:'$ curl -m 5 https://198.51.100.77:8443\ntimed out\n$ # flow log: ... 8443 TCP REJECT OK', d:['awsacl']},
+  {id:'sgdeny', at:3, type:'drop', label:'Security group has no matching rule', short:'SG DENY', title:'The security group does not allow this source', body:'The only 8443 rule is limited to private addresses. Anything not explicitly allowed is dropped. Security groups cannot deny, so the fix is to add an allow rule, not to remove a deny.', user:'$ curl -m 5 https://198.51.100.77:8443\ntimed out\n$ aws ec2 describe-security-groups --group-ids sg-0d4e5f', d:['awssg']}
+], {banner:'Rule trace: the highlighted row is the rule that decides this packet.'}),
+
+/* ================================================================ Attack replays */
+arp: J('Attack replays', 'ARP spoofing (MITM)', 'Poisoned ARP cache', 'Victim → attacker → gateway (man in the middle)', ['rfc826', 'rfc791'], [
+  N('Victim', 'PC', 'host', 'Office LAN', 'ORIGIN', 0, '192.168.1.23', 'Forged ARP replies told the victim that the gateway 192.168.1.1 is at the attacker\'s MAC. The frame therefore carries the attacker\'s MAC as destination, while the IP header still says the real destination.',
+    {set:{ethSrc:'3C:22:FB:A1:09:23', ethDst:'02:00:5E:66:66:66', ipSrc:'192.168.1.23', ipDst:'203.0.113.10', sport:52144, dport:80}, docs:['rfc826'], x:[TBL('Victim ARP cache', ['IP', 'MAC', 'Note'], [['192.168.1.1', '02:00:5E:66:66:66', 'POISONED: should be the router'], ['192.168.1.50', '3C:22:FB:00:11:50', 'normal']], [0], 'ARP has no authentication: the last reply wins.')]}),
+  N('Attacker host', 'MITM', 'host', 'Office LAN', 'FORWARDS A COPY', 0.3, '192.168.1.66', 'With IP forwarding on, the attacker can read or change cleartext traffic and then pass it on, so the victim notices nothing. Only the Ethernet addresses change; the IP header is untouched apart from TTL.',
+    {router:true, set:{ethSrc:'02:00:5E:66:66:66', ethDst:'F4:F2:6D:5E:11:A0'}, docs:['rfc826']}),
+  N('Gateway', 'RT', 'router', 'Office LAN', 'NORMAL ROUTING', 0.8, '192.168.1.1', 'The real router sees a perfectly normal frame and forwards it. Its logs show the victim\'s IP, so nothing looks wrong here.', {router:true, set:{ethSrc:'F4:F2:6D:5E:11:A1', ethDst:'00:1B:54:C2:7A:01'}, docs:['rfc791']}),
+  N('Web server', 'SRV', 'server', 'Internet', 'DELIVERED', 9, '203.0.113.10', 'The server answers the victim as usual. The attacker also poisons the gateway, so replies pass through it in the other direction.', {docs:['rfc826']})
+], [
+  {id:'pvlan', at:1, type:'drop', label:'Client isolation drops host-to-host frames', short:'ISOLATED', title:'Port isolation stops the frame at the switch', body:'Private VLAN or client isolation forbids a host-to-host frame, so the victim\'s traffic never reaches the attacker. Dynamic ARP Inspection goes further: it drops the forged ARP replies, so the cache is never poisoned.', user:'$ ip neigh show 192.168.1.1\n192.168.1.1 dev eth0 lladdr f4:f2:6d:5e:11:a0 REACHABLE   # correct MAC', d:['rfc826']}
+], {banner:'Educational replay of a known attack: shows what an attacker changes so you can detect and block it.'}),
+
+synflood: J('Attack replays', 'SYN flood', 'Spoofed sources · backlog', 'Spoofed SYN → edge → server backlog', ['rfc4987', 'rfc2827', 'rfc9293'], [
+  N('Botnet host', 'BOT', 'host', 'Internet', 'SPOOFED SOURCE', 0, '198.51.100.201', 'The sender forges the source address, so the SYN-ACK goes to an innocent host and the handshake never completes. Thousands of these per second fill the server\'s half-open queue.', {set:{ipSrc:'198.51.100.201', ipDst:'203.0.113.10', sport:34812, dport:443}, docs:['rfc4987']}),
+  N('ISP edge router', 'RT', 'router', 'ISP', 'BCP 38 CHECK', 7, '198.51.100.1', 'A provider doing ingress filtering (BCP 38 / uRPF) drops packets whose source is not reachable via the interface they arrived on. Many networks still do not.', {router:true, docs:['rfc2827'], x:[TBL('uRPF check', ['Source', 'Expected interface', 'Result'], [['198.51.100.201', 'customer port', 'pass'], ['10.1.2.3', 'customer port', 'fail (not routed here)']], [0], 'A source the customer does not own fails and is dropped.', {ingress:[1]})]}),
+  N('Firewall / LB', 'FW', 'lb', 'Server edge', 'RATE LIMIT · SYN PROXY', 9, '203.0.113.2', 'A SYN proxy or SYN cookies answer the handshake on behalf of the server, so no state is stored until the client proves it exists with the final ACK.', {router:true, docs:['rfc4987']}),
+  N('Web server', 'SRV', 'server', 'Server', 'SYN QUEUE', 10, '203.0.113.10', 'Each SYN makes the server allocate a half-open entry. When the backlog is full and cookies are off, new SYNs are dropped, real users included.',
+    {docs:['rfc9293'], x:[TBL('Listen socket', ['Item', 'Value'], [['SYN backlog', '4096 entries'], ['Half-open now', '4096 (full)'], ['tcp_syncookies', '0 (off)']], [1, 2], 'With tcp_syncookies=1 the queue is bypassed under pressure.', {backlog:[1, 2]})]})
+], [
+  {id:'ingress', at:1, type:'drop', label:'ISP drops spoofed source (BCP 38)', short:'BCP 38', title:'Ingress filtering kills the spoofed packet at the source network', body:'The ISP checks that the source belongs to the customer port. A forged address fails and the packet never leaves. This is the real fix for spoofing, but it must be deployed by the sender\'s network, not the victim\'s.', user:'$ # victim side: SYN rate normal, no flood', d:['rfc2827']},
+  {id:'backlog', at:3, type:'drop', label:'SYN backlog full', short:'BACKLOG FULL', title:'The server drops new SYNs because the queue is full', body:'The half-open queue is exhausted by forged SYNs. Real clients retry SYNs with growing delays and eventually time out. Enable SYN cookies, increase the backlog and rate limit at the edge.', user:'$ ss -ant state syn-recv | wc -l\n4096\n$ nstat -az | grep -Ei "listen(drops|overflows)"', d:['rfc4987']}
+], {banner:'Educational replay of a known attack: shows what an attacker changes so you can detect and block it.'}),
+
+dnsspoof: J('Attack replays', 'DNS cache poisoning', 'Forged answer · defences', 'Resolver → authoritative (forged answer race)', ['rfc5452', 'rfc1035', 'rfc2827'], [
+  N('Recursive resolver', 'RES', 'server', 'Resolver', 'ORIGIN · CACHE MISS', 0, '10.0.0.53', 'On a cache miss the resolver asks the authoritative server. It picks a random source port and a random 16-bit transaction ID. An attacker must guess both, and arrive before the real answer.',
+    {set:{ipSrc:'10.0.0.53', ipDst:'192.0.2.53', sport:41872, dport:53}, docs:['rfc5452'], x:[TBL('What a forged answer must match', ['Field', 'Space'], [['Source IP', 'the authoritative server'], ['Destination port', 'random, 16 bits'], ['Transaction ID', 'random, 16 bits'], ['Question (0x20 case)', 'extra bits']], [1, 2, 3], 'Port and ID randomisation make blind guessing impractical.')]}),
+  N('Resolver edge', 'RT', 'router', 'Resolver network', 'EGRESS', 0.3, '10.0.0.1', 'Normal routing. Egress filtering keeps spoofed packets out of the network but does nothing for forged answers arriving from outside.', {router:true, docs:['rfc2827']}),
+  N('Internet path', 'NET', 'router', 'Internet', 'THE RACE', 18, 'many hops', 'Anyone able to send packets with the authoritative server\'s source address can race the real answer. This is why spoofing prevention (BCP 38) matters to everyone.', {router:true, docs:['rfc5452']}),
+  N('Authoritative server', 'NS', 'server', 'Authority', 'DELIVERED', 20, '192.0.2.53', 'The real server answers with the same transaction ID and port. If a forged answer arrived first and matched, the resolver caches it and ignores this one.', {docs:['rfc1034']})
+], [
+  {id:'forged', at:2, type:'l7', label:'Forged answer wins the race', short:'FORGED', title:'The resolver accepts a forged answer and caches it', resp:{title:'DNS response (forged)', hdr:[['Source IP', '192.0.2.53 (spoofed)'], ['Answer', 'www.example.com. 86400 IN A 198.51.100.66'], ['Result', 'cached for 24 h: every user of this resolver is redirected']]}, body:'Only the Layer 7 content is wrong: every network header looks right. This is why transport randomisation, DNSSEC validation and short cache limits exist.', user:'$ dig +short www.example.com @10.0.0.53\n198.51.100.66   # not the real address', d:['rfc5452']},
+  {id:'dnssec', at:0, type:'l7', label:'DNSSEC validation rejects it', short:'SERVFAIL', title:'A validating resolver rejects the unsigned or wrongly signed answer', resp:{title:'DNS response (SERVFAIL)', hdr:[['Result', 'SERVFAIL: signature check failed'], ['Cache', 'nothing stored'], ['ad flag', 'not set']]}, body:'With DNSSEC the answer carries a signature chaining up to the root. A forged answer has no valid signature, so the resolver refuses it and returns SERVFAIL instead of a poisoned address.', user:'$ dig +dnssec www.example.com @10.0.0.53\nstatus: SERVFAIL', d:['rfc5452', 'rfc1035']}
+], {base:{proto:'udp', payload:DNSQ, payName:'DNS query'}, reply:{payload:DNSR, payName:'DNS response'}, msg:{f:'Standard query A www.example.com', r:'Standard query response A 203.0.113.10'}, l7:{title:'DNS query', hdr:[['ID', '0x4f2a'], ['Question', 'www.example.com IN A'], ['Source port', '41872 (random)']]}, l7r:{title:'DNS response', hdr:[['ID', '0x4f2a'], ['Answer', 'www.example.com. 300 IN A 203.0.113.10']]}, banner:'Educational replay of a known attack: shows what an attacker changes so you can detect and block it.'}),
+
+/* ================================================================ Hybrid & cross-region */
+hybrid: J('Hybrid & multi-region', 'On-prem → AWS over VPN', 'IPsec tunnel · MTU', 'Office laptop → site-to-site VPN → EC2', ['rfc4301', 'rfc4303', 'awsvpn', 'rfc1191'], [
+  N('Laptop', 'PC', 'host', 'Office 10.20.0.0/16', 'ORIGIN', 0, '10.20.5.15', 'A private address talks to a private address in AWS. No NAT is involved; both sides must have non-overlapping ranges and routes.', {set:{ipSrc:'10.20.5.15', ipDst:'10.0.1.25', sport:50612, dport:443}, docs:['rfc1918']}),
+  N('Office router', 'RT', 'router', 'Office', 'ROUTE TO VPN', 1, '10.20.0.1', 'The route for 10.0.0.0/16 points to the VPN gateway.', {router:true, docs:['rfc1812']}),
+  N('VPN gateway (office)', 'VPN', 'tunnel', 'Office edge', 'ESP ENCAPSULATION', 2, '203.0.113.9', 'IPsec in tunnel mode wraps the whole packet in a new one addressed to the AWS endpoint and encrypts it. The ESP header, padding and extra IP header cost roughly 50-70 bytes, so the usable MTU shrinks.',
+    {router:true, set:{outer:'203.0.113.9 → 198.51.100.200 · ESP (+~60 B)'}, docs:['rfc4303', 'rfc4301'], x:[TBL('IPsec security association', ['Item', 'Value'], [['IKE', 'up (phase 1)'], ['ESP SA', 'up, AES-GCM'], ['Tunnel MTU', '~1400'], ['Selectors', '10.20.0.0/16 ↔ 10.0.0.0/16']], [1, 2], 'Both ends must agree on the selectors or traffic is dropped.', {sa:[0, 1], mtu:[2]})]}),
+  N('Internet', 'NET', 'router', 'Internet', 'OUTER HEADERS ONLY', 28, 'many hops', 'The internet sees only the ESP packet between the two VPN endpoints. Inner addresses and ports are hidden, and middleboxes cannot read or fix them.', {router:true, docs:['rfc4303']}),
+  N('AWS VPN endpoint', 'VGW', 'tunnel', 'AWS edge', 'DECAPSULATION', 30, '198.51.100.200', 'AWS decrypts and strips the outer headers, then routes the inner packet into the VPC.', {router:true, set:{outer:''}, docs:['awsvpn']}),
+  N('VPC router', 'RT', 'router', 'VPC 10.0.0.0/16', 'ROUTE TABLE', 30.5, '10.0.1.1', 'The VPC route table must also have a route back to the office range (static or propagated), or replies are lost.', {router:true, docs:['awsrt']}),
+  N('EC2 instance', 'EC2', 'server', 'VPC', 'DELIVERED', 31, '10.0.1.25', 'The security group must allow the office CIDR, not just the VPC CIDR.', {docs:['awssg']})
+], [
+  {id:'sa', at:2, type:'drop', label:'IPsec tunnel is down', short:'TUNNEL DOWN', title:'No security association: nothing can be encrypted', body:'Phase 1 or 2 negotiation fails (mismatched proposals, pre-shared key, or selectors). The route still points at the tunnel, so packets are silently discarded. Check the tunnel state first.', user:'$ ipsec statusall   # no ESTABLISHED SA\n$ aws ec2 describe-vpn-connections   # VgwTelemetry: DOWN', d:['rfc4301', 'awsvpn']},
+  {id:'mtu', at:3, type:'mtu', label:'ESP overhead exceeds the path MTU', short:'MTU', title:'Large packets vanish after encapsulation', body:'Small packets (ping, SYN, login) work, but full-size packets exceed the path MTU after encryption. If ICMP "fragmentation needed" is filtered, TCP stalls. Clamp MSS on the tunnel (about 1350-1380) instead of relying on PMTUD.', user:'$ ping -M do -s 1472 10.0.1.25   # fails\n$ ping -M do -s 1300 10.0.1.25   # works', d:['rfc1191', 'rfc4303']},
+  {id:'sg', at:6, type:'drop', label:'Security group allows only the VPC CIDR', short:'SG DROP', title:'The office range is not allowed at the instance', body:'The tunnel is up and routing works, but the instance\'s security group allows 10.0.0.0/16 only. The packet arrives and is dropped. Flow Logs show REJECT.', user:'$ curl -m 5 https://10.0.1.25\ntimed out   # while a same-VPC host works', d:['awssg']}
+]),
+
+xregion: J('Hybrid & multi-region', 'Cross-region (TGW peering)', 'us-east-1 ↔ eu-west-1', 'EC2 in us-east-1 → Transit Gateway peering → EC2 in eu-west-1', ['awstgwp', 'awstgw', 'awssg'], [
+  N('EC2 us-east-1', 'EC2', 'host', 'VPC 10.1.0.0/16 (N. Virginia)', 'ORIGIN', 0, '10.1.1.10', 'The instance calls a private address in another region. Latency, not bandwidth, is now the main cost.', {set:{ipSrc:'10.1.1.10', ipDst:'10.2.1.20', sport:50720, dport:8443}, docs:['awstgwp']}),
+  N('VPC router', 'RT', 'router', 'us-east-1', 'ROUTE TABLE', 0.4, '10.1.1.1', 'Sends 10.2.0.0/16 to the regional Transit Gateway.', {router:true, docs:['awsrt']}),
+  N('TGW us-east-1', 'TGW', 'router', 'us-east-1', 'STATIC ROUTE TO PEER', 1, 'tgw-use1', 'A TGW peering attachment does not propagate routes. A static route for the remote CIDR must be added on both sides.',
+    {router:true, docs:['awstgwp'], x:[TBL('TGW route table (us-east-1)', ['CIDR', 'Attachment', 'Type'], [['10.1.0.0/16', 'vpc-a', 'propagated'], ['10.2.0.0/16', 'peering-euw1', 'static']], [1], 'Without the static route the packet is a blackhole.', {static:[]})]}),
+  N('AWS backbone', 'BB', 'switch', 'AWS global network', '~70 ms ROUND TRIP', 38, 'private fibre', 'Traffic between peered TGWs stays on the AWS backbone and is encrypted. Distance sets the delay: roughly 70-80 ms round trip here.', {docs:['awstgwp']}),
+  N('TGW eu-west-1', 'TGW', 'router', 'eu-west-1', 'STATIC ROUTE BACK', 76, 'tgw-euw1', 'The remote TGW needs a static route to 10.1.0.0/16 for the replies.', {router:true, docs:['awstgwp']}),
+  N('VPC router', 'RT', 'router', 'eu-west-1', 'ROUTE TABLE', 76.5, '10.2.1.1', 'Delivers locally in the destination VPC.', {router:true, docs:['awsrt']}),
+  N('EC2 eu-west-1', 'EC2', 'server', 'VPC 10.2.0.0/16 (Ireland)', 'DELIVERED', 77, '10.2.1.20', 'Delivered when the security group allows the source CIDR.', {docs:['awssg']})
+], [
+  {id:'static', at:2, type:'drop', label:'No static route to the peer', short:'BLACKHOLE', title:'TGW peering needs static routes: none exist', body:'Peering attachments are static-only. Without a route for 10.2.0.0/16 pointing at the peering attachment, the TGW drops the packet. Add routes on both TGWs.', user:'$ curl -m 5 http://10.2.1.20:8443\ntimed out\n$ aws ec2 search-transit-gateway-routes ...', d:['awstgwp']},
+  {id:'sg', at:6, type:'drop', label:'Remote security group blocks the source', short:'SG DROP', title:'The destination security group does not include the other region\'s CIDR', body:'Security groups can reference other security groups only within a VPC or a peering; across regions use CIDR ranges. Packets arrive and are dropped.', user:'$ curl -m 5 http://10.2.1.20:8443\ntimed out', d:['awssg']}
+]),
+
+/* ================================================================ Incident replays */
+bgpleak: J('Incident replays', 'BGP route leak', 'More-specific prefix wins', 'Client → ISP → backbone → content edge (with a leaked prefix)', ['rfc7908', 'rfc4271', 'rfc7454'], [
+  N('Client', 'PC', 'host', 'Eyeball ISP', 'ORIGIN', 0, '192.0.2.10', 'A normal user opens a site hosted in 203.0.113.0/24.', {set:{ipSrc:'192.0.2.10', ipDst:'203.0.113.10', sport:52144, dport:443}, docs:['rfc4271']}),
+  N('ISP router', 'RT', 'router', 'AS 64496', 'DEFAULT TO TRANSIT', 4, '192.0.2.1', 'The access ISP has a default route to its transit provider.', {router:true, docs:['rfc4271']}),
+  N('Transit backbone', 'BB', 'router', 'AS 64497', 'BEST PATH SELECTION', 12, '198.51.100.1', 'BGP picks the longest matching prefix first, whatever the AS path length. If a small network leaks a /25 that falls inside the content provider\'s /24, every router that accepts it prefers the leak.',
+    {router:true, docs:['rfc4271', 'rfc7908'], x:[TBL('BGP table for 203.0.113.0/24', ['Prefix', 'AS path', 'Result'], [['203.0.113.0/24', '64497 64500', 'legitimate'], ['203.0.113.0/25', '64497 64511 64500', 'LEAKED more-specific'], ['203.0.113.128/25', '64497 64511 64500', 'LEAKED more-specific']], [0], 'Longest prefix wins: the /25 beats the /24 even though the path is longer.', {leak:[1, 2]})]}),
+  N('Content edge', 'EDGE', 'router', 'AS 64500', 'LEGITIMATE PATH', 20, '203.0.113.1', 'The route the traffic should take. It was bypassed by the leaked more-specifics.', {router:true, docs:['rfc4271']}),
+  N('Web server', 'SRV', 'server', 'AS 64500', 'DELIVERED', 21, '203.0.113.10', 'Normal delivery.', {docs:['rfc4271']})
+], [
+  {id:'leak', at:2, type:'drop', label:'Leaked /25 pulls traffic into the wrong network', short:'LEAK', title:'Traffic follows a leaked more-specific route into a network that cannot carry it', body:'A small network re-announced routes it should not have. The backbone accepted them and started sending traffic for the whole prefix toward that network, which dropped or could not carry it. Users see timeouts from many places at once. Mitigations: prefix filters, max-prefix limits, RPKI origin validation and the route-leak communities in RFC 9234.', user:'$ mtr -rwzc 20 203.0.113.10\n  ... AS64497  198.51.100.1\n  ... AS64511  ???   ← unexpected AS, loss 100%\n$ whois -h whois.radb.net 203.0.113.0/24', d:['rfc7908', 'rfc7454']}
+], {banner:'Simplified reconstruction of a common route-leak pattern using documentation addresses and ASNs. Not a specific incident.'}),
+
+pmtud: J('Incident replays', 'MTU black hole', 'ICMP filtered · stalls', 'Client → firewall → WAN tunnel → server', ['rfc1191', 'rfc2923', 'rfc4821'], [
+  N('Client', 'PC', 'host', 'Office', 'ORIGIN', 0, '10.0.0.5', 'The TCP handshake works and a login prompt appears, then the session freezes when the server sends a large screen of output.', {set:{ipSrc:'10.0.0.5', ipDst:'10.8.0.20', sport:52210, dport:22}, docs:['rfc1191']}),
+  N('Office router', 'RT', 'router', 'Office', 'ROUTE', 1, '10.0.0.1', 'Normal forwarding.', {router:true, docs:['rfc1812']}),
+  N('Firewall', 'FW', 'router', 'Office edge', 'DROPS ALL ICMP', 2, '10.0.0.2', 'A well-meaning rule blocks every ICMP type. That includes "fragmentation needed" (type 3, code 4), the message path MTU discovery depends on.', {router:true, docs:['rfc2923'], x:[TBL('Firewall rules', ['Rule', 'Action'], [['allow tcp 22 to 10.8.0.0/16', 'allow'], ['deny icmp any any', 'deny (breaks PMTUD)']], [1], 'Allow at least ICMP type 3 code 4.', {})]}),
+  N('WAN tunnel', 'TUN', 'tunnel', 'WAN', 'MTU 1400', 12, '10.8.0.1', 'The tunnel can carry only 1400-byte packets. A full 1500-byte packet with Don\'t Fragment set must be dropped and the sender told to shrink it, but the notice never arrives.', {router:true, docs:['rfc1191'], x:[TBL('Tunnel interface', ['Item', 'Value'], [['MTU', '1400'], ['MSS clamp', 'none'], ['DF bit', 'set (TCP default)']], [0, 1], 'Clamp MSS to about 1360 on the tunnel to avoid the problem entirely.')]}),
+  N('Server', 'SRV', 'server', 'Data centre', 'DELIVERED', 13, '10.8.0.20', 'Small packets get through, so the handshake and short commands work.', {docs:['rfc1191']})
+], [
+  {id:'blackhole', at:3, type:'mtu', label:'Full-size packets vanish, no ICMP error', short:'BLACK HOLE', title:'A PMTU black hole: big packets disappear without a trace', body:'The tunnel drops oversized DF packets and sends ICMP type 3 code 4, but the firewall removes it. The sender never learns the limit, keeps retransmitting the same big segment and the connection stalls. Typical sign: SSH or HTTPS connects, then hangs.', user:'$ ping -M do -s 1372 10.8.0.20   # ok\n$ ping -M do -s 1472 10.8.0.20   # no reply, no error\n$ tracepath 10.8.0.20', d:['rfc1191', 'rfc2923']}
+], {banner:'Simplified teaching reconstruction of a common outage pattern.'}),
+
+dnsttl: J('Incident replays', 'Stale DNS after migration', 'TTL not lowered', 'Client → resolver cache vs authoritative', ['rfc1034', 'rfc1035', 'rfc8767'], [
+  N('Client', 'PC', 'host', 'Office', 'ORIGIN', 0, '10.0.0.5', 'After a server migration to 203.0.113.20, some users still reach the old server.', {set:{ipSrc:'10.0.0.5', ipDst:'10.0.0.53', sport:53011, dport:53}, docs:['rfc1034']}),
+  N('Office router', 'RT', 'router', 'Office', 'ROUTE', 0.5, '10.0.0.1', 'Normal forwarding.', {router:true, docs:['rfc1812']}),
+  N('Recursive resolver', 'RES', 'server', 'Office', 'CACHE', 1, '10.0.0.53', 'If the name is cached, the resolver answers without asking anyone, and keeps doing so until the record\'s TTL runs out. A TTL of 86400 set before the change means up to a day of stale answers.',
+    {docs:['rfc1034', 'rfc8767'], x:[TBL('Resolver cache', ['Name', 'Type', 'Value', 'TTL left'], [['api.example.com', 'A', '203.0.113.10 (old)', '81 000 s'], ['api.example.com', 'A', '203.0.113.20 (new)', 'not cached']], [0], 'The authoritative zone has the new value; this cache does not know yet.', {stale:[0]})]}),
+  N('Authoritative server', 'NS', 'server', 'Authority', 'DELIVERED', 14, '192.0.2.53', 'If asked, it would return the new address with a short TTL.', {docs:['rfc1035']})
+], [
+  {id:'stale', at:2, type:'l7', label:'Resolver serves the old cached address', short:'STALE', title:'The resolver answers from its cache with the pre-migration address', resp:{title:'DNS response (from cache)', hdr:[['rcode', 'NOERROR'], ['Answer', 'api.example.com. 81000 IN A 203.0.113.10  (old address)'], ['Authoritative zone', 'now says 203.0.113.20']]}, body:'Nothing is broken in the network: the resolver does exactly what the old TTL told it to do. The standard practice is to lower the TTL (for example to 60 s) at least one old-TTL period before a change, then raise it again afterwards.', user:'$ dig +noall +answer api.example.com @10.0.0.53\napi.example.com. 81000 IN A 203.0.113.10\n$ dig +noall +answer api.example.com @192.0.2.53\napi.example.com. 60 IN A 203.0.113.20', d:['rfc1034', 'rfc8767']}
+], {base:{proto:'udp', payload:DNSQ, payName:'DNS query'}, reply:{payload:DNSR, payName:'DNS response'}, msg:{f:'Standard query A api.example.com', r:'Standard query response A 203.0.113.20'}, l7:{title:'DNS query', hdr:[['Question', 'api.example.com IN A']]}, l7r:{title:'DNS response', hdr:[['rcode', 'NOERROR'], ['Answer', 'api.example.com. 60 IN A 203.0.113.20']]}, banner:'Simplified teaching reconstruction of a common outage pattern.'})
+
+});
+
+/* ============ fault metadata: symptom tags + real commands ============ */
+const SYMPTOMS = [
+  {id:'timeout', t:'Request hangs, then times out', h:'No error at all: a drop somewhere. Find where packets stop.'},
+  {id:'refused', t:'Connection refused or reset', h:'Something answered quickly with a refusal: a reachable host with no listener or a REJECT rule.'},
+  {id:'http', t:'I get an HTTP error (401, 404, 502, 503, 504)', h:'The network works; a Layer 7 device decided. Read its logs, not packet captures.'},
+  {id:'big', t:'Small requests work, large ones hang', h:'Classic MTU / PMTUD black hole. Test with the do-not-fragment ping.'},
+  {id:'dns', t:'Wrong, stale or failing DNS answers', h:'Compare the cache, the authoritative server and any filtering on UDP/TCP 53.'},
+  {id:'scope', t:'Works from one place but not another', h:'Think security groups, ACLs, routes and policy: rules that depend on the source.'},
+  {id:'cross', t:'Works inside a VPC / cluster but not across', h:'A hop between two networks has no route, no policy or no rule.'},
+  {id:'trace', t:'Traceroute stops or shows * * *', h:'Find the last responding hop; the fault is at or after the next one.'}
+];
+const FMETA = {
+  'web/ttl':{sym:['trace'], cmd:['traceroute -n 142.250.195.46', 'mtr -rwzc 20 142.250.195.46']},
+  'web/mtu':{sym:['big', 'timeout'], cmd:['ping -M do -s 1472 142.250.195.46', 'tracepath 142.250.195.46', 'ip link show | grep mtu']},
+  'web/drop':{sym:['timeout'], cmd:['curl -v -m 5 https://142.250.195.46', 'nc -vz 142.250.195.46 443', 'sudo tcpdump -ni any host 142.250.195.46 and tcp port 443']},
+  'dns/drop':{sym:['dns', 'timeout'], cmd:['dig +time=2 +tries=1 www.example.com @8.8.8.8', 'dig +tcp www.example.com @8.8.8.8', 'resolvectl status']},
+  'ping/ttl':{sym:['trace'], cmd:['traceroute -I -n 203.0.113.10', 'ping -t 3 203.0.113.10   # macOS: -m 3', 'mtr -rwzc 10 203.0.113.10']},
+  'ping/drop':{sym:['timeout', 'trace'], cmd:['ping -c 3 203.0.113.10', 'curl -sI https://203.0.113.10', 'traceroute -T -p 443 203.0.113.10']},
+  'aws/noroute':{sym:['timeout', 'cross'], cmd:['aws ec2 describe-route-tables --filters Name=association.subnet-id,Values=subnet-0abc', 'aws ec2 describe-nat-gateways --filter Name=state,Values=available']},
+  'aws/noigw':{sym:['timeout'], cmd:['aws ec2 describe-route-tables --filters Name=route.gateway-id,Values=igw-*', 'aws ec2 describe-nat-gateways']},
+  'k8s/vxlan':{sym:['timeout', 'cross'], cmd:['ip -d link show flannel.1', 'bridge fdb show dev flannel.1', 'sudo tcpdump -ni eth0 udp port 8472']},
+  'k8s/mtu':{sym:['big'], cmd:['ip link show | grep mtu', 'kubectl exec web -- ping -M do -s 1422 10.244.2.9', 'kubectl -n kube-system get cm kube-flannel-cfg -o yaml']},
+  'api/jwt':{sym:['http'], cmd:['curl -i -H "Authorization: Bearer $TOK" https://api.example.com/orders', 'cut -d. -f2 <<<"$TOK" | tr _- /+ | base64 -d 2>/dev/null | jq .exp', 'date +%s']},
+  'api/waf':{sym:['timeout', 'scope'], cmd:['curl -v -m 5 https://api.example.com/orders', 'curl -v -m 5 -A "Mozilla/5.0" https://api.example.com/orders']},
+  'k8snp/sg':{sym:['timeout', 'scope'], cmd:['kubectl get svc web', 'curl -m 5 http://NODE_IP:30080', 'aws ec2 describe-security-groups --group-ids sg-NODES']},
+  'k8snp/noep':{sym:['refused'], cmd:['kubectl get endpoints web', 'kubectl get pods -l app=web -o wide', 'kubectl describe svc web']},
+  'k8sing/notfound':{sym:['http'], cmd:['curl -i -H "Host: shop.example.com" http://INGRESS_IP/cart', 'kubectl describe ingress shop', 'kubectl get ingressclass']},
+  'k8sing/noep':{sym:['http'], cmd:['kubectl get endpoints cart-svc', 'kubectl describe pod -l app=cart | grep -A5 Readiness', 'kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=50']},
+  'k8spol/egress':{sym:['timeout', 'scope'], cmd:['kubectl get netpol -A', 'kubectl exec frontend -- nc -vz 10.244.2.8 5432', 'kubectl exec frontend -- nslookup kubernetes.default']},
+  'k8spol/deny':{sym:['timeout', 'scope'], cmd:['kubectl get netpol -n db -o yaml', 'kubectl get ns frontend --show-labels', 'kubectl exec frontend -- nc -vz postgres.db 5432']},
+  'awstgw/noprop':{sym:['timeout', 'cross'], cmd:['aws ec2 search-transit-gateway-routes --transit-gateway-route-table-id tgw-rtb-0abc --filters Name=state,Values=active,blackhole', 'aws ec2 get-transit-gateway-route-table-associations --transit-gateway-route-table-id tgw-rtb-0abc']},
+  'awstgw/sg':{sym:['timeout', 'scope', 'cross'], cmd:['aws ec2 describe-security-groups --group-ids sg-0abc', 'aws ec2 create-network-insights-path --source i-SRC --destination i-DST --protocol tcp --destination-port 8443']},
+  'awspeer/overlap':{sym:['cross'], cmd:['aws ec2 describe-vpcs --query "Vpcs[].CidrBlock"', 'aws ec2 describe-vpc-peering-connections']},
+  'awspeer/transit':{sym:['cross', 'timeout'], cmd:['aws ec2 describe-vpc-peering-connections --query "VpcPeeringConnections[].[VpcPeeringConnectionId,Status.Code]"', 'aws ec2 describe-route-tables']},
+  'awspl/sg':{sym:['timeout', 'cross'], cmd:['aws ec2 describe-vpc-endpoints --vpc-endpoint-ids vpce-0abc', 'dig +short service.region.vpce.amazonaws.com', 'curl -v -m 5 https://vpce-0abc.example.vpce.amazonaws.com']},
+  'awspl/unhealthy':{sym:['timeout', 'refused'], cmd:['aws elbv2 describe-target-health --target-group-arn ARN', 'aws elbv2 describe-target-group-attributes --target-group-arn ARN']},
+  'awsalb/unhealthy':{sym:['http'], cmd:['aws elbv2 describe-target-health --target-group-arn ARN', 'curl -i http://10.0.2.30:8080/health', 'aws cloudwatch get-metric-statistics --namespace AWS/ApplicationELB --metric-name HealthyHostCount ...']},
+  'awsalb/slow':{sym:['http'], cmd:['curl -w "%{time_total}\\n" -o /dev/null -s https://app.example.com/report', 'aws elbv2 describe-load-balancer-attributes --load-balancer-arn ARN | grep idle']},
+  'awsalb/sg':{sym:['http', 'timeout'], cmd:['aws elbv2 describe-target-health --target-group-arn ARN', 'aws ec2 describe-security-groups --group-ids sg-TARGET']},
+  'sgnacl/nacl':{sym:['timeout', 'scope'], cmd:['aws ec2 describe-network-acls --filters Name=association.subnet-id,Values=subnet-0abc', 'aws logs filter-log-events --log-group-name vpc-flow-logs --filter-pattern REJECT']},
+  'sgnacl/sgdeny':{sym:['timeout', 'scope'], cmd:['aws ec2 describe-security-groups --group-ids sg-0d4e5f', 'aws ec2 authorize-security-group-ingress --group-id sg-0d4e5f --protocol tcp --port 8443 --cidr 203.0.113.0/24']},
+  'arp/pvlan':{sym:['scope'], cmd:['ip neigh show', 'arp -an', 'sudo arping -I eth0 192.168.1.1', 'sudo tcpdump -nn -e arp']},
+  'synflood/ingress':{sym:['scope'], cmd:['ss -ant state syn-recv | wc -l', 'sysctl net.ipv4.tcp_syncookies']},
+  'synflood/backlog':{sym:['timeout'], cmd:['ss -ant state syn-recv | wc -l', 'sysctl net.ipv4.tcp_syncookies net.ipv4.tcp_max_syn_backlog', 'nstat -az | grep -Ei "listen(drops|overflows)|syncookies"']},
+  'dnsspoof/forged':{sym:['dns'], cmd:['dig +short www.example.com @10.0.0.53', 'dig +short www.example.com @192.0.2.53', 'dig +dnssec www.example.com @10.0.0.53']},
+  'dnsspoof/dnssec':{sym:['dns'], cmd:['dig +dnssec www.example.com @10.0.0.53', 'dig +cd www.example.com @10.0.0.53   # skip validation to compare', 'delv www.example.com']},
+  'hybrid/sa':{sym:['timeout', 'cross'], cmd:['ipsec statusall', 'aws ec2 describe-vpn-connections --query "VpnConnections[].VgwTelemetry"', 'sudo tcpdump -ni eth0 esp or udp port 500 or udp port 4500']},
+  'hybrid/mtu':{sym:['big'], cmd:['ping -M do -s 1372 10.0.1.25', 'tracepath 10.0.1.25', 'sudo iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu']},
+  'hybrid/sg':{sym:['timeout', 'scope', 'cross'], cmd:['aws ec2 describe-security-groups --group-ids sg-0abc', 'aws logs filter-log-events --log-group-name vpc-flow-logs --filter-pattern "10.20.5.15 REJECT"']},
+  'xregion/static':{sym:['timeout', 'cross'], cmd:['aws ec2 search-transit-gateway-routes --transit-gateway-route-table-id tgw-rtb-0abc --filters Name=state,Values=active,blackhole --region us-east-1', 'aws ec2 describe-transit-gateway-peering-attachments --region us-east-1']},
+  'xregion/sg':{sym:['timeout', 'scope', 'cross'], cmd:['aws ec2 describe-security-groups --group-ids sg-0abc --region eu-west-1', 'ping -c 5 10.2.1.20']},
+  'bgpleak/leak':{sym:['timeout', 'scope'], cmd:['mtr -rwzc 20 203.0.113.10', 'traceroute -A 203.0.113.10', 'whois -h whois.radb.net 203.0.113.0/24']},
+  'pmtud/blackhole':{sym:['big', 'timeout'], cmd:['ping -M do -s 1372 10.8.0.20', 'ping -M do -s 1472 10.8.0.20', 'tracepath 10.8.0.20', 'sudo tcpdump -ni any icmp and icmp[0]=3']},
+  'dnsttl/stale':{sym:['dns'], cmd:['dig +noall +answer api.example.com @10.0.0.53', 'dig +noall +answer api.example.com @192.0.2.53', 'unbound-control flush api.example.com']}
+};
+
+"use strict";
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -907,6 +1268,274 @@ function markProg(){
 }
 
 "use strict";
+/* ================= Why is it failing? + fault library ================= */
+const WHY = {sym:null};
+function cmdBlock(cmds){
+  if (!cmds.length) return '';
+  return `<div class="cmds"><h4>Confirm it with</h4>${cmds.map(c => `<div class="cmd"><code>${esc(c)}</code><button class="btn" data-cmd="${esc(c)}">Copy</button></div>`).join('')}</div>`;
+}
+function drawWhy(){
+  const sy = WHY.sym;
+  let h = `<h2>Why is my request failing?</h2><p class="hint">Pick what you see. Each match is a fault you can replay hop by hop, with the real commands that confirm it. With nothing selected this is the full fault library.</p><div class="symrow">`
+    + SYMPTOMS.map(s => `<button class="sym ${sy === s.id ? 'on' : ''}" data-sym="${s.id}">${esc(s.t)}</button>`).join('')
+    + `<button class="sym ${!sy ? 'on' : ''}" data-sym="">All faults</button></div>`;
+  if (sy) h += `<p class="symhint">${esc(SYMPTOMS.find(x => x.id === sy).h)}</p>`;
+  const rows = [];
+  Object.entries(SC).forEach(([jk, J]) => J.faults.forEach(f => { const m = FMETA[jk + '/' + f.id] || {}; if (!sy || (m.sym || []).includes(sy)) rows.push({jk, J, f, m}); }));
+  h += `<div class="fcount">${rows.length} fault${rows.length === 1 ? '' : 's'}${sy ? '' : ' in ' + Object.keys(SC).length + ' journeys'}</div><div class="fgrid">`;
+  h += rows.map(r => `<div class="fcard"><div class="fh"><b>${esc(r.f.label)}</b><small>${esc(r.J.group)} · ${esc(r.J.short)}</small></div>
+    <p>${esc(r.f.body.split('. ')[0])}.</p>${cmdBlock((r.m.cmd || []).slice(0, 3))}
+    <div class="fa"><button class="btn pri" data-rj="${r.jk}" data-rf="${r.f.id}">Replay this fault</button></div></div>`).join('');
+  return h + '</div>';
+}
+
+/* ================= PCAP viewer (all local) ================= */
+const PC = {pk:[], sel:-1, name:'', filter:'', conv:null, convs:[]};
+const MAXPK = 20000, MAXBYTES = 25 * 1024 * 1024;
+
+function parsePcap(buf){
+  if (buf.byteLength < 24) throw new Error('File is too small to be a capture');
+  const dv = new DataView(buf), u8 = new Uint8Array(buf), m = dv.getUint32(0, false), out = [];
+  if ([0xa1b2c3d4, 0xa1b23c4d, 0xd4c3b2a1, 0x4d3cb2a1].includes(m)){
+    const le = m === 0xd4c3b2a1 || m === 0x4d3cb2a1, nano = m === 0xa1b23c4d || m === 0x4d3cb2a1, lt = dv.getUint32(20, le) & 0x0fffffff;
+    let o = 24;
+    while (o + 16 <= u8.length && out.length < MAXPK){
+      const sec = dv.getUint32(o, le), fr = dv.getUint32(o + 4, le), cl = dv.getUint32(o + 8, le), ol = dv.getUint32(o + 12, le);
+      if (o + 16 + cl > u8.length) break;
+      out.push({ts:sec + fr / (nano ? 1e9 : 1e6), d:u8.subarray(o + 16, o + 16 + cl), lt, orig:ol}); o += 16 + cl;
+    }
+    return out;
+  }
+  if (m === 0x0a0d0d0a){
+    let o = 0, le = true; const ifs = [];
+    while (o + 12 <= u8.length && out.length < MAXPK){
+      if (o === 0 || dv.getUint32(o, true) === 0x0a0d0d0a || dv.getUint32(o, false) === 0x0a0d0d0a){ if (dv.getUint32(o + 8, true) === 0x1a2b3c4d) le = true; else if (dv.getUint32(o + 8, false) === 0x1a2b3c4d) le = false; }
+      const ty = dv.getUint32(o, le), bl = dv.getUint32(o + 4, le);
+      if (bl < 12 || o + bl > u8.length) break;
+      if (ty === 1){
+        let res = 1e-6; const lt = dv.getUint16(o + 8, le); let q = o + 16;
+        while (q + 4 <= o + bl - 4){ const oc = dv.getUint16(q, le), ol = dv.getUint16(q + 2, le); if (oc === 0) break; if (oc === 9){ const v = u8[q + 4]; res = v & 0x80 ? Math.pow(2, -(v & 0x7f)) : Math.pow(10, -v); } q += 4 + ((ol + 3) & ~3); }
+        ifs.push({lt, res});
+      } else if (ty === 6){
+        const ifc = ifs[dv.getUint32(o + 8, le)] || {lt:1, res:1e-6}, hi = dv.getUint32(o + 12, le), lo = dv.getUint32(o + 16, le), cl = dv.getUint32(o + 20, le), ol = dv.getUint32(o + 24, le);
+        if (o + 28 + cl <= u8.length) out.push({ts:(hi * 4294967296 + lo) * ifc.res, d:u8.subarray(o + 28, o + 28 + cl), lt:ifc.lt, orig:ol});
+      } else if (ty === 3){
+        const ifc = ifs[0] || {lt:1}, ol = dv.getUint32(o + 8, le), cl = Math.min(ol, bl - 16);
+        out.push({ts:0, d:u8.subarray(o + 12, o + 12 + cl), lt:ifc.lt, orig:ol});
+      }
+      o += (bl + 3) & ~3;
+    }
+    return out;
+  }
+  throw new Error('Not a pcap or pcapng file');
+}
+
+const onesSum = (b, init = 0) => { let s = init; for (let i = 0; i < b.length; i += 2) s += (b[i] << 8) | (b[i + 1] || 0); while (s >>> 16) s = (s & 0xffff) + (s >>> 16); return s; };
+const ICMPT = {0:'Echo reply', 3:'Destination unreachable', 5:'Redirect', 8:'Echo request', 11:'Time exceeded', 12:'Parameter problem'};
+const ICMPU = {0:'net', 1:'host', 2:'protocol', 3:'port', 4:'fragmentation needed (DF set)', 13:'administratively prohibited'};
+const tcpFlagStr = f => [[0x80, 'CWR'], [0x40, 'ECE'], [0x20, 'URG'], [0x10, 'ACK'], [0x08, 'PSH'], [0x04, 'RST'], [0x02, 'SYN'], [0x01, 'FIN']].filter(x => f & x[0]).map(x => x[1]).join(', ');
+function ip6str(d, o){ const g = []; for (let i = 0; i < 8; i++) g.push(((d[o + 2 * i] << 8) | d[o + 2 * i + 1]).toString(16)); return g.join(':').replace(/(^|:)0(:0)+(:|$)/, '::').replace(/:{3,}/, '::'); }
+
+function decodePkt(p){
+  const d = p.d, L = [], R = {layers:L, src:'', dst:'', proto:'?', info:'', len:p.orig || d.length, ttl:null, key:null, bad:0, d};
+  const u16 = o => (d[o] << 8) | d[o + 1], u32 = o => ((d[o] << 24) | (d[o + 1] << 16) | (d[o + 2] << 8) | d[o + 3]) >>> 0;
+  const mac = o => [...d.slice(o, o + 6)].map(h2).join(':'), ip4 = o => `${d[o]}.${d[o + 1]}.${d[o + 2]}.${d[o + 3]}`;
+  const F = (l, v, o, n, note) => ({l, v, o, n, note});
+  let off = 0, et = null;
+  if (p.lt === 1){
+    if (d.length < 14){ R.info = 'Truncated frame'; return R; }
+    const f = [F('Destination', mac(0), 0, 6), F('Source', mac(6), 6, 6)]; et = u16(12); off = 14;
+    while ((et === 0x8100 || et === 0x88a8) && off + 4 <= d.length){ f.push(F('VLAN ID', u16(off) & 0xfff, off, 2)); et = u16(off + 2); off += 4; }
+    f.push(F('EtherType', '0x' + et.toString(16).padStart(4, '0'), off - 2, 2, et === 0x0800 ? 'IPv4' : et === 0x86dd ? 'IPv6' : et === 0x0806 ? 'ARP' : ''));
+    L.push({name:'Ethernet II', c:'eth', s:0, e:off, f}); R.src = mac(6); R.dst = mac(0); R.proto = 'Ethernet';
+  } else if (p.lt === 113){ et = u16(14); off = 16; L.push({name:'Linux cooked capture', c:'eth', s:0, e:16, f:[F('Protocol', '0x' + et.toString(16), 14, 2)]}); }
+  else if (p.lt === 101 || p.lt === 12){ et = (d[0] >> 4) === 6 ? 0x86dd : 0x0800; }
+  else { R.info = 'Unsupported link type ' + p.lt; return R; }
+
+  if (et === 0x0806 && off + 28 <= d.length){
+    const op = u16(off + 6), sm = mac(off + 8), si = ip4(off + 14), tm = mac(off + 18), ti = ip4(off + 24);
+    L.push({name:'ARP', c:'eth', s:off, e:off + 28, f:[F('Operation', op === 1 ? 'request' : op === 2 ? 'reply' : op, off + 6, 2), F('Sender MAC', sm, off + 8, 6), F('Sender IP', si, off + 14, 4), F('Target MAC', tm, off + 18, 6), F('Target IP', ti, off + 24, 4)]});
+    R.proto = 'ARP'; R.src = si; R.dst = ti; R.info = op === 1 ? `Who has ${ti}? Tell ${si}` : `${si} is at ${sm}`; R.key = 'arp ' + [si, ti].sort().join(' '); return R;
+  }
+  let proto = null, l4 = 0, end = d.length, v6 = false, sIP = '', dIP = '', pseudo = null;
+  if (et === 0x0800 && off + 20 <= d.length){
+    const ihl = (d[off] & 15) * 4, tot = u16(off + 2), fl = u16(off + 6), fo = fl & 0x1fff, mf = !!(fl & 0x2000), df = !!(fl & 0x4000); proto = d[off + 9]; sIP = ip4(off + 12); dIP = ip4(off + 16);
+    const ok = ihl >= 20 && off + ihl <= d.length && onesSum(d.subarray(off, off + ihl)) === 0xffff; if (!ok) R.bad++;
+    R.ttl = d[off + 8];
+    L.push({name:'IPv4', c:'ip', s:off, e:off + ihl, f:[F('Header length', ihl + ' bytes', off, 1), F('Total length', tot, off + 2, 2), F('Identification', '0x' + u16(off + 4).toString(16).padStart(4, '0'), off + 4, 2), F('Flags', (df ? 'DF ' : '') + (mf ? 'MF' : '') || 'none', off + 6, 2), F('Fragment offset', fo * 8, off + 6, 2), F('TTL', d[off + 8], off + 8, 1, 'Initial value guess: ' + ([32, 64, 128, 255].find(x => x >= d[off + 8]) || 255)), F('Protocol', proto, off + 9, 1, {1:'ICMP', 6:'TCP', 17:'UDP'}[proto] || ''), F('Header checksum', hx4(u16(off + 10)) + (ok ? '  ✓ valid' : '  ✗ invalid'), off + 10, 2, ok ? '' : 'May be checksum offload if captured on the sending host.'), F('Source', sIP, off + 12, 4), F('Destination', dIP, off + 16, 4)]});
+    R.src = sIP; R.dst = dIP; R.proto = {1:'ICMP', 6:'TCP', 17:'UDP'}[proto] || 'IP ' + proto;
+    l4 = off + ihl; end = Math.min(d.length, off + tot); const trunc = off + tot > d.length;
+    if (fo > 0 || mf){ R.info = (fo ? 'Fragment at offset ' + fo * 8 : 'First fragment (more follow)') + ', not reassembled'; R.key = `ip ${sIP} ${dIP}`; return R; }
+    pseudo = (len) => { const ph = new Uint8Array(12); ph.set(d.subarray(off + 12, off + 20), 0); ph[9] = proto; ph[10] = len >> 8; ph[11] = len & 255; return ph; };
+    R.trunc = trunc; R.l4len = tot - ihl;
+  } else if (et === 0x86dd && off + 40 <= d.length){
+    v6 = true; proto = d[off + 6]; sIP = ip6str(d, off + 8); dIP = ip6str(d, off + 24); R.ttl = d[off + 7];
+    L.push({name:'IPv6', c:'ip', s:off, e:off + 40, f:[F('Payload length', u16(off + 4), off + 4, 2), F('Next header', proto, off + 6, 1, {6:'TCP', 17:'UDP', 58:'ICMPv6'}[proto] || ''), F('Hop limit', d[off + 7], off + 7, 1), F('Source', sIP, off + 8, 16), F('Destination', dIP, off + 24, 16)]});
+    R.src = sIP; R.dst = dIP; R.proto = {6:'TCP', 17:'UDP', 58:'ICMPv6'}[proto] || 'IPv6'; l4 = off + 40; end = Math.min(d.length, l4 + u16(off + 4)); R.l4len = u16(off + 4);
+  } else { R.info = 'EtherType 0x' + (et || 0).toString(16); R.key = 'l2 ' + R.src; return R; }
+
+  const fullL4 = !v6 && !R.trunc && l4 + R.l4len <= d.length;
+  const ckState = (sum, label) => !fullL4 ? ` (${label}: not verifiable)` : sum === 0xffff ? '  ✓ valid' : (R.bad++, '  ✗ invalid');
+  let pay = end;
+  if (proto === 6 && l4 + 20 <= d.length){
+    const sp = u16(l4), dp = u16(l4 + 2), sq = u32(l4 + 4), ak = u32(l4 + 8), hl = (d[l4 + 12] >> 4) * 4, fg = d[l4 + 13], win = u16(l4 + 14), ck = u16(l4 + 16);
+    let sum = 0; if (fullL4){ const seg = d.subarray(l4, l4 + R.l4len); sum = onesSum(seg, onesSum(pseudo(R.l4len))); }
+    const opts = []; for (let q = l4 + 20; q < Math.min(l4 + hl, d.length);){ const k = d[q]; if (k === 0) break; if (k === 1){ q++; continue; } const ln = d[q + 1]; if (!ln) break; if (k === 2) opts.push('MSS ' + u16(q + 2)); else if (k === 3) opts.push('WScale ' + d[q + 2]); else if (k === 4) opts.push('SACK permitted'); else if (k === 8) opts.push('Timestamps'); q += ln; }
+    pay = l4 + hl; const plen = Math.max(0, end - pay);
+    L.push({name:'TCP', c:'l4', s:l4, e:Math.min(pay, d.length), f:[F('Source port', sp, l4, 2), F('Destination port', dp, l4 + 2, 2), F('Sequence', sq, l4 + 4, 4), F('Acknowledgment', ak, l4 + 8, 4), F('Header length', hl + ' bytes', l4 + 12, 1), F('Flags', tcpFlagStr(fg) || 'none', l4 + 13, 1), F('Window', win, l4 + 14, 2), F('Checksum', hx4(ck) + ckState(sum, 'tcp'), l4 + 16, 2, 'Covers a pseudo-header (addresses), so NAT must recompute it.'), ...(opts.length ? [F('Options', opts.join(', '), l4 + 20, hl - 20)] : [])]});
+    R.sport = sp; R.dport = dp; R.src = (v6 ? `[${sIP}]` : sIP) + ':' + sp; R.dst = (v6 ? `[${dIP}]` : dIP) + ':' + dp;
+    R.key = `tcp ${[R.src, R.dst].sort().join(' ')}`; R.info = `${sp} → ${dp} [${tcpFlagStr(fg) || 'none'}] Seq=${sq}${fg & 0x10 ? ' Ack=' + ak : ''} Win=${win} Len=${plen}`;
+    app_payload(R, d, pay, end, sp, dp, 'tcp', L);
+  } else if (proto === 17 && l4 + 8 <= d.length){
+    const sp = u16(l4), dp = u16(l4 + 2), ul = u16(l4 + 4), ck = u16(l4 + 6); let sum = 0;
+    if (fullL4 && ck) sum = onesSum(d.subarray(l4, l4 + R.l4len), onesSum(pseudo(R.l4len)));
+    pay = l4 + 8;
+    L.push({name:'UDP', c:'l4', s:l4, e:pay, f:[F('Source port', sp, l4, 2), F('Destination port', dp, l4 + 2, 2), F('Length', ul, l4 + 4, 2), F('Checksum', ck ? hx4(ck) + ckState(sum, 'udp') : '0x0000 (not used)', l4 + 6, 2)]});
+    R.src = (v6 ? `[${sIP}]` : sIP) + ':' + sp; R.dst = (v6 ? `[${dIP}]` : dIP) + ':' + dp; R.key = `udp ${[R.src, R.dst].sort().join(' ')}`; R.info = `${sp} → ${dp} Len=${ul - 8}`;
+    app_payload(R, d, pay, end, sp, dp, 'udp', L);
+  } else if ((proto === 1 || proto === 58) && l4 + 8 <= d.length){
+    const ty = d[l4], cd = d[l4 + 1]; let sum = 0; if (!v6 && fullL4) sum = onesSum(d.subarray(l4, l4 + R.l4len));
+    const f = [F('Type', ty + ' ' + (ICMPT[ty] || ''), l4, 1), F('Code', cd + (ty === 3 && ICMPU[cd] ? ' ' + ICMPU[cd] : ''), l4 + 1, 1), F('Checksum', hx4(u16(l4 + 2)) + (v6 ? '' : ckState(sum, 'icmp')), l4 + 2, 2)];
+    if (ty === 0 || ty === 8){ f.push(F('Identifier', u16(l4 + 4), l4 + 4, 2, 'NAT rewrites this to keep echo flows apart.'), F('Sequence', u16(l4 + 6), l4 + 6, 2)); }
+    L.push({name:v6 ? 'ICMPv6' : 'ICMP', c:'l4', s:l4, e:Math.min(l4 + 8, d.length), f}); pay = l4 + 8;
+    R.key = `icmp ${[sIP, dIP].sort().join(' ')}`;
+    R.info = (ICMPT[ty] || 'Type ' + ty) + (ty === 3 && ICMPU[cd] ? ': ' + ICMPU[cd] : '') + ((ty === 0 || ty === 8) ? `  id=${u16(l4 + 4)} seq=${u16(l4 + 6)}` : '') + (ty === 11 ? ' (a router dropped the packet: TTL reached 0)' : '');
+  } else R.key = `ip ${sIP} ${dIP}`;
+  if (pay < end && !L.some(x => x.c === 'pay')) L.push({name:'Payload', c:'pay', s:pay, e:end, f:[F('Length', end - pay + ' bytes', pay, end - pay)]});
+  return R;
+}
+function app_payload(R, d, pay, end, sp, dp, tp, L){
+  if (pay >= end) return;
+  const txt = () => String.fromCharCode(...d.subarray(pay, Math.min(end, pay + 80))).split(/\r?\n/)[0].replace(/[^\x20-\x7e]/g, '·');
+  const u16 = o => (d[o] << 8) | d[o + 1];
+  if ((sp === 53 || dp === 53 || sp === 5353 || dp === 5353) && tp === 'udp' && end - pay >= 12){
+    const id = u16(pay), fl = u16(pay + 2), qr = fl >> 15, rc = fl & 15, qd = u16(pay + 4), an = u16(pay + 6); let o = pay + 12, name = '';
+    while (o < end && d[o]){ const n = d[o]; if (n >= 192) break; name += (name ? '.' : '') + String.fromCharCode(...d.subarray(o + 1, o + 1 + n)); o += n + 1; }
+    const qt = qd && o + 3 < end ? u16(o + 1) : 0, TY = {1:'A', 2:'NS', 5:'CNAME', 15:'MX', 16:'TXT', 28:'AAAA', 65:'HTTPS'};
+    R.proto = 'DNS'; R.info = `${qr ? 'Response' : 'Query'} 0x${id.toString(16)} ${TY[qt] || qt} ${name}${qr ? ` (${['NOERROR', 'FORMERR', 'SERVFAIL', 'NXDOMAIN', 'NOTIMP', 'REFUSED'][rc] || 'rcode ' + rc}, ${an} answer${an === 1 ? '' : 's'})` : ''}`;
+    L.push({name:'DNS', c:'pay', s:pay, e:end, f:[{l:'Transaction ID', v:'0x' + id.toString(16), o:pay, n:2}, {l:'Type', v:qr ? 'response' : 'query', o:pay + 2, n:2}, {l:'Question', v:name + ' ' + (TY[qt] || qt), o:pay + 12, n:Math.max(0, o - pay - 12 + 5)}, {l:'Answers', v:an, o:pay + 6, n:2}]}); return;
+  }
+  if (/^(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH) /.test(txt()) || /^HTTP\/1\.[01] /.test(txt())){ R.proto = 'HTTP'; R.info = txt(); L.push({name:'HTTP (clear text)', c:'pay', s:pay, e:end, f:[{l:'First line', v:txt(), o:pay, n:Math.min(80, end - pay)}]}); return; }
+  if (d[pay] === 0x16 && end - pay > 9 && d[pay + 1] === 3){
+    const hs = d[pay + 5]; let sni = '';
+    if (hs === 1){ try{ let o = pay + 9 + 2 + 32; o += 1 + d[o]; o += 2 + u16(o); o += 1 + d[o]; const eEnd = o + 2 + u16(o); o += 2; while (o + 4 <= eEnd && o + 4 <= end){ const ty = u16(o), ln = u16(o + 2); if (ty === 0){ const nl = u16(o + 7); sni = String.fromCharCode(...d.subarray(o + 9, o + 9 + nl)); break; } o += 4 + ln; } }catch(_){} }
+    R.proto = 'TLS'; R.info = hs === 1 ? 'Client Hello' + (sni ? ' · SNI ' + sni : '') : hs === 2 ? 'Server Hello' : 'Handshake type ' + hs;
+    L.push({name:'TLS handshake', c:'pay', s:pay, e:end, f:[{l:'Message', v:R.info, o:pay + 5, n:1}, ...(sni ? [{l:'Server name (SNI)', v:sni, o:pay, n:0, note:'Visible even with encryption, unless ECH is used.'}] : [])]}); return;
+  }
+  if (d[pay] === 0x17 && d[pay + 1] === 3){ R.proto = 'TLS'; R.info = `Application data (${end - pay} bytes, encrypted)`; L.push({name:'TLS record', c:'pay', s:pay, e:end, f:[{l:'Content', v:'encrypted application data', o:pay, n:end - pay}]}); return; }
+  L.push({name:'Payload', c:'pay', s:pay, e:end, f:[{l:'Length', v:(end - pay) + ' bytes', o:pay, n:end - pay}]});
+}
+
+function pcapLoad(name, pkts){
+  PC.name = name; PC.sel = -1; PC.conv = null; PC.filter = '';
+  const t0 = pkts.length ? pkts[0].ts : 0;
+  PC.pk = pkts.map((p, i) => { const r = decodePkt(p); r.n = i + 1; r.t = p.ts - t0; return r; });
+  const cm = new Map();
+  PC.pk.forEach(r => { if (!r.key) return; let c = cm.get(r.key); if (!c){ c = {key:r.key, proto:r.proto, a:r.src, b:r.dst, n:0, bytes:0, ttl:{}, first:r.t, last:r.t, idx:[]}; cm.set(r.key, c); } c.n++; c.bytes += r.len; c.last = r.t; c.idx.push(r.n - 1); if (r.ttl != null && r.src && c.ttl[r.src] === undefined) c.ttl[r.src] = r.ttl; if (r.proto !== 'TCP' && r.proto !== 'UDP' && r.proto !== 'ICMP') c.proto = r.proto; });
+  PC.convs = [...cm.values()].sort((x, y) => y.n - x.n);
+}
+function hopsFromTTL(t){ const init = [32, 64, 128, 255].find(x => x >= t) || 255; return {init, hops:init - t}; }
+
+function samplePcap(){
+  const keep = {j:app.j, f:app.f}, frames = [];
+  ['web', 'dns', 'ping'].forEach(j => { app.j = j; app.f = 'none'; CACHE.clear(); const c = geom().count; for (let s = 0; s < c; s++) frames.push(Uint8Array.from(view(s).pk.bytes)); });
+  app.j = keep.j; app.f = keep.f; CACHE.clear();
+  const total = 24 + frames.reduce((a, b) => a + 16 + b.length, 0), buf = new ArrayBuffer(total), dv = new DataView(buf), u8 = new Uint8Array(buf);
+  dv.setUint32(0, 0xa1b2c3d4, true); dv.setUint16(4, 2, true); dv.setUint16(6, 4, true); dv.setUint32(16, 65535, true); dv.setUint32(20, 1, true);
+  let o = 24; frames.forEach((f, i) => { dv.setUint32(o, 1730000000 + Math.floor(i / 50), true); dv.setUint32(o + 4, (i % 50) * 20000, true); dv.setUint32(o + 8, f.length, true); dv.setUint32(o + 12, f.length, true); u8.set(f, o + 16); o += 16 + f.length; });
+  return buf;
+}
+
+function pcapFiltered(){
+  const q = PC.filter.trim().toLowerCase(); let idx = PC.pk.map((_, i) => i);
+  if (PC.conv != null) idx = PC.convs[PC.conv].idx.slice();
+  if (q) idx = idx.filter(i => { const r = PC.pk[i]; return (r.src + ' ' + r.dst + ' ' + r.proto + ' ' + r.info).toLowerCase().includes(q); });
+  return idx;
+}
+function drawPcapTable(){
+  const idx = pcapFiltered(), cap = 600;
+  let h = `<table><thead><tr><th>No.</th><th>Time</th><th>Source</th><th>Destination</th><th>Proto</th><th>TTL</th><th>Info</th></tr></thead><tbody>`;
+  idx.slice(0, cap).forEach(i => { const r = PC.pk[i]; h += `<tr class="hr ${i === PC.sel ? 'on' : ''}" data-pi="${i}"><td><span class="no">${r.n}</span></td><td>${r.t.toFixed(4)}</td><td>${esc(r.src)}</td><td>${esc(r.dst)}</td><td class="pt-${r.proto === 'DNS' ? 'dns' : r.proto.toLowerCase()}">${esc(r.proto)}</td><td>${r.ttl == null ? '' : r.ttl}</td><td class="info">${esc(r.info)}${r.bad ? ' <span class="bg x">checksum</span>' : ''}</td></tr>`; });
+  $('#ptable').innerHTML = h + '</tbody></table>' + (idx.length > cap ? `<p class="hint" style="padding:8px">Showing the first ${cap} of ${idx.length} matching packets. Use the filter to narrow down.</p>` : '') + (idx.length ? '' : '<p class="hint" style="padding:8px">No packets match.</p>');
+}
+function drawPcapDecode(sel){
+  const el = $('#pdecode');
+  if (PC.sel < 0){ el.innerHTML = '<p class="hint">Select a packet to decode it layer by layer, with checksum verification.</p>'; return; }
+  const r = PC.pk[PC.sel], cl = {eth:'L2', ip:'L3', l4:'L4', pay:'L7'};
+  let h = `<div class="stamp">PACKET ${r.n} · ${esc(r.proto)}<small>${r.len} BYTES${r.ttl != null ? ' · TTL ' + r.ttl : ''}</small></div>`;
+  if (r.ttl != null){ const x = hopsFromTTL(r.ttl); h += `<p class="hint">TTL ${r.ttl} suggests the sender started at ${x.init}, so it is about <b>${x.hops}</b> router hop${x.hops === 1 ? '' : 's'} away (a guess: some systems use other starting values).</p>`; }
+  r.layers.forEach((l, li) => {
+    h += `<div class="grp"><div class="gh"><span class="lay ${cl[l.c]}">${cl[l.c]}</span>${esc(l.name)}<small>${l.e - l.s} bytes</small></div>`;
+    l.f.forEach((f, fi) => { h += `<div class="fr ${sel === li + ':' + fi ? 'sel' : ''}" data-fl="${li}:${fi}"><span class="f">${esc(f.l)}</span><span class="o"></span><span class="n">${esc(f.v)}</span>${f.note ? `<div class="note">${esc(f.note)}</div>` : ''}</div>`; });
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+function drawPcapHex(sel){
+  const el = $('#phex'); if (PC.sel < 0){ el.innerHTML = ''; return; }
+  const r = PC.pk[PC.sel], d = r.d, cls = new Array(d.length).fill('');
+  r.layers.forEach(l => { for (let i = l.s; i < Math.min(l.e, d.length); i++) cls[i] = l.c; });
+  let hl = null; if (sel){ const [li, fi] = sel.split(':').map(Number), f = r.layers[li].f[fi]; hl = [f.o, f.o + f.n]; }
+  let h = '<div class="hexw">';
+  for (let o = 0; o < d.length && o < 512; o += 16){
+    h += `<div class="hrow"><span class="hoff">${o.toString(16).padStart(4, '0')}</span><span>`; let asc = '';
+    for (let k = o; k < Math.min(o + 16, d.length); k++){ h += `<span class="hb ${cls[k]}${hl && k >= hl[0] && k < hl[1] ? ' sel' : ''}">${h2(d[k])}</span>`; asc += d[k] >= 32 && d[k] < 127 ? String.fromCharCode(d[k]) : '·'; }
+    h += `</span><span class="hasc">${esc(asc)}</span></div>`;
+  }
+  el.innerHTML = h + (d.length > 512 ? '<p class="hint">First 512 bytes shown.</p>' : '') + '</div>';
+}
+function drawPcapConvs(){
+  if (!PC.convs.length){ $('#pconvs').innerHTML = ''; return; }
+  let h = `<h3>Conversations</h3><table><thead><tr><th>Protocol</th><th>Endpoints</th><th>Packets</th><th>Bytes</th><th>Distance</th><th></th></tr></thead><tbody>`;
+  PC.convs.slice(0, 80).forEach((c, i) => {
+    const ts = Object.values(c.ttl); const dist = ts.length ? '≈ ' + ts.map(t => hopsFromTTL(t).hops).join(' / ') + ' hops' : '';
+    h += `<tr class="hr ${PC.conv === i ? 'on' : ''}" data-pc="${i}"><td>${esc(c.proto)}</td><td>${esc(c.a)} ↔ ${esc(c.b)}</td><td>${c.n}</td><td>${c.bytes}</td><td>${dist}</td><td><button class="btn" data-ladder="${i}">Ladder</button></td></tr>`;
+  });
+  $('#pconvs').innerHTML = h + '</tbody></table>';
+}
+function drawLadder(ci){
+  const el = $('#pladder'); if (ci == null){ el.innerHTML = ''; return; }
+  const c = PC.convs[ci], pk = c.idx.slice(0, 60).map(i => PC.pk[i]);
+  const ends = [...new Set(pk.flatMap(r => [r.src, r.dst]))].slice(0, 2); if (ends.length < 2) ends.push(ends[0] || '?');
+  const W = 760, H = 70 + pk.length * 26, X = [150, W - 150];
+  let h = `<h3>Ladder · ${esc(c.a)} ↔ ${esc(c.b)}</h3><svg viewBox="0 0 ${W} ${H}" width="100%" class="lad" role="img" aria-label="Packet ladder"><defs><marker id="lah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>`;
+  ends.forEach((e, i) => { h += `<line x1="${X[i]}" y1="40" x2="${X[i]}" y2="${H - 8}" class="life"/><text x="${X[i]}" y="26" class="ln">${esc(e.length > 30 ? e.slice(0, 29) + '…' : e)}</text>`; });
+  pk.forEach((r, i) => { const y = 62 + i * 26, fw = r.src === ends[0], x1 = X[fw ? 0 : 1], x2 = X[fw ? 1 : 0] + (fw ? -4 : 4); let tx = r.info.length > 58 ? r.info.slice(0, 57) + '…' : r.info; h += `<g class="lar ${fw ? '' : 'r'}" data-pi="${r.n - 1}"><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" marker-end="url(#lah)"/><text x="${W / 2}" y="${y - 5}" class="ll">${esc(r.n + '  ' + tx)}</text></g>`; });
+  el.innerHTML = h + '</svg>' + (c.idx.length > 60 ? `<p class="hint">First 60 of ${c.idx.length} packets.</p>` : '');
+}
+function drawPcapTiles(){
+  const bad = PC.pk.filter(r => r.bad).length, dur = PC.pk.length ? PC.pk[PC.pk.length - 1].t : 0;
+  $('#ptiles').innerHTML = [[PC.pk.length, 'packets'], [dur.toFixed(3) + ' s', 'duration'], [PC.convs.length, 'conversations'], [bad, 'bad checksums']].map(([v, l]) => `<div class="tile"><b>${esc(v)}</b><span>${l}</span></div>`).join('');
+  $('#pname').textContent = PC.name ? PC.name : 'No capture loaded';
+}
+function drawPcap(){ drawPcapTiles(); drawPcapTable(); drawPcapDecode(null); drawPcapHex(null); drawPcapConvs(); drawLadder(null); }
+
+function pcapFile(file){
+  if (!file) return;
+  if (file.size > MAXBYTES){ toast('File is over 25 MB: trim it first (for example with editcap)'); return; }
+  const fr = new FileReader();
+  fr.onload = () => { try{ pcapLoad(file.name, parsePcap(fr.result)); drawPcap(); toast(PC.pk.length + ' packets decoded locally'); }catch(e){ toast(e.message); } };
+  fr.readAsArrayBuffer(file);
+}
+function bindPcap(){
+  $('#pfile').addEventListener('change', e => pcapFile(e.target.files[0]));
+  $('#psample').addEventListener('click', () => { pcapLoad('sample-journeys.pcap (generated here)', parsePcap(samplePcap())); drawPcap(); });
+  $('#pfilter').addEventListener('input', e => { PC.filter = e.target.value; drawPcapTable(); });
+  const dz = $('#pdrop');
+  ['dragover', 'dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('over'); }));
+  dz.addEventListener('drop', e => pcapFile(e.dataTransfer.files[0]));
+  $('#pcappane').addEventListener('click', e => {
+    const tr = e.target.closest('tr[data-pi]'), lad = e.target.closest('[data-ladder]'), cv = e.target.closest('tr[data-pc]'), fl = e.target.closest('[data-fl]'), lg = e.target.closest('g[data-pi]');
+    if (lad){ PC.conv = +lad.dataset.ladder; drawPcapTable(); drawPcapConvs(); drawLadder(PC.conv); return; }
+    if (cv){ PC.conv = PC.conv === +cv.dataset.pc ? null : +cv.dataset.pc; drawPcapTable(); drawPcapConvs(); return; }
+    const pi = tr ? tr.dataset.pi : lg ? lg.dataset.pi : null;
+    if (pi != null){ PC.sel = +pi; drawPcapTable(); drawPcapDecode(null); drawPcapHex(null); const dd = $('#pdecode'); if (dd && dd.scrollIntoView && matchMedia('(max-width:860px)').matches) dd.scrollIntoView({block:'nearest'}); return; }
+    if (fl){ drawPcapDecode(fl.dataset.fl); drawPcapHex(fl.dataset.fl); }
+  });
+}
+
+"use strict";
 /* ================= isometric scene ================= */
 const K = 0.866, NS = 'http://www.w3.org/2000/svg';
 const Pj = (x, y, z = 0) => [(x - y) * K, (x + y) * 0.5 - z];
@@ -1098,11 +1727,12 @@ function drawNarration(){
   $('#scrub').max = g.count - 1;
   $$('#spdSel button').forEach(b => b.classList.toggle('on', +b.dataset.v === app.speed));
 }
+function faultCmds(g){ return ((FMETA[app.j + '/' + (g.f && g.f.id)] || {}).cmd) || []; }
 function drawFault(){
-  const g = geom(), el = $('#faultBox');
-  if (!g.f){ el.innerHTML = ''; return; }
-  if (app.s < g.F){ el.innerHTML = `<div class="faultbox"><h3>⚠ ${esc(g.f.label)}</h3><p style="margin:0;color:var(--dim)">Fault armed at hop ${g.F}. Step forward to see what happens there.</p></div>`; return; }
-  el.innerHTML = `<div class="faultbox"><h3>${esc(g.f.title)}</h3><p>${esc(g.f.body)}</p><pre>${esc(g.f.user)}</pre><div class="chips" style="margin-top:8px">${(g.f.d || []).map(docChip).join('')}</div></div>`;
+  const g = geom(), el = $('#faultBox'), bn = g.S.banner ? `<div class="banner">${esc(g.S.banner)}</div>` : '';
+  if (!g.f){ el.innerHTML = bn; return; }
+  if (app.s < g.F){ el.innerHTML = bn + `<div class="faultbox"><h3>⚠ ${esc(g.f.label)}</h3><p style="margin:0;color:var(--dim)">Fault armed at hop ${g.F}. Step forward to see what happens there.</p></div>`; return; }
+  el.innerHTML = bn + `<div class="faultbox"><h3>${esc(g.f.title)}</h3><p>${esc(g.f.body)}</p><pre>${esc(g.f.user)}</pre>${cmdBlock(faultCmds(g))}<div class="chips" style="margin-top:8px">${(g.f.d || []).map(docChip).join('')}</div></div>`;
 }
 const badge = (c, s) => `<span class="bg ${c}">${s}</span>`;
 function drawPassport(){
@@ -1145,13 +1775,14 @@ function drawHow(){
   const bl = howBlocks(app.s);
   return bl.map((b, i) => `<div class="blk2"><div class="bh"><span>${esc(b.t)}</span><button class="btn" data-copy="${i}">Copy</button></div><pre>${esc(b.c)}</pre>${(b.d || []).length ? `<div class="bd chips">${b.d.map(docChip).join('')}</div>` : ''}</div>`).join('');
 }
+const hitOf = b => (b.hitF && b.hitF[app.f] !== undefined) ? b.hitF[app.f] : (b.hit || []);
 function drawXray(){
   const nd = geom().S.nodes[view(app.s).info.j];
   if (!nd.x) return `<p class="hint">No internals are modeled for ${esc(nd.name)}: it only forwards the packet. Devices with tables or rules (routers, NAT, load balancers, gateways) have an X-ray view.</p>`;
   return `<div class="gh">${esc(nd.name)} <small>${esc(nd.addr || '')}</small></div>` + nd.x.map(b => {
     let h = `<div class="blk2"><div class="bh"><span>${esc(b.title)}</span></div><div class="bd">`;
-    if (b.kind === 'table') h += `<table class="xt"><thead><tr>${b.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${b.rows.map((r, i) => `<tr class="${(b.hit || []).includes(i) ? 'hit' : ''}">${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-    else h += `<div class="fl">${b.items.map((it, i) => `<span class="${(b.hit || []).includes(i) ? 'hit' : ''}">${esc(it)}</span>`).join('<i>→</i>')}</div>`;
+    if (b.kind === 'table') h += `<table class="xt"><thead><tr>${b.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${b.rows.map((r, i) => `<tr class="${hitOf(b).includes(i) ? 'hit' : ''}">${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    else h += `<div class="fl">${b.items.map((it, i) => `<span class="${hitOf(b).includes(i) ? 'hit' : ''}">${esc(it)}</span>`).join('<i>→</i>')}</div>`;
     if (b.note) h += `<div class="hint" style="margin:4px 0 0">${esc(b.note)}</div>`;
     return h + '</div></div>';
   }).join('');
@@ -1226,7 +1857,7 @@ function drawRail(){
       if (act) h += '<div class="steps">' + s.nodes.map((n, i) => `<button class="rs ${i === cur ? 'on' : ''}" data-n="${i}"><i>${i + 1}</i><b>${esc(n.name)}</b><span>${esc(n.tag)}</span></button>`).join('') + '</div>';
     });
   });
-  h += `<div class="rg">${t('tools')}</div><button class="ri ${app.page === 'trace' ? 'act' : ''}" data-page="trace"><i class="dot"></i><b>${t('traceTool')}</b><span>Paste output, get annotated hops</span></button>`;
+  h += `<div class="rg">${t('tools')}</div>` + [['why', 'Why is it failing?', 'Symptom → fault, with commands'], ['pcap', 'PCAP viewer', 'Open a capture, decode locally'], ['trace', t('traceTool'), 'Paste output, get annotated hops']].map(([k, n, d]) => `<button class="ri ${app.page === k ? 'act' : ''}" data-page="${k}"><i class="dot"></i><b>${esc(n)}</b><span>${esc(d)}</span></button>`).join('');
   $('#rail').innerHTML = h;
 }
 function applyI18n(){
@@ -1244,11 +1875,18 @@ function renderPanels(){
   if (app.view === 'seq') drawSeq();
   syncHash();
 }
+const PAGES = {why:'Why is it failing?', pcap:'PCAP viewer', trace:'Traceroute decoder'};
 function renderAll(animate){
-  $('#app').classList.toggle('trace', app.page === 'trace');
-  $('#center').hidden = $('#right').hidden = app.page === 'trace'; $('#tracepane').hidden = app.page !== 'trace';
+  const pg = app.page, jr = pg === 'journey';
+  $('#app').classList.toggle('trace', !jr);
+  $('#center').hidden = $('#right').hidden = !jr;
+  ['trace', 'why', 'pcap'].forEach(k => { $('#' + k + 'pane').hidden = pg !== k; });
   applyI18n();
-  if (app.page === 'trace'){ drawHeader(); drawRail(); syncHash(); return; }
+  if (!jr){
+    drawHeader(); drawRail(); $('#nowTitle').textContent = PAGES[pg];
+    if (pg === 'why') $('#whypane').innerHTML = drawWhy(); else if (pg === 'pcap') drawPcap(); else drawTrace();
+    syncHash(); return;
+  }
   renderPanels(); updateMap(animate);
 }
 function goto(s){ const g = geom(); app.s = Math.max(0, Math.min(g.count - 1, s)); markProg(); renderAll(true); }
@@ -1273,6 +1911,7 @@ function exportPNG(){
   img.onerror = () => toast('Export failed in this browser');
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone));
 }
+function closeMenu(){ $('#rail').classList.remove('open'); }
 function toast(m){ const e = $('#toast'); e.textContent = m; e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 1600); }
 
 /* ================= traceroute decoder ================= */
@@ -1342,9 +1981,9 @@ function drawTrace(){
 function bind(){
   $('#rail').addEventListener('click', e => {
     const j = e.target.closest('[data-j]'), n = e.target.closest('[data-n]'), pg = e.target.closest('[data-page]');
-    if (j){ if (j.dataset.j === app.j && app.page === 'journey') return; setJourney(j.dataset.j); }
-    else if (n){ stopPlay(); goto(nodeFirstStep(+n.dataset.n)); }
-    else if (pg){ stopPlay(); app.page = 'trace'; renderAll(false); drawTrace(); }
+    if (j){ closeMenu(); if (j.dataset.j === app.j && app.page === 'journey') return; setJourney(j.dataset.j); }
+    else if (n){ stopPlay(); goto(nodeFirstStep(+n.dataset.n)); closeMenu(); }
+    else if (pg){ stopPlay(); app.page = pg.dataset.page; renderAll(false); closeMenu(); }
   });
   $('#layerSel').addEventListener('click', e => { const b = e.target.closest('[data-l]'); if (!b) return; app.layer = b.dataset.l; if (app.layer === 'L7') app.itab = 'l7'; else if (app.itab === 'l7' && app.layer !== 'all') app.itab = 'passport'; if (app.page === 'journey'){ renderPanels(); updateMap(false); } else renderAll(false); });
   $('#viewSel').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; app.view = b.dataset.v; renderPanels(); if (app.view === 'map') updateMap(false); });
@@ -1370,6 +2009,14 @@ function bind(){
   $('#bTheme').addEventListener('click', () => { app.theme = app.theme === 'light' ? 'dark' : 'light'; document.documentElement.dataset.theme = app.theme; try{ localStorage.setItem('hbh-theme', app.theme); }catch(_){} });
   $('#lang').addEventListener('change', e => { app.lang = e.target.value; try{ localStorage.setItem('hbh-lang', app.lang); }catch(_){} renderAll(false); });
   $('#tin').addEventListener('input', drawTrace);
+  bindPcap();
+  $('#bMenu').addEventListener('click', () => $('#rail').classList.toggle('open'));
+  $('#whypane').addEventListener('click', e => {
+    const sy = e.target.closest('[data-sym]'), rj = e.target.closest('[data-rj]');
+    if (sy){ WHY.sym = sy.dataset.sym || null; $('#whypane').innerHTML = drawWhy(); }
+    else if (rj){ setJourney(rj.dataset.rj); setFault(rj.dataset.rf); closeMenu(); }
+  });
+  document.addEventListener('click', e => { const c = e.target.closest('[data-cmd]'); if (!c) return; try{ navigator.clipboard.writeText(c.dataset.cmd); toast('Copied'); }catch(_){ toast('Copy not available'); } });
   $('#tsample').addEventListener('click', () => { $('#tin').value = SAMPLE_TR; drawTrace(); });
   document.addEventListener('keydown', e => {
     if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || app.page !== 'journey') return;
@@ -1393,12 +2040,13 @@ function bind(){
   if (['all', 'L2', 'L3', 'L4', 'L7'].includes(q.get('l'))) app.layer = q.get('l');
   if (['passport', 'l7', 'how', 'xray', 'docs'].includes(q.get('i'))) app.itab = q.get('i');
   if (['fit', 'follow'].includes(q.get('z'))) app.zoom = q.get('z');
-  if (q.get('p') === 'trace') app.page = 'trace';
+  if (['trace', 'why', 'pcap'].includes(q.get('p'))) app.page = q.get('p');
+  if (!q.get('z') && matchMedia('(max-width:860px)').matches) app.zoom = 'follow';
   $('#lang').value = app.lang; $('#tin').value = SAMPLE_TR;
   bind(); drawMap();
   app.s = Math.max(0, Math.min(geom().count - 1, parseInt(q.get('s') || '0', 10) || 0)); app.t = app.s;
-  markProg(); renderAll(false); drawTrace();
-  window.__hbh = {app, geom, view, infoText, howBlocks, l7Of, buildPacket, cksum16, goto, setJourney, setFault, SC, drawSeq, exportPNG};
+  markProg(); renderAll(false);
+  window.__hbh = {PC, parsePcap, decodePkt, pcapLoad, samplePcap, drawPcap, drawWhy, app, geom, view, infoText, howBlocks, l7Of, buildPacket, cksum16, goto, setJourney, setFault, SC, drawSeq, exportPNG};
 })();
 </script>
 </body>
