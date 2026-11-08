@@ -7,7 +7,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ZC = ['#4cc9f0', '#ffb020', '#c792ea', '#3ddc97', '#ff7a90', '#8b9cff'];
 const TOPH = {host:32, pod:26, server:30, router:36, switch:14, nat:20, lb:24, proxy:24, tunnel:18};
 const PZ = 52;
-let scene = null, raf = null, lastT = 0, playTimer = null, trailPts = [], ROLL = false;
+let scene = null, raf = null, lastT = 0, playTimer = null, trailPts = [], ROLL = false, PREV_LAYERS = [];
 const TRAILN = 16;
 
 function boxAt(p, cx, cy, w, d, h, z0, cls){
@@ -48,7 +48,7 @@ function drawMap(){
   const scr = pts.map(p => Pj(p.gx, p.gy, 0));
   const root = SV('g', {class:'iso'}, svg);
   zones.forEach((z, zi) => {
-    const zg = SV('g', {style:`--zc:${ZC[zi % ZC.length]}`}, root);
+    const zg = SV('g', {style:`--zc:${ZC[zi % ZC.length]}`, id:'Z' + zi, class:'zg'}, root);
     boxAt(zg, (z.x0 + z.x1) / 2, (z.y0 + z.y1) / 2, z.x1 - z.x0, z.y1 - z.y0, 6, -6, 'zp');
     const [lx, ly] = Pj(z.x0, z.y1, 0); const tx = SV('text', {x:lx + 16, y:ly - 6, class:'zl'}, zg); tx.textContent = z.name;
   });
@@ -67,12 +67,15 @@ function drawMap(){
     const c = SV('text', {x:sx, y:sy - TOPH[nd.type] - 6, class:'ncode'}, ng); c.textContent = nd.code;
     const nm = SV('text', {x:sx, y:sy + 36, class:'nname'}, ng); nm.textContent = nd.name;
     const ad = SV('text', {x:sx, y:sy + 49, class:'naddr'}, ng); ad.textContent = nd.addr || '';
+    if (QTYPES.includes(nd.type)){ const q = SV('g', {class:'q', id:'Q' + k}, ng); for (let i = 0; i < 6; i++) SV('rect', {x:sx + 27 + i * 5, y:sy - 2, width:3.4, height:8, rx:1, class:'qc'}, q); const qp = SV('text', {x:sx + 27, y:sy - 6, class:'qpop'}, q); qp.textContent = 'tail-drop'; }
     ng.addEventListener('click', () => goto(nodeFirstStep(k)));
     ng.addEventListener('keydown', e => { if (e.key === 'Enter') goto(nodeFirstStep(k)); });
   });
   SV('g', {id:'fx'}, svg); SV('g', {id:'tag'}, svg); const tr = SV('g', {id:'trail'}, svg); for (let q = 0; q < TRAILN; q++) SV('circle', {r:3, class:'trl', cx:-999, cy:-999}, tr); trailPts = [];
-  const pk = SV('g', {id:'pkt'}, svg); SV('g', {id:'pbody', class:'pk'}, pk); SV('text', {id:'ptxt', class:'ptxt', x:0, y:-4}, pk);
-  scene = {pts, scr, zones, fit, vb:Object.assign({}, fit)};
+  SV('g', {id:'ov'}, svg);
+  const pk = SV('g', {id:'pkt'}, svg); SV('g', {id:'pbody', class:'pk'}, pk); SV('text', {id:'ptxt', class:'ptxt', x:0, y:-4}, pk); SV('text', {id:'pms', class:'pms', x:0, y:15}, pk); PREV_LAYERS = [];
+  const zoneOf = []; zones.forEach((z, zi) => { for (let k = z.i; k <= z.j; k++) zoneOf[k] = zi; });
+  scene = {pts, scr, zones, fit, vb:Object.assign({}, fit), zoneOf, maxD, cam:null, camT:null, slow:false};
   svg.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`);
   // minimap
   const mi = $('#mini'); mi.innerHTML = ''; mi.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`);
@@ -93,7 +96,7 @@ function rollEl(el, ms = 380){
     for (let i = 0; i < fin.length; i++){ const c = fin[i]; o += i < settle || !/[0-9a-fA-F]/.test(c) ? c : H[(Math.random() * 16) | 0]; }
     el.textContent = o; if (k < 1) requestAnimationFrame(f); else el.textContent = fin; })(t0);
 }
-function drawPacketBody(o, prev){
+function drawPacketBody(o, prev, animate){
   const pb = $('#pbody'); pb.innerHTML = '';
   const v = o.pk.v, pv = prev && prev.info.dir === o.info.dir ? prev.pk.v : null;
   const chg = {
@@ -106,11 +109,19 @@ function drawPacketBody(o, prev){
   if (v.outer) layers.push({c:'sl-out', w:36, d:24, L:'L2', f:chg.out});
   layers.push({c:'sl-eth', w:28, d:20, L:'L2', f:chg.eth}, {c:'sl-ip', w:28, d:20, L:'L3', f:chg.ip}, {c:'sl-l4', w:28, d:20, L:'L4', f:chg.l4});
   if ((o.st.payload || []).length) layers.push({c:'sl-pay', w:28, d:20, L:'L7', f:false});
-  let z = 0;
+  let z = 0; const cur = [], PL = animate && prev ? PREV_LAYERS : [];
   layers.forEach(l => {
-    const gg = SV('g', {opacity:app.layer === 'all' || app.layer === l.L ? 1 : 0.28}, pb);
-    boxAt(gg, 0, 0, l.w, l.d, 4.5, z, 'sl ' + l.c + (l.f ? ' flash' : '')); z += 5.5;
+    const old = PL.find(x => x.c === l.c), gg = SV('g', {class:'slab', opacity:app.layer === 'all' || app.layer === l.L ? 1 : 0.28}, pb);
+    if (animate && prev){
+      if (!old) gg.classList.add('enter');
+      else if (Math.abs(z - old.z) > 0.1){ gg.style.setProperty('--dz', (z - old.z) + 'px'); gg.classList.add('mv'); }
+    }
+    boxAt(gg, 0, 0, l.w, l.d, 4.5, z, 'sl ' + l.c + (l.f ? ' flash' : ''));
+    if (animate && prev && old && l.f){ const gh = SV('g', {class:'slab ghost'}, pb); boxAt(gh, 0, 0, l.w, l.d, 4.5, z, 'sl ' + l.c); }
+    cur.push({c:l.c, w:l.w, d:l.d, z}); z += 5.5;
   });
+  PL.forEach(x => { if (!cur.find(y => y.c === x.c)){ const gh = SV('g', {class:'slab leave'}, pb); boxAt(gh, 0, 0, x.w, x.d, 4.5, x.z, 'sl ' + x.c); } });
+  PREV_LAYERS = cur;
   $('#ptxt').setAttribute('y', -(z + 8));
   const pt = (o.info.dir === 'r' ? '↩ ' : '') + 'TTL ', from = prev && prev.info.dir === o.info.dir ? +prev.pk.v.ttl : +v.ttl;
   tweenNum($('#ptxt'), from, +v.ttl, pt);
@@ -125,9 +136,10 @@ function placePacket(){
   $('#pkt').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
   pushTrail(x, y, rev);
   const f = scene.fit; let vb = f;
-  if (app.zoom === 'follow'){ const w = f.w * 0.46, h = f.h * 0.46; vb = {x:Math.max(f.x, Math.min(f.x + f.w - w, x - w / 2)), y:Math.max(f.y, Math.min(f.y + f.h - h, y + 30 - h / 2)), w, h}; }
-  $('#map').setAttribute('viewBox', `${vb.x.toFixed(1)} ${vb.y.toFixed(1)} ${vb.w.toFixed(1)} ${vb.h.toFixed(1)}`);
-  const mv = $('#mv'); if (mv){ mv.setAttribute('x', vb.x); mv.setAttribute('y', vb.y); mv.setAttribute('width', vb.w); mv.setAttribute('height', vb.h); }
+  const kz = app.zoom === 'follow' ? (scene.slow ? 0.34 : 0.46) : (scene.slow && app.fx.cam ? 0.62 : 0);
+  if (kz){ const w = f.w * kz, h = f.h * kz; vb = {x:Math.max(f.x, Math.min(f.x + f.w - w, x - w / 2)), y:Math.max(f.y, Math.min(f.y + f.h - h, y + 30 - h / 2)), w, h}; }
+  camTo(vb);
+  const pm = $('#pms'); if (pm) pm.textContent = '+' + msAt(t0, g).toFixed(1) + ' ms';
   $('#scrub').value = t0;
 }
 
@@ -186,17 +198,18 @@ function updateMap(animate){
     SV('rect', {x:x - wd / 2, y:ty, width:wd, height:h, rx:3, class:'tagbg'}, w);
     tx.forEach((l, i) => { const e = SV('text', {x:x - wd / 2 + 7, y:ty + 14 + i * 12, class:'tagtx'}, w); e.textContent = l; });
   }
-  drawPacketBody(o, prev); applyLod();
+  drawPacketBody(o, prev, animate); applyLod(); updateQueues(g, pos);
+  if (animate) fxOnStep(g, o, prev, pos);
   if (animate) kick(); else { app.t = app.s; placePacket(); }
 }
 function stepAnim(now){
   const dt = Math.min(50, now - (lastT || now)); lastT = now;
   const d = app.s - app.t;
-  if (Math.abs(d) < 0.002){ app.t = app.s; placePacket(); raf = null; lastT = 0; return; }
-  app.t += Math.sign(d) * Math.min(Math.abs(d), dt * Math.max(1, Math.abs(d)) * app.speed / 550);
+  if (Math.abs(d) < 0.002){ app.t = app.s; placePacket(); raf = null; lastT = 0; if (scene.slow){ clearTimeout(scene._st); scene._st = setTimeout(() => { scene.slow = false; placePacket(); }, 900); } return; }
+  app.t += Math.sign(d) * Math.min(Math.abs(d), dt * Math.max(1, Math.abs(d)) * app.speed * latK(app.t) * (scene.slow ? 0.65 : 1) / 550);
   placePacket(); raf = requestAnimationFrame(stepAnim);
 }
-function kick(){ if (reduced){ app.t = app.s; placePacket(); return; } if (!raf){ lastT = 0; raf = requestAnimationFrame(stepAnim); } }
+function kick(){ if (reduced){ scene.slow = false; app.t = app.s; placePacket(); return; } if (!raf){ lastT = 0; raf = requestAnimationFrame(stepAnim); } }
 
 /* ================= sequence view ================= */
 function drawSeq(){
@@ -227,7 +240,7 @@ function drawNarration(){
   $('#capDocs').innerHTML = docsFor(app.s).slice(0, 6).map(docChip).join('');
   $('#bPrev').disabled = $('#bFirst').disabled = app.s <= 0; $('#bNext').disabled = $('#bLast').disabled = app.s >= g.count - 1;
   $('#bPlay').textContent = app.playing ? t('pause') : t('play');
-  $('#scrub').max = g.count - 1;
+  $('#scrub').max = g.count - 1; const tcp = !!(g.S.base && g.S.base.proto === 'tcp'); $('#bHs').hidden = $('#bStream').hidden = !tcp; drawMarks();
   $$('#spdSel button').forEach(b => b.classList.toggle('on', +b.dataset.v === app.speed));
 }
 function faultCmds(g){ return ((FMETA[app.j + '/' + (g.f && g.f.id)] || {}).cmd) || []; }
@@ -388,10 +401,15 @@ function applyI18n(){
 }
 
 /* ================= render orchestration ================= */
-function syncHash(){
-  const p = new URLSearchParams({p:app.page, j:app.j, s:app.s, f:app.f, v:app.view, l:app.layer, i:app.itab, z:app.zoom, g:app.lang, d:app.detail ? 1 : 0});
-  try{ history.replaceState(null, '', '#' + p.toString()); }catch(_){}
+function hashParams(full){
+  const mob = matchMedia('(max-width:860px)').matches, dflt = {p:'journey', j:'web', s:'0', f:'none', v:'map', l:'all', i:'passport', z:mob ? 'follow' : 'fit', g:'en', d:'0'},
+    cur = {p:app.page, j:app.j, s:String(app.s), f:app.f, v:app.view, l:app.layer, i:app.itab, z:app.zoom, g:app.lang, d:app.detail ? '1' : '0'}, o = new URLSearchParams();
+  for (const k in cur) if (full || cur[k] !== dflt[k]) o.set(k, cur[k]);
+  return o.toString();
 }
+/* the address bar stays clean until the visitor actually does something, and then shows only what differs from the defaults */
+function syncHash(){ if (!app.touched) return; const h = hashParams(false); try{ history.replaceState(null, '', location.pathname + location.search + (h ? '#' + h : '')); }catch(_){} }
+function shareURL(){ return location.href.split('#')[0] + '#' + hashParams(true); }
 function renderPanels(){
   drawHeader(); drawRail(); drawNarration(); drawFault(); drawInspector(); drawHops(); drawBytes();
   if (app.view === 'seq') drawSeq();
@@ -406,16 +424,16 @@ function renderAll(animate){
   applyI18n();
   if (!jr){
     drawHeader(); drawRail(); $('#nowTitle').textContent = PAGES[pg];
-    if (pg === 'why') $('#whypane').innerHTML = drawWhy(); else if (pg === 'pcap') drawPcap(); else drawTrace();
-    syncHash(); return;
+    if (pg === 'why') $('#whypane').innerHTML = drawWhy(); else if (pg === 'pcap') drawPcap(); else drawTrace(app._pg !== 'trace');
+    app._pg = pg; syncHash(); return;
   }
-  renderPanels(); updateMap(animate);
+  app._pg = pg; renderPanels(); updateMap(animate);
 }
 function goto(s){ const g = geom(); app.s = Math.max(0, Math.min(g.count - 1, s)); markProg(); renderAll(true); }
 function stopPlay(){ app.playing = false; clearTimeout(playTimer); if (app.page === 'journey') drawNarration(); }
 function playTick(){ if (!app.playing) return; const g = geom(); if (app.s >= g.count - 1){ stopPlay(); return; } goto(app.s + 1); playTimer = setTimeout(playTick, 1800 / app.speed); }
-function startPlay(){ const g = geom(); if (app.s >= g.count - 1){ app.s = 0; app.t = 0; } app.playing = true; playTick(); }
-function setJourney(j){ stopPlay(); app.j = j; app.f = 'none'; app.s = 0; app.t = 0; app.sel = null; app.page = 'journey'; CACHE.clear(); drawMap(); markProg(); renderAll(false); }
+function startPlay(){ ovStop(); const g = geom(); if (app.s >= g.count - 1){ app.s = 0; app.t = 0; } app.playing = true; playTick(); }
+function setJourney(j){ stopPlay(); ovStop(); app.j = j; app.f = 'none'; app.s = 0; app.t = 0; app.sel = null; app.page = 'journey'; CACHE.clear(); drawMap(); markProg(); renderAll(false); }
 function setFault(f){ stopPlay(); app.f = f; const g = geom(); app.s = f === 'none' ? 0 : Math.min(g.F, app.s); CACHE.clear(); drawMap(); renderAll(false); if (f !== 'none') goto(g.F); }
 
 /* ================= export PNG ================= */
@@ -488,9 +506,10 @@ function annotate(hops){
   if (hops.length && last < hops.length - 1) out[out.length - 1].notes.push({k:'bad', t:'Trace ends in stars. The destination filters probes, or packets die here. Try a TCP trace: traceroute -T -p 443 <host>.'});
   return out;
 }
-function drawTrace(){
-  const hops = annotate(parseTrace($('#tin').value)), T = $('#ttiles'), O = $('#tout'); T.innerHTML = ''; O.innerHTML = '';
-  if (!hops.length){ O.innerHTML = '<p class="hint">Paste traceroute output above.</p>'; return; }
+function drawTrace(animate){
+  const raw = $('#tin').value, hops = annotate(parseTrace(raw)), T = $('#ttiles'), O = $('#tout'); T.innerHTML = ''; O.innerHTML = '';
+  drawTraceAnim(hops, animate === true);
+  if (!hops.length){ O.innerHTML = raw.trim() ? emptyState('bad', 'No hops found', 'Expected lines such as "1  192.168.1.1  1.2 ms  1.1 ms  1.3 ms". Paste the full output of traceroute, tracert or mtr.', '<button class="btn" data-es="trsample">Load sample</button>') : emptyState('notrace', 'Nothing to decode yet', 'Paste traceroute output above and the path draws itself, hop by hop.', '<button class="btn" data-es="trsample">Load sample</button>'); return; }
   const resp = hops.filter(h => h.avg != null), mx = Math.max(...resp.map(h => h.avg), 1);
   let jump = 0, jh = null, pv = null; resp.forEach(h => { if (pv != null && h.avg - pv > jump){ jump = h.avg - pv; jh = h.n; } pv = h.avg; });
   [[hops.length, 'hops'], [resp.length ? resp[resp.length - 1].avg.toFixed(1) + ' ms' : '—', 'final RTT'], [jump > 0 ? '+' + jump.toFixed(0) + ' ms' : '—', jh ? `biggest jump (hop ${jh})` : 'biggest jump'], [hops.filter(h => !h.ip).length, 'silent hops'], [hops.filter(h => h.c && h.c.c !== 'pub').length, 'private / CGNAT hops']]
@@ -533,13 +552,13 @@ function bind(){
   $('#bPlay').addEventListener('click', () => { if (app.playing) stopPlay(); else startPlay(); });
   $('#spdSel').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; app.speed = +b.dataset.v; drawNarration(); });
   $('#scrub').addEventListener('input', e => { stopPlay(); cancelAnimationFrame(raf); raf = null; app.t = +e.target.value; const s = Math.round(app.t); if (s !== app.s){ app.s = s; markProg(); renderPanels(); updateMap(false); app.t = +e.target.value; } placePacket(); });
-  $('#bShare').addEventListener('click', async () => { syncHash(); try{ await navigator.clipboard.writeText(location.href); toast(t('linkCopied')); }catch(_){ toast('Copy the address bar link'); } });
+  $('#bShare').addEventListener('click', async () => { try{ await navigator.clipboard.writeText(shareURL()); toast(t('linkCopied')); }catch(_){ toast('Copy the address bar link'); } });
   $('#bExport').addEventListener('click', () => { if (app.page === 'journey' && app.view === 'map') exportPNG(); else toast('Switch to the Map view to export'); });
   $('#bTheme').addEventListener('click', () => setTheme(THEMES[(THEMES.indexOf(app.theme) + 1) % THEMES.length]));
   $('#detSel').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (b) setDetail(b.dataset.d === '1'); });
   $('#lang').addEventListener('change', e => { app.lang = e.target.value; try{ localStorage.setItem('hbh-lang', app.lang); }catch(_){} renderAll(false); });
   $('#tin').addEventListener('input', drawTrace);
-  bindPcap();
+  bindPcap(); bindFx();
   $('#bMenu').addEventListener('click', () => $('#rail').classList.toggle('open'));
   $('#whypane').addEventListener('click', e => {
     const sy = e.target.closest('[data-sym]'), rj = e.target.closest('[data-rj]');
@@ -547,13 +566,15 @@ function bind(){
     else if (rj){ setJourney(rj.dataset.rj); setFault(rj.dataset.rf); closeMenu(); }
   });
   document.addEventListener('click', e => { const c = e.target.closest('[data-cmd]'); if (!c) return; try{ navigator.clipboard.writeText(c.dataset.cmd); toast('Copied'); }catch(_){ toast('Copy not available'); } });
-  $('#tsample').addEventListener('click', () => { $('#tin').value = SAMPLE_TR; drawTrace(); });
+  $('#tsample').addEventListener('click', () => { $('#tin').value = SAMPLE_TR; drawTrace(true); });
+  $('#tplay').addEventListener('click', () => drawTrace(true));
   document.addEventListener('keydown', e => {
     if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || app.page !== 'journey') return;
     if (e.key === 'ArrowRight'){ stopPlay(); goto(app.s + 1); } else if (e.key === 'ArrowLeft'){ stopPlay(); goto(app.s - 1); }
     else if (e.key === 'Home'){ stopPlay(); goto(0); } else if (e.key === 'End'){ stopPlay(); goto(geom().count - 1); }
     else if (e.key === ' '){ e.preventDefault(); if (app.playing) stopPlay(); else startPlay(); }
     else if (e.key.toLowerCase() === 'd'){ setDetail(!app.detail); }
+    else if (e.key.toLowerCase() === 'a'){ if (app.fx.amb) ambStop(); else ambStart(); }
     else if (e.key.toLowerCase() === 'x'){ app.itab = 'xray'; drawInspector(); }
   });
 }
@@ -563,7 +584,7 @@ function bind(){
   const q = new URLSearchParams(location.hash.slice(1));
   try{ const st = localStorage.getItem('hbh-theme'); app.theme = THEMES.includes(st) ? st : matchMedia('(prefers-contrast: more)').matches ? 'hc' : matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; app.lang = localStorage.getItem('hbh-lang') || 'en'; app.detail = localStorage.getItem('hbh-detail') === '1'; }catch(_){}
   if (q.get('d')) app.detail = q.get('d') === '1';
-  setTheme(app.theme); applyDetail();
+  setTheme(app.theme); applyDetail(); loadFx();
   loadProg();
   if (SC[q.get('j')]) app.j = q.get('j');
   if (I18N[q.get('g')]) app.lang = q.get('g');
@@ -578,5 +599,7 @@ function bind(){
   bind(); drawMap();
   app.s = Math.max(0, Math.min(geom().count - 1, parseInt(q.get('s') || '0', 10) || 0)); app.t = app.s;
   markProg(); renderAll(false);
-  window.__hbh = {PC, PCS, samplePoints, pcapLoad, replayFromCaptures, parsePcap, decodePkt, pcapLoad, samplePcap, drawPcap, drawWhy, app, geom, view, infoText, howBlocks, l7Of, buildPacket, cksum16, goto, setJourney, setFault, SC, drawSeq, exportPNG};
+  if (q.get('j') && !SC[q.get('j')]) toast('That link points to a journey that does not exist. Showing the default one.');
+  if (q.get('amb') === '1') ambStart(); else maybeTour();
+  window.__hbh = {playHandshake, playStream, tourStart, ambStart, ambStop, hashParams, shareURL, emptyState, drawTraceAnim, markEvents, PC, PCS, samplePoints, pcapLoad, replayFromCaptures, parsePcap, decodePkt, pcapLoad, samplePcap, drawPcap, drawWhy, app, geom, view, infoText, howBlocks, l7Of, buildPacket, cksum16, goto, setJourney, setFault, SC, drawSeq, exportPNG};
 })();

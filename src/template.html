@@ -22,12 +22,22 @@
   <button class="btn" id="bExport" data-i="export">PNG</button>
   <select id="lang" aria-label="Language"><option value="en">EN</option><option value="te">తెలుగు</option><option value="hi">हिन्दी</option></select>
   <button class="btn" id="bTheme" aria-label="Change theme">Theme</button>
+  <span class="fxwrap"><button class="btn" id="bFx" aria-label="Effects" aria-haspopup="true">FX</button>
+    <div id="fxPop" class="fxpop" hidden>
+      <label><input type="checkbox" data-fx="lat"><span>Latency physics<small>slow links look slow</small></span></label>
+      <label><input type="checkbox" data-fx="q"><span>Queue view<small>buffers on routers and switches</small></span></label>
+      <label><input type="checkbox" data-fx="cam"><span>Camera effects<small>parallax tilt and bullet time</small></span></label>
+      <label><input type="checkbox" data-fx="snd"><span>Sound<small>quiet cues, off by default</small></span></label>
+      <label><input type="checkbox" data-fx="amb"><span>Ambient demo<small>hands-free loop (key A)</small></span></label>
+      <button class="btn" id="fxTour">Replay the tour</button>
+    </div></span>
 </header>
 <main class="app" id="app">
   <nav class="rail" id="rail" aria-label="Journeys"></nav>
   <section class="center" id="center">
     <div class="stagewrap">
       <div id="stage"><svg id="map" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Isometric packet path"></svg></div>
+      <div id="ztoast" class="ztoast" aria-hidden="true"></div><div id="ovmsg" class="ovmsg" aria-live="polite"></div>
       <div id="seq" class="seq" style="display:none"></div>
       <svg id="mini" class="mini" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
     </div>
@@ -38,7 +48,8 @@
       <button class="btn" id="bNext" aria-label="Next">▶</button>
       <button class="btn" id="bLast" aria-label="Last">⏭</button>
       <button class="btn" id="bReset" data-i="reset">Reset</button>
-      <input type="range" id="scrub" min="0" max="1" step="0.01" value="0" aria-label="Scrub">
+      <button class="btn fxb" id="bHs" title="Replay the TCP three-way handshake">Handshake</button><button class="btn fxb" id="bStream" title="Many segments in flight: TCP slow start">Stream</button>
+      <div class="scrubw"><div id="marks" class="marks"></div><input type="range" id="scrub" min="0" max="1" step="0.01" value="0" aria-label="Scrub"></div>
       <div class="seg" id="spdSel"><button data-v="0.5">0.5×</button><button data-v="1" class="on">1×</button><button data-v="2">2×</button><button data-v="3">3×</button></div>
     </div>
     <div class="narr">
@@ -58,6 +69,7 @@
     <p class="hint">Paste output from traceroute, tracert or mtr. Everything is parsed in your browser; nothing is uploaded.</p>
     <textarea id="tin" spellcheck="false" rows="9"></textarea>
     <div><button class="btn" id="tsample">Load sample</button></div>
+    <div class="tanimw" id="tanim" hidden><div class="tah"><b>Live path</b><button class="btn" id="tplay">▶ Replay</button><small>The packet slows down where the RTT jumps</small></div><div class="tscroll"><svg id="tsvg" role="img" aria-label="Animated traceroute path"></svg></div></div>
     <div class="tiles" id="ttiles"></div>
     <div id="tout"></div>
   </section>
@@ -73,6 +85,8 @@
     <div class="tw" id="pconvs"></div><div id="pladder"></div>
   </section>
 </main>
+<div id="ambBadge" class="ambbadge" hidden>● Ambient demo · click anywhere to stop</div>
+<div id="tour" class="tour" hidden role="dialog" aria-modal="true" aria-label="Quick tour"><div id="thole" class="thole"></div><div id="tcard" class="tcard"><small id="tstep"></small><h3 id="tt"></h3><p id="td"></p><div class="tbtn"><button class="btn" id="tskip">Skip</button><span></span><button class="btn" id="tback">Back</button><button class="btn pri" id="tnext">Next</button></div></div></div>
 <footer class="foot"><b>Private by design.</b> Everything runs in your browser. Nothing you paste or open (traceroute output, captures) is uploaded, and there are no cookies or analytics. Only your theme, language and progress are saved on this device. Journeys are simplified teaching models: real devices vary.</footer>
 <div class="toast" id="toast" role="status"></div>
 <script>/*JS*/</script>

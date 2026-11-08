@@ -24,3 +24,10 @@ Docs links must come from official sources only (see `DOCS`).
 - **Simple / Detailed** mode (key `d`): Simple shows only what changed at each hop in plain language; Detailed shows every header field, the hop table and the bytes.
 - **Three themes** (Dark, Light, High contrast; follows OS preference), softer dark palette.
 - Packet trail, progressive labels and level-of-detail zoom, tasteful fault ripples, animated TTL/progress/changed values (all respect reduced motion).
+
+## Motion and interaction (v3)
+- Packet layers peel, slide and re-stack as headers change; latency physics makes slow links look slow; queue view on routers (with tail-drop on drops); zone-crossing sweep; eased camera with bullet time and hover parallax.
+- **Handshake** (SYN, SYN-ACK, ACK, plus TLS and retransmit timers when a fault drops the SYN) and **Stream** (TCP slow start, many segments in flight) buttons on TCP journeys.
+- **FX menu**: latency physics, queues, camera effects, sound (off by default), ambient demo (key `a`, or `#amb=1`).
+- Guided tour on first visit (replay from FX), scrubber markers for NAT, tunnels, faults and the return path, live animated traceroute, glass panels, illustrated empty and error states.
+- The address bar stays clean on load; it only shows non-default state after you interact. The Share button copies the full link.

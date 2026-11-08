@@ -235,10 +235,11 @@ function pcapFiltered(){
   return idx;
 }
 function drawPcapTable(){
+  if (!PC.pk.length){ $('#ptable').innerHTML = PC.err ? emptyState('bad', 'That file could not be read', PC.err, '<button class="btn" data-es="sample">Try the sample capture</button>') : emptyState('nocap', 'No capture loaded', 'Drop a .pcap or .pcapng file above, or open a sample. Files never leave your browser.', '<button class="btn" data-es="sample">Sample capture</button><button class="btn" data-es="sample6">6 capture points</button>'); return; }
   const idx = pcapFiltered(), cap = 600;
   let h = `<table><thead><tr><th>No.</th><th>Time</th><th>Source</th><th>Destination</th><th>Proto</th><th>TTL</th><th>Info</th></tr></thead><tbody>`;
   idx.slice(0, cap).forEach(i => { const r = PC.pk[i]; h += `<tr class="hr ${i === PC.sel ? 'on' : ''}" data-pi="${i}"><td><span class="no">${r.n}</span></td><td>${r.t.toFixed(4)}</td><td>${esc(r.src)}</td><td>${esc(r.dst)}</td><td class="pt-${r.proto === 'DNS' ? 'dns' : r.proto.toLowerCase()}">${esc(r.proto)}</td><td>${r.ttl == null ? '' : r.ttl}</td><td class="info">${esc(r.info)}${r.bad ? ' <span class="bg x">checksum</span>' : ''}</td></tr>`; });
-  $('#ptable').innerHTML = h + '</tbody></table>' + (idx.length > cap ? `<p class="hint" style="padding:8px">Showing the first ${cap} of ${idx.length} matching packets. Use the filter to narrow down.</p>` : '') + (idx.length ? '' : '<p class="hint" style="padding:8px">No packets match.</p>');
+  $('#ptable').innerHTML = h + '</tbody></table>' + (idx.length > cap ? `<p class="hint" style="padding:8px">Showing the first ${cap} of ${idx.length} matching packets. Use the filter to narrow down.</p>` : '') + (idx.length ? '' : emptyState('nomatch', 'No packets match', 'Try a simpler filter such as tcp, dns or an IP address.', ''));
 }
 function drawPcapDecode(sel){
   const el = $('#pdecode');
@@ -299,14 +300,15 @@ function drawPcap(){ drawPcapTiles(); drawPcapTable(); drawPcapDecode(null); dra
 function readFile(file){ return new Promise((res, rej) => { if (file.size > MAXBYTES) return rej(new Error('File is over 25 MB: trim it first (for example with editcap)')); const fr = new FileReader(); fr.onload = () => { try{ res(parsePcap(fr.result)); }catch(e){ rej(e); } }; fr.onerror = () => rej(new Error('Could not read file')); fr.readAsArrayBuffer(file); }); }
 async function pcapFiles(files){
   let n = 0;
-  for (const f of files){ try{ pcapLoad(f.name, await readFile(f), true); n++; }catch(e){ toast(f.name + ': ' + e.message); } }
-  if (n){ drawPcap(); toast(n + ' capture' + (n === 1 ? '' : 's') + ' decoded locally'); }
+  for (const f of files){ try{ pcapLoad(f.name, await readFile(f), true); n++; }catch(e){ PC.err = f.name + ': ' + e.message; toast(f.name + ': ' + e.message); } }
+  if (!n) drawPcap();
+  if (n){ PC.err = ''; drawPcap(); toast(n + ' capture' + (n === 1 ? '' : 's') + ' decoded locally'); }
 }
 function bindPcap(){
   $('#pfile').addEventListener('change', e => { pcapFiles([...e.target.files]); e.target.value = ''; });
   $('#psample').addEventListener('click', () => { pcapLoad('sample-journeys.pcap', parsePcap(samplePcap())); drawPcap(); });
   $('#psample6').addEventListener('click', () => { PCS.length = 0; samplePoints().forEach(x => pcapLoad(x.name, parsePcap(x.buf), true)); useCap(0); drawPcap(); toast('6 capture points loaded: select the SYN packet and trace it'); });
-  $('#pclear').addEventListener('click', () => { PCS.length = 0; PC.pk = []; PC.convs = []; PC.sel = -1; PC.conv = null; PC.name = ''; drawPcap(); });
+  $('#pclear').addEventListener('click', () => { PC.err = ''; PCS.length = 0; PC.pk = []; PC.convs = []; PC.sel = -1; PC.conv = null; PC.name = ''; drawPcap(); });
   $('#pfilter').addEventListener('input', e => { PC.filter = e.target.value; drawPcapTable(); });
   const dz = $('#pdrop');
   ['dragover', 'dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('over'); }));
