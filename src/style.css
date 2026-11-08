@@ -1,8 +1,8 @@
 :root{
-  --bg:#0b1020;--plate:#111a35;--panel:#0f172f;--panel2:#15203f;--line:#243059;--text:#dbe5ff;--dim:#8193c4;
-  --accent:#ffb020;--ok:#3ddc97;--bad:#ff5d6c;--chg:#4cc9f0;
+  --bg:#10141f;--plate:#171d2d;--panel:#151a29;--panel2:#1c2336;--line:#2a3350;--text:#d6deef;--dim:#8f9bba;
+  --accent:#f0b24a;--ok:#5fd1a0;--bad:#ef7480;--chg:#6cc3e6;
   --eth:#8b9cff;--ipc:#4cc9f0;--l4:#c792ea;--pay:#3ddc97;
-  --s-top:#243a73;--s-lf:#1a2b5c;--s-rf:#13204a;--ink:#6f8cff;
+  --s-top:#2a3a66;--s-lf:#202d52;--s-rf:#18223f;--ink:#7f97f0;
   --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Telugu","Noto Sans Devanagari",Arial,sans-serif;
 }
@@ -322,3 +322,50 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0}
   .top .btn,.top select{min-height:32px;padding:2px 8px;font-size:11.5px}.seg button{min-height:32px;padding:2px 8px}
   .now{order:6}.now b{font-size:13px}
 }
+.capchips{display:flex;flex-wrap:wrap;gap:6px}.capchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:3px 4px 3px 10px;font-family:var(--mono);font-size:12px;cursor:pointer}
+.capchip.on{border-color:var(--accent);color:var(--text)}.capchip em{font-style:normal;color:var(--dim)}.capchip button{border:0;background:transparent;color:var(--dim);cursor:pointer;font-size:14px;line-height:1;padding:0 6px}
+.replay{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+
+:root[data-theme=hc]{
+  --bg:#000;--plate:#0a0a0a;--panel:#050505;--panel2:#141414;--line:#8a8a8a;--text:#fff;--dim:#d0d0d0;
+  --accent:#ffd400;--ok:#00ff9c;--bad:#ff4d5e;--chg:#4dd8ff;
+  --eth:#9fb0ff;--ipc:#4dd8ff;--l4:#e0a8ff;--pay:#00ff9c;
+  --s-top:#1d1d1d;--s-lf:#101010;--s-rf:#000;--ink:#fff;
+}
+:root[data-theme=hc] body{background-image:none}
+:root[data-theme=hc] *{outline-color:#ffd400}
+:root[data-theme=hc] .btn,:root[data-theme=hc] .seg button{border-width:2px}
+/* trail, ripples, fault drama */
+.trl{fill:var(--accent);pointer-events:none}
+.trl.r{fill:var(--ok)}
+.ripple{fill:none;stroke:var(--bad);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:ripple 2.2s ease-out infinite;opacity:0}
+@keyframes ripple{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.2);opacity:0}}
+.rwpulse{fill:none;stroke:var(--ok);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:ripple 1.6s ease-out 2}
+.lnk.ahead{opacity:.25;stroke-dasharray:3 5}
+#stage.faulted #map{filter:saturate(.8)}
+#stage.faulted::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 90px rgba(239,116,128,.18);animation:vig 3s ease-in-out infinite alternate}
+@keyframes vig{from{opacity:.55}to{opacity:1}}
+.node.near .nname,.node.cur .nname{opacity:1}
+.lbl{opacity:0;transition:opacity .2s}
+.lbl.on,.lbl.adj,.lod-near .lbl{opacity:1}
+.node:not(.near):not(.cur) .naddr{opacity:0}
+.node.cur .naddr,.lod-near .naddr{opacity:1}
+.naddr,.nname{transition:opacity .2s}
+.lod-far .naddr,.lod-far .lbl{opacity:0!important}
+.lod-far .nname{opacity:0}
+.lod-far .node.cur .nname,.lod-far .node.near .nname{opacity:1}
+.node.dim{opacity:.35}
+/* simple / detailed */
+details.sec{margin-top:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+details.sec>summary{cursor:pointer;padding:8px 12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+details.sec[open]>summary{border-bottom:1px solid var(--line)}
+.chg-item{border:1px solid var(--line);border-left:3px solid var(--chg);border-radius:4px;padding:8px 10px;margin:8px 0;background:var(--panel2)}
+.chg-item .ci-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.chg-item .ci-v{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--dim)}
+.chg-item .ci-v s{opacity:.6}
+.chg-item p{margin:6px 0 2px;color:var(--dim);font-size:13px}
+.lay{font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;border:1px solid var(--line);color:var(--dim)}
+.moreb{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hint{color:var(--dim);font-size:13px}
+#detSel button.on{background:var(--accent);color:#111}
+@media (prefers-reduced-motion:reduce){.ripple,.rwpulse,#stage.faulted::after{animation:none}}

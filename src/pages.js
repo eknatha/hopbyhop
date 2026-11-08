@@ -78,7 +78,7 @@ function decodePkt(p){
     const f = [F('Destination', mac(0), 0, 6), F('Source', mac(6), 6, 6)]; et = u16(12); off = 14;
     while ((et === 0x8100 || et === 0x88a8) && off + 4 <= d.length){ f.push(F('VLAN ID', u16(off) & 0xfff, off, 2)); et = u16(off + 2); off += 4; }
     f.push(F('EtherType', '0x' + et.toString(16).padStart(4, '0'), off - 2, 2, et === 0x0800 ? 'IPv4' : et === 0x86dd ? 'IPv6' : et === 0x0806 ? 'ARP' : ''));
-    L.push({name:'Ethernet II', c:'eth', s:0, e:off, f}); R.src = mac(6); R.dst = mac(0); R.proto = 'Ethernet';
+    L.push({name:'Ethernet II', c:'eth', s:0, e:off, f}); R.src = mac(6); R.dst = mac(0); R.proto = 'Ethernet'; R.mac = {s:mac(6), d:mac(0)};
   } else if (p.lt === 113){ et = u16(14); off = 16; L.push({name:'Linux cooked capture', c:'eth', s:0, e:16, f:[F('Protocol', '0x' + et.toString(16), 14, 2)]}); }
   else if (p.lt === 101 || p.lt === 12){ et = (d[0] >> 4) === 6 ? 0x86dd : 0x0800; }
   else { R.info = 'Unsupported link type ' + p.lt; return R; }
@@ -115,12 +115,12 @@ function decodePkt(p){
     pay = l4 + hl; const plen = Math.max(0, end - pay);
     L.push({name:'TCP', c:'l4', s:l4, e:Math.min(pay, d.length), f:[F('Source port', sp, l4, 2), F('Destination port', dp, l4 + 2, 2), F('Sequence', sq, l4 + 4, 4), F('Acknowledgment', ak, l4 + 8, 4), F('Header length', hl + ' bytes', l4 + 12, 1), F('Flags', tcpFlagStr(fg) || 'none', l4 + 13, 1), F('Window', win, l4 + 14, 2), F('Checksum', hx4(ck) + ckState(sum, 'tcp'), l4 + 16, 2, 'Covers a pseudo-header (addresses), so NAT must recompute it.'), ...(opts.length ? [F('Options', opts.join(', '), l4 + 20, hl - 20)] : [])]});
     R.sport = sp; R.dport = dp; R.src = (v6 ? `[${sIP}]` : sIP) + ':' + sp; R.dst = (v6 ? `[${dIP}]` : dIP) + ':' + dp;
-    R.key = `tcp ${[R.src, R.dst].sort().join(' ')}`; R.info = `${sp} → ${dp} [${tcpFlagStr(fg) || 'none'}] Seq=${sq}${fg & 0x10 ? ' Ack=' + ak : ''} Win=${win} Len=${plen}`;
+    R.key = `tcp ${[R.src, R.dst].sort().join(' ')}`; R.m = {proto:'tcp', sport:sp, dport:dp, seq:sq, ack:ak, flags:fg, plen}; R.sig = `t|${sq}|${ak}|${fg}|${plen}`; R.info = `${sp} → ${dp} [${tcpFlagStr(fg) || 'none'}] Seq=${sq}${fg & 0x10 ? ' Ack=' + ak : ''} Win=${win} Len=${plen}`;
     app_payload(R, d, pay, end, sp, dp, 'tcp', L);
   } else if (proto === 17 && l4 + 8 <= d.length){
     const sp = u16(l4), dp = u16(l4 + 2), ul = u16(l4 + 4), ck = u16(l4 + 6); let sum = 0;
     if (fullL4 && ck) sum = onesSum(d.subarray(l4, l4 + R.l4len), onesSum(pseudo(R.l4len)));
-    pay = l4 + 8;
+    pay = l4 + 8; const up = d.subarray(pay, end); R.m = {proto:'udp', sport:sp, dport:dp, pay:up}; R.sig = 'u|' + up.length + '|' + [...up.subarray(0, 48)].map(h2).join('');
     L.push({name:'UDP', c:'l4', s:l4, e:pay, f:[F('Source port', sp, l4, 2), F('Destination port', dp, l4 + 2, 2), F('Length', ul, l4 + 4, 2), F('Checksum', ck ? hx4(ck) + ckState(sum, 'udp') : '0x0000 (not used)', l4 + 6, 2)]});
     R.src = (v6 ? `[${sIP}]` : sIP) + ':' + sp; R.dst = (v6 ? `[${dIP}]` : dIP) + ':' + dp; R.key = `udp ${[R.src, R.dst].sort().join(' ')}`; R.info = `${sp} → ${dp} Len=${ul - 8}`;
     app_payload(R, d, pay, end, sp, dp, 'udp', L);
@@ -129,9 +129,10 @@ function decodePkt(p){
     const f = [F('Type', ty + ' ' + (ICMPT[ty] || ''), l4, 1), F('Code', cd + (ty === 3 && ICMPU[cd] ? ' ' + ICMPU[cd] : ''), l4 + 1, 1), F('Checksum', hx4(u16(l4 + 2)) + (v6 ? '' : ckState(sum, 'icmp')), l4 + 2, 2)];
     if (ty === 0 || ty === 8){ f.push(F('Identifier', u16(l4 + 4), l4 + 4, 2, 'NAT rewrites this to keep echo flows apart.'), F('Sequence', u16(l4 + 6), l4 + 6, 2)); }
     L.push({name:v6 ? 'ICMPv6' : 'ICMP', c:'l4', s:l4, e:Math.min(l4 + 8, d.length), f}); pay = l4 + 8;
-    R.key = `icmp ${[sIP, dIP].sort().join(' ')}`;
+    R.key = `icmp ${[sIP, dIP].sort().join(' ')}`; if (!v6 && (ty === 0 || ty === 8)){ const ip_ = d.subarray(l4 + 8, end); R.m = {proto:'icmp', type:ty, code:cd, id:u16(l4 + 4), iseq:u16(l4 + 6), pay:ip_}; R.sig = `i|${ty}|${u16(l4 + 6)}|` + [...ip_.subarray(0, 32)].map(h2).join(''); }
     R.info = (ICMPT[ty] || 'Type ' + ty) + (ty === 3 && ICMPU[cd] ? ': ' + ICMPU[cd] : '') + ((ty === 0 || ty === 8) ? `  id=${u16(l4 + 4)} seq=${u16(l4 + 6)}` : '') + (ty === 11 ? ' (a router dropped the packet: TTL reached 0)' : '');
   } else R.key = `ip ${sIP} ${dIP}`;
+  if (R.m && !v6){ Object.assign(R.m, {ethSrc:R.mac && R.mac.s, ethDst:R.mac && R.mac.d, ipSrc:sIP, ipDst:dIP, ttl:R.ttl}); }
   if (pay < end && !L.some(x => x.c === 'pay')) L.push({name:'Payload', c:'pay', s:pay, e:end, f:[F('Length', end - pay + ' bytes', pay, end - pay)]});
   return R;
 }
@@ -157,24 +158,74 @@ function app_payload(R, d, pay, end, sp, dp, tp, L){
   L.push({name:'Payload', c:'pay', s:pay, e:end, f:[{l:'Length', v:(end - pay) + ' bytes', o:pay, n:end - pay}]});
 }
 
-function pcapLoad(name, pkts){
-  PC.name = name; PC.sel = -1; PC.conv = null; PC.filter = '';
+const PCS = [];
+function makeCap(name, pkts){
   const t0 = pkts.length ? pkts[0].ts : 0;
-  PC.pk = pkts.map((p, i) => { const r = decodePkt(p); r.n = i + 1; r.t = p.ts - t0; return r; });
+  const pk = pkts.map((p, i) => { const r = decodePkt(p); r.n = i + 1; r.t = p.ts - t0; r.ts = p.ts; return r; });
   const cm = new Map();
-  PC.pk.forEach(r => { if (!r.key) return; let c = cm.get(r.key); if (!c){ c = {key:r.key, proto:r.proto, a:r.src, b:r.dst, n:0, bytes:0, ttl:{}, first:r.t, last:r.t, idx:[]}; cm.set(r.key, c); } c.n++; c.bytes += r.len; c.last = r.t; c.idx.push(r.n - 1); if (r.ttl != null && r.src && c.ttl[r.src] === undefined) c.ttl[r.src] = r.ttl; if (r.proto !== 'TCP' && r.proto !== 'UDP' && r.proto !== 'ICMP') c.proto = r.proto; });
-  PC.convs = [...cm.values()].sort((x, y) => y.n - x.n);
+  pk.forEach(r => { if (!r.key) return; let c = cm.get(r.key); if (!c){ c = {key:r.key, proto:r.proto, a:r.src, b:r.dst, n:0, bytes:0, ttl:{}, first:r.t, last:r.t, idx:[]}; cm.set(r.key, c); } c.n++; c.bytes += r.len; c.last = r.t; c.idx.push(r.n - 1); if (r.ttl != null && r.src && c.ttl[r.src] === undefined) c.ttl[r.src] = r.ttl; if (r.proto !== 'TCP' && r.proto !== 'UDP' && r.proto !== 'ICMP') c.proto = r.proto; });
+  return {name, pk, convs:[...cm.values()].sort((x, y) => y.n - x.n)};
 }
+function useCap(i){ const c = PCS[i]; PC.active = i; PC.pk = c.pk; PC.convs = c.convs; PC.name = c.name; PC.sel = -1; PC.conv = null; PC.filter = ''; }
+function pcapLoad(name, pkts, append){ if (!append) PCS.length = 0; PCS.push(makeCap(name, pkts)); useCap(PCS.length - 1); }
 function hopsFromTTL(t){ const init = [32, 64, 128, 255].find(x => x >= t) || 255; return {init, hops:init - t}; }
 
+function toPcap(frames, t0){
+  const total = 24 + frames.reduce((a, b) => a + 16 + b.d.length, 0), buf = new ArrayBuffer(total), dv = new DataView(buf), u8 = new Uint8Array(buf);
+  dv.setUint32(0, 0xa1b2c3d4, true); dv.setUint16(4, 2, true); dv.setUint16(6, 4, true); dv.setUint32(16, 65535, true); dv.setUint32(20, 1, true);
+  let o = 24; frames.forEach(f => { const sec = Math.floor(f.t), us = Math.round((f.t - sec) * 1e6); dv.setUint32(o, sec, true); dv.setUint32(o + 4, us, true); dv.setUint32(o + 8, f.d.length, true); dv.setUint32(o + 12, f.d.length, true); u8.set(f.d, o + 16); o += 16 + f.d.length; });
+  return buf;
+}
 function samplePcap(){
   const keep = {j:app.j, f:app.f}, frames = [];
-  ['web', 'dns', 'ping'].forEach(j => { app.j = j; app.f = 'none'; CACHE.clear(); const c = geom().count; for (let s = 0; s < c; s++) frames.push(Uint8Array.from(view(s).pk.bytes)); });
+  ['web', 'dns', 'ping'].forEach(j => { app.j = j; app.f = 'none'; CACHE.clear(); const c = geom().count; for (let s = 0; s < c; s++) frames.push({d:Uint8Array.from(view(s).pk.bytes), t:1730000000 + s * 0.02}); });
   app.j = keep.j; app.f = keep.f; CACHE.clear();
-  const total = 24 + frames.reduce((a, b) => a + 16 + b.length, 0), buf = new ArrayBuffer(total), dv = new DataView(buf), u8 = new Uint8Array(buf);
-  dv.setUint32(0, 0xa1b2c3d4, true); dv.setUint16(4, 2, true); dv.setUint16(6, 4, true); dv.setUint32(16, 65535, true); dv.setUint32(20, 1, true);
-  let o = 24; frames.forEach((f, i) => { dv.setUint32(o, 1730000000 + Math.floor(i / 50), true); dv.setUint32(o + 4, (i % 50) * 20000, true); dv.setUint32(o + 8, f.length, true); dv.setUint32(o + 12, f.length, true); u8.set(f, o + 16); o += 16 + f.length; });
-  return buf;
+  return toPcap(frames);
+}
+/* the web journey seen from six capture points, one file per point */
+function samplePoints(){
+  const keep = {j:app.j, f:app.f}; app.j = 'web'; app.f = 'none'; CACHE.clear();
+  const g = geom(), S = g.S, pts = [[0, 'laptop'], [1, 'home-router-wan'], [2, 'isp-cgnat'], [4, 'exchange-point'], [5, 'edge-lb'], [6, 'web-server']], out = [];
+  pts.forEach(([k, nm]) => {
+    const fr = [];
+    for (let s = 0; s < g.count; s++) if (nodePos(s, g) === k) fr.push({d:Uint8Array.from(view(s).pk.bytes), t:1730000000 + S.nodes[k].ms / 1000 + (s > g.F ? 0.002 : 0)});
+    out.push({name:nm + '.pcap', buf:toPcap(fr)});
+  });
+  app.j = keep.j; app.f = keep.f; CACHE.clear(); return out;
+}
+
+/* ===== replay one packet, seen at several capture points, as a journey ===== */
+const hex2 = a => [...a].map(h2).join('');
+function replayFromCaptures(sig){
+  const seen = [], missing = [];
+  PCS.forEach((c, ci) => { const p = c.pk.find(r => r.sig === sig && r.m); (p ? seen : missing).push({c, ci, p}); });
+  if (seen.length < 2){ toast('This packet appears in only ' + seen.length + ' capture. Load the same flow captured at another point.'); return false; }
+  seen.sort((a, b) => (b.p.m.ttl - a.p.m.ttl) || (a.ci - b.ci));
+  const f0 = seen[0].p.m, isSyn = f0.proto === 'tcp' && (f0.flags & 2) && !(f0.flags & 16);
+  const span = (seen[seen.length - 1].p.ts - seen[0].p.ts) * 1000, useT = span >= 0 && span < 5000;
+  const nodes = seen.map((x, i) => {
+    const m = x.p.m, pm = i ? seen[i - 1].p.m : null, last = i === seen.length - 1, d = [];
+    const ch = k => pm && pm[k] !== m[k];
+    if (pm){
+      if (ch('ipSrc') || ch('ipDst')) d.push(`addresses ${pm.ipSrc} → ${pm.ipDst} became ${m.ipSrc} → ${m.ipDst}`);
+      if (ch('sport') || ch('dport')) d.push(`ports ${pm.sport} → ${pm.dport} became ${m.sport} → ${m.dport}`);
+      if (m.proto === 'icmp' && ch('id')) d.push(`ICMP id ${pm.id} became ${m.id}`);
+      if (ch('ethSrc') || ch('ethDst')) d.push('MAC addresses changed (a router or gateway sits between the two points)');
+      const dec = pm.ttl - m.ttl; if (dec > 0) d.push(`TTL fell by ${dec}: about ${dec} router${dec === 1 ? '' : 's'} between the two points`); else if (dec < 0) d.push('TTL went up: the packet was re-created in between');
+    }
+    const addrCh = pm && (ch('ipSrc') || ch('ipDst') || ch('sport') || ch('dport') || (m.proto === 'icmp' && ch('id')));
+    const dec = pm ? Math.max(0, pm.ttl - m.ttl) : 0;
+    const set = {ethSrc:m.ethSrc, ethDst:m.ethDst, ipSrc:m.ipSrc, ipDst:m.ipDst}; if (m.proto !== 'icmp'){ set.sport = m.sport; set.dport = m.dport; } else set.id = m.id;
+    const nm = x.c.name.replace(/\.(pcapng|pcap|cap)$/i, '');
+    return N(nm, 'P' + (i + 1), !i ? 'host' : last ? 'server' : addrCh ? 'nat' : dec ? 'router' : 'switch', nm, !i ? 'ORIGIN' : last ? 'LAST CAPTURE POINT' : addrCh ? 'ADDRESSES REWRITTEN' : dec ? 'ROUTED' : 'UNCHANGED', useT ? Math.max(0, (x.p.ts - seen[0].p.ts) * 1000) : i, `${m.ipSrc}${m.sport != null ? ':' + m.sport : ''}`,
+      !i ? 'The first capture point that saw this packet (highest TTL). Everything after it is compared with this.' : d.length ? 'Compared with the previous capture point: ' + d.join('; ') + '.' : 'Nothing changed between the previous capture point and this one.',
+      Object.assign({set, router:dec > 0, dec:dec > 1 ? dec : undefined, docs:['rfc791', 'rfc3022'], x:[TBL('Seen at this capture point', ['Field', 'Value'], [['Source', `${m.ipSrc}${m.sport != null ? ':' + m.sport : ''}`], ['Destination', `${m.ipDst}${m.dport != null ? ':' + m.dport : ''}`], ['TTL', m.ttl], ['MACs', `${m.ethSrc} → ${m.ethDst}`]], [], 'Decoded from ' + x.c.name + '.')]}, {}));
+  });
+  const base = f0.proto === 'tcp' ? {proto:'tcp', flags:f0.flags, seq:f0.seq, ack:f0.ack} : f0.proto === 'udp' ? {proto:'udp', payload:[...f0.pay.subarray(0, 200)], payName:'UDP payload'} : {proto:'icmp', type:f0.type, code:f0.code, id:f0.id, seq:f0.iseq, payload:[...f0.pay.subarray(0, 56)], payName:'Echo data'};
+  const reply = f0.proto === 'tcp' ? {flags:isSyn ? 0x12 : 0x10, seq:isSyn ? 0x2b90de10 : f0.ack, ack:(f0.seq + (isSyn ? 1 : f0.plen)) >>> 0} : f0.proto === 'udp' ? {payload:[]} : {type:0};
+  SC.pcap = {group:'Your capture', short:'Captured packet', sub:`${seen.length} capture points`, title:`${f0.ipSrc} → ${f0.ipDst}`, ttl:f0.ttl, base, reply, nodes:fillL2(nodes), faults:[], docs:['rfc791', 'rfc3022'],
+    banner:'Rebuilt from decoded header fields (options and payload simplified). ' + (missing.length ? 'Not seen at: ' + missing.map(x => x.c.name).join(', ') + ' (dropped, filtered, or captured too late).' : 'Seen at every capture point.')};
+  setJourney('pcap'); return true;
 }
 
 function pcapFiltered(){
@@ -194,6 +245,7 @@ function drawPcapDecode(sel){
   if (PC.sel < 0){ el.innerHTML = '<p class="hint">Select a packet to decode it layer by layer, with checksum verification.</p>'; return; }
   const r = PC.pk[PC.sel], cl = {eth:'L2', ip:'L3', l4:'L4', pay:'L7'};
   let h = `<div class="stamp">PACKET ${r.n} · ${esc(r.proto)}<small>${r.len} BYTES${r.ttl != null ? ' · TTL ' + r.ttl : ''}</small></div>`;
+  if (r.sig) h += PCS.length >= 2 ? `<div class="replay"><button class="btn pri" data-replay>Trace this packet across ${PCS.length} captures →</button><span class="hint">Finds the same packet in every loaded capture and replays what changed between them.</span></div>` : `<p class="hint replay">Add a second capture taken elsewhere on the path (same traffic, different place) to replay this packet as a journey.</p>`;
   if (r.ttl != null){ const x = hopsFromTTL(r.ttl); h += `<p class="hint">TTL ${r.ttl} suggests the sender started at ${x.init}, so it is about <b>${x.hops}</b> router hop${x.hops === 1 ? '' : 's'} away (a guess: some systems use other starting values).</p>`; }
   r.layers.forEach((l, li) => {
     h += `<div class="grp"><div class="gh"><span class="lay ${cl[l.c]}">${cl[l.c]}</span>${esc(l.name)}<small>${l.e - l.s} bytes</small></div>`;
@@ -234,29 +286,37 @@ function drawLadder(ci){
   pk.forEach((r, i) => { const y = 62 + i * 26, fw = r.src === ends[0], x1 = X[fw ? 0 : 1], x2 = X[fw ? 1 : 0] + (fw ? -4 : 4); let tx = r.info.length > 58 ? r.info.slice(0, 57) + '…' : r.info; h += `<g class="lar ${fw ? '' : 'r'}" data-pi="${r.n - 1}"><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" marker-end="url(#lah)"/><text x="${W / 2}" y="${y - 5}" class="ll">${esc(r.n + '  ' + tx)}</text></g>`; });
   el.innerHTML = h + '</svg>' + (c.idx.length > 60 ? `<p class="hint">First 60 of ${c.idx.length} packets.</p>` : '');
 }
+function drawPcaps(){
+  $('#pcaps').innerHTML = PCS.length ? `<div class="capchips">${PCS.map((c, i) => `<span class="capchip ${i === PC.active ? 'on' : ''}" data-cap="${i}">${esc(c.name)}<em>${c.pk.length}</em><button data-capx="${i}" aria-label="Remove ${esc(c.name)}">×</button></span>`).join('')}</div>` : '<span class="hint">No capture loaded</span>';
+}
 function drawPcapTiles(){
   const bad = PC.pk.filter(r => r.bad).length, dur = PC.pk.length ? PC.pk[PC.pk.length - 1].t : 0;
   $('#ptiles').innerHTML = [[PC.pk.length, 'packets'], [dur.toFixed(3) + ' s', 'duration'], [PC.convs.length, 'conversations'], [bad, 'bad checksums']].map(([v, l]) => `<div class="tile"><b>${esc(v)}</b><span>${l}</span></div>`).join('');
-  $('#pname').textContent = PC.name ? PC.name : 'No capture loaded';
+  drawPcaps();
 }
 function drawPcap(){ drawPcapTiles(); drawPcapTable(); drawPcapDecode(null); drawPcapHex(null); drawPcapConvs(); drawLadder(null); }
 
-function pcapFile(file){
-  if (!file) return;
-  if (file.size > MAXBYTES){ toast('File is over 25 MB: trim it first (for example with editcap)'); return; }
-  const fr = new FileReader();
-  fr.onload = () => { try{ pcapLoad(file.name, parsePcap(fr.result)); drawPcap(); toast(PC.pk.length + ' packets decoded locally'); }catch(e){ toast(e.message); } };
-  fr.readAsArrayBuffer(file);
+function readFile(file){ return new Promise((res, rej) => { if (file.size > MAXBYTES) return rej(new Error('File is over 25 MB: trim it first (for example with editcap)')); const fr = new FileReader(); fr.onload = () => { try{ res(parsePcap(fr.result)); }catch(e){ rej(e); } }; fr.onerror = () => rej(new Error('Could not read file')); fr.readAsArrayBuffer(file); }); }
+async function pcapFiles(files){
+  let n = 0;
+  for (const f of files){ try{ pcapLoad(f.name, await readFile(f), true); n++; }catch(e){ toast(f.name + ': ' + e.message); } }
+  if (n){ drawPcap(); toast(n + ' capture' + (n === 1 ? '' : 's') + ' decoded locally'); }
 }
 function bindPcap(){
-  $('#pfile').addEventListener('change', e => pcapFile(e.target.files[0]));
-  $('#psample').addEventListener('click', () => { pcapLoad('sample-journeys.pcap (generated here)', parsePcap(samplePcap())); drawPcap(); });
+  $('#pfile').addEventListener('change', e => { pcapFiles([...e.target.files]); e.target.value = ''; });
+  $('#psample').addEventListener('click', () => { pcapLoad('sample-journeys.pcap', parsePcap(samplePcap())); drawPcap(); });
+  $('#psample6').addEventListener('click', () => { PCS.length = 0; samplePoints().forEach(x => pcapLoad(x.name, parsePcap(x.buf), true)); useCap(0); drawPcap(); toast('6 capture points loaded: select the SYN packet and trace it'); });
+  $('#pclear').addEventListener('click', () => { PCS.length = 0; PC.pk = []; PC.convs = []; PC.sel = -1; PC.conv = null; PC.name = ''; drawPcap(); });
   $('#pfilter').addEventListener('input', e => { PC.filter = e.target.value; drawPcapTable(); });
   const dz = $('#pdrop');
   ['dragover', 'dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('over'); }));
   ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('over'); }));
-  dz.addEventListener('drop', e => pcapFile(e.dataTransfer.files[0]));
+  dz.addEventListener('drop', e => pcapFiles([...e.dataTransfer.files]));
   $('#pcappane').addEventListener('click', e => {
+    const rp = e.target.closest('[data-replay]'), cx = e.target.closest('[data-capx]'), cp = e.target.closest('[data-cap]');
+    if (rp){ if (PC.sel >= 0) replayFromCaptures(PC.pk[PC.sel].sig); return; }
+    if (cx){ PCS.splice(+cx.dataset.capx, 1); if (PCS.length) useCap(Math.min(PC.active, PCS.length - 1)); else { PC.pk = []; PC.convs = []; PC.name = ''; PC.sel = -1; } drawPcap(); return; }
+    if (cp){ useCap(+cp.dataset.cap); drawPcap(); return; }
     const tr = e.target.closest('tr[data-pi]'), lad = e.target.closest('[data-ladder]'), cv = e.target.closest('tr[data-pc]'), fl = e.target.closest('[data-fl]'), lg = e.target.closest('g[data-pi]');
     if (lad){ PC.conv = +lad.dataset.ladder; drawPcapTable(); drawPcapConvs(); drawLadder(PC.conv); return; }
     if (cv){ PC.conv = PC.conv === +cv.dataset.pc ? null : +cv.dataset.pc; drawPcapTable(); drawPcapConvs(); return; }

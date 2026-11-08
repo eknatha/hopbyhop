@@ -6,10 +6,10 @@
 <title>Hop by Hop — follow one packet, see every hop</title>
 <meta name="description" content="Follow one packet across the network. Real bytes, real checksums, every rewrite explained. Free, offline, single file.">
 <style>:root{
-  --bg:#0b1020;--plate:#111a35;--panel:#0f172f;--panel2:#15203f;--line:#243059;--text:#dbe5ff;--dim:#8193c4;
-  --accent:#ffb020;--ok:#3ddc97;--bad:#ff5d6c;--chg:#4cc9f0;
+  --bg:#10141f;--plate:#171d2d;--panel:#151a29;--panel2:#1c2336;--line:#2a3350;--text:#d6deef;--dim:#8f9bba;
+  --accent:#f0b24a;--ok:#5fd1a0;--bad:#ef7480;--chg:#6cc3e6;
   --eth:#8b9cff;--ipc:#4cc9f0;--l4:#c792ea;--pay:#3ddc97;
-  --s-top:#243a73;--s-lf:#1a2b5c;--s-rf:#13204a;--ink:#6f8cff;
+  --s-top:#2a3a66;--s-lf:#202d52;--s-rf:#18223f;--ink:#7f97f0;
   --mono:"JetBrains Mono","IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Sans Telugu","Noto Sans Devanagari",Arial,sans-serif;
 }
@@ -329,6 +329,53 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0}
   .top .btn,.top select{min-height:32px;padding:2px 8px;font-size:11.5px}.seg button{min-height:32px;padding:2px 8px}
   .now{order:6}.now b{font-size:13px}
 }
+.capchips{display:flex;flex-wrap:wrap;gap:6px}.capchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:3px 4px 3px 10px;font-family:var(--mono);font-size:12px;cursor:pointer}
+.capchip.on{border-color:var(--accent);color:var(--text)}.capchip em{font-style:normal;color:var(--dim)}.capchip button{border:0;background:transparent;color:var(--dim);cursor:pointer;font-size:14px;line-height:1;padding:0 6px}
+.replay{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+
+:root[data-theme=hc]{
+  --bg:#000;--plate:#0a0a0a;--panel:#050505;--panel2:#141414;--line:#8a8a8a;--text:#fff;--dim:#d0d0d0;
+  --accent:#ffd400;--ok:#00ff9c;--bad:#ff4d5e;--chg:#4dd8ff;
+  --eth:#9fb0ff;--ipc:#4dd8ff;--l4:#e0a8ff;--pay:#00ff9c;
+  --s-top:#1d1d1d;--s-lf:#101010;--s-rf:#000;--ink:#fff;
+}
+:root[data-theme=hc] body{background-image:none}
+:root[data-theme=hc] *{outline-color:#ffd400}
+:root[data-theme=hc] .btn,:root[data-theme=hc] .seg button{border-width:2px}
+/* trail, ripples, fault drama */
+.trl{fill:var(--accent);pointer-events:none}
+.trl.r{fill:var(--ok)}
+.ripple{fill:none;stroke:var(--bad);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:ripple 2.2s ease-out infinite;opacity:0}
+@keyframes ripple{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.2);opacity:0}}
+.rwpulse{fill:none;stroke:var(--ok);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:ripple 1.6s ease-out 2}
+.lnk.ahead{opacity:.25;stroke-dasharray:3 5}
+#stage.faulted #map{filter:saturate(.8)}
+#stage.faulted::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 90px rgba(239,116,128,.18);animation:vig 3s ease-in-out infinite alternate}
+@keyframes vig{from{opacity:.55}to{opacity:1}}
+.node.near .nname,.node.cur .nname{opacity:1}
+.lbl{opacity:0;transition:opacity .2s}
+.lbl.on,.lbl.adj,.lod-near .lbl{opacity:1}
+.node:not(.near):not(.cur) .naddr{opacity:0}
+.node.cur .naddr,.lod-near .naddr{opacity:1}
+.naddr,.nname{transition:opacity .2s}
+.lod-far .naddr,.lod-far .lbl{opacity:0!important}
+.lod-far .nname{opacity:0}
+.lod-far .node.cur .nname,.lod-far .node.near .nname{opacity:1}
+.node.dim{opacity:.35}
+/* simple / detailed */
+details.sec{margin-top:8px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+details.sec>summary{cursor:pointer;padding:8px 12px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+details.sec[open]>summary{border-bottom:1px solid var(--line)}
+.chg-item{border:1px solid var(--line);border-left:3px solid var(--chg);border-radius:4px;padding:8px 10px;margin:8px 0;background:var(--panel2)}
+.chg-item .ci-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.chg-item .ci-v{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--dim)}
+.chg-item .ci-v s{opacity:.6}
+.chg-item p{margin:6px 0 2px;color:var(--dim);font-size:13px}
+.lay{font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;border:1px solid var(--line);color:var(--dim)}
+.moreb{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hint{color:var(--dim);font-size:13px}
+#detSel button.on{background:var(--accent);color:#111}
+@media (prefers-reduced-motion:reduce){.ripple,.rwpulse,#stage.faulted::after{animation:none}}
 </style>
 </head>
 <body>
@@ -338,13 +385,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0}
   <div class="now"><b id="nowTitle"></b><span id="nowDots" class="ndots"></span></div>
   <div class="hgrp"><div class="seg" id="layerSel" aria-label="Layer focus"></div>
   <div class="seg" id="viewSel"></div>
-  <div class="seg" id="zoomSel"></div></div>
+  <div class="seg" id="zoomSel"></div>
+    <div class="seg" id="detSel" aria-label="Detail level"></div></div>
   <select id="selF" aria-label="Fault"></select>
   <div class="prog" title="Progress"><b id="progPct"></b><span id="progBar" class="pbar"></span><small id="progTxt"></small></div>
   <button class="btn" id="bShare" data-i="share">Share</button>
   <button class="btn" id="bExport" data-i="export">PNG</button>
   <select id="lang" aria-label="Language"><option value="en">EN</option><option value="te">తెలుగు</option><option value="hi">हिन्दी</option></select>
-  <button class="btn" id="bTheme" aria-label="Toggle theme">◐</button>
+  <button class="btn" id="bTheme" aria-label="Change theme">Theme</button>
 </header>
 <main class="app" id="app">
   <nav class="rail" id="rail" aria-label="Journeys"></nav>
@@ -366,11 +414,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0}
     </div>
     <div class="narr">
       <div class="sdots" id="sdots"></div><div class="ctr" id="stepTxt"></div>
-      <p id="cap" class="cap"></p><div class="chips" id="capDocs"></div>
+      <p id="cap" class="cap" aria-live="polite"></p><div class="chips" id="capDocs"></div>
     </div>
     <div id="faultBox"></div>
-    <div class="tw" id="hops"></div>
-    <div id="bytes" class="bytes"></div>
+    <details class="sec" id="secHops"><summary>Hop table</summary><div class="tw" id="hops"></div></details>
+    <details class="sec" id="secBytes"><summary>Packet bytes</summary><div id="bytes" class="bytes"></div></details>
   </section>
   <aside class="right" id="right">
     <div class="itabs" id="itabs"></div>
@@ -387,8 +435,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);margin:0}
   <section class="tracepane" id="whypane" hidden></section>
   <section class="tracepane" id="pcappane" hidden>
     <h2>PCAP viewer</h2>
-    <p class="hint">Open a .pcap or .pcapng capture (Ethernet, up to 25 MB). Decoding, checksum checks and the ladder diagram all run in your browser: the file is never uploaded.</p>
-    <div class="drop" id="pdrop"><label class="btn pri" for="pfile">Choose a capture</label><input type="file" id="pfile" accept=".pcap,.pcapng,.cap" hidden><span>or drop it here</span><button class="btn" id="psample">Load sample</button><b id="pname"></b></div>
+    <p class="hint">Open one or more .pcap / .pcapng captures (Ethernet, up to 25 MB each). Load the same traffic captured at several points on the path to replay one packet as a journey. Decoding, checksum checks and the ladder diagram all run in your browser: the file is never uploaded.</p>
+    <div class="drop" id="pdrop"><label class="btn pri" for="pfile">Choose a capture</label><input type="file" id="pfile" accept=".pcap,.pcapng,.cap" multiple hidden><span>or drop one or more here</span><button class="btn" id="psample">Sample: one capture</button><button class="btn" id="psample6">Sample: 6 capture points</button><button class="btn" id="pclear">Clear</button></div>
+    <div id="pcaps"></div>
     <div class="tiles" id="ptiles"></div>
     <input type="search" id="pfilter" placeholder="Filter: address, protocol or text in Info (e.g. 443, dns, syn)" aria-label="Filter packets">
     <div class="pcmain"><div class="tw" id="ptable"></div><div class="pside"><div id="pdecode"></div><div id="phex"></div></div></div>
@@ -1032,6 +1081,127 @@ const FMETA = {
 };
 
 "use strict";
+/* ============ Azure + OpenStack journeys ============ */
+Object.assign(DOCS, {
+  azpeer:{l:'Azure · Virtual network peering',u:'https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview',k:'Vendor'},
+  aznsg:{l:'Azure · Network security groups',u:'https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview',k:'Vendor'},
+  azudr:{l:'Azure · Virtual network traffic routing',u:'https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-udr-overview',k:'Vendor'},
+  azlb:{l:'Azure · Load Balancer overview',u:'https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-overview',k:'Vendor'},
+  azagw:{l:'Azure · Application Gateway',u:'https://learn.microsoft.com/en-us/azure/application-gateway/overview',k:'Vendor'},
+  azwaf:{l:'Azure · Web Application Firewall on Application Gateway',u:'https://learn.microsoft.com/en-us/azure/web-application-firewall/ag/ag-overview',k:'Vendor'},
+  azfw:{l:'Azure · Firewall',u:'https://learn.microsoft.com/en-us/azure/firewall/overview',k:'Vendor'},
+  azhub:{l:'Azure · Hub-spoke network topology',u:'https://learn.microsoft.com/en-us/azure/architecture/networking/architecture/hub-spoke',k:'Vendor'},
+  osnet:{l:'OpenStack Neutron · Networking concepts',u:'https://docs.openstack.org/neutron/latest/admin/intro-os-networking.html',k:'Vendor'},
+  osmtu:{l:'OpenStack Neutron · MTU considerations',u:'https://docs.openstack.org/neutron/latest/admin/config-mtu.html',k:'Vendor'},
+  osovs:{l:'OpenStack Neutron · Open vSwitch self-service networks',u:'https://docs.openstack.org/neutron/latest/admin/deploy-ovs-selfservice.html',k:'Vendor'}
+});
+
+Object.assign(SC, {
+
+azpeer: J('Azure', 'Azure: VNet peering', 'System route · NSG', 'VM in VNet A → peering → VM in VNet B', ['azpeer', 'aznsg', 'azudr'], [
+  N('VM in VNet A', 'VM', 'host', 'VNet A 10.1.0.0/16', 'ORIGIN', 0, '10.1.0.4', 'The VM calls a private address in the peered VNet. Azure adds a system route for the peer\'s address space automatically, with next hop "VNet peering".', {set:{ipSrc:'10.1.0.4', ipDst:'10.2.0.4', sport:50801, dport:8443}, docs:['azpeer']}),
+  N('VNet A routing', 'RT', 'switch', 'VNet A', 'SYSTEM ROUTE', 0.1, 'effective routes', 'Azure\'s virtual router is not a hop you can see: it does not decrement TTL and does not answer traceroute. The effective route table decides the next hop.',
+    {docs:['azudr'], x:[TBL('Effective routes (VM A NIC)', ['Source', 'Prefix', 'Next hop'], [['Default', '10.1.0.0/16', 'Virtual network'], ['Default', '10.2.0.0/16', 'VNet peering'], ['Default', '0.0.0.0/0', 'Internet']], [1], 'Overlapping address spaces cannot be peered.', {overlap:[0]})]}),
+  N('Peering link', 'PEER', 'switch', 'Microsoft backbone', 'PRIVATE BACKBONE', 0.3, 'peering state: Connected', 'Traffic crosses Microsoft\'s backbone, not the internet. Each side needs its own peering object, and both must show Connected.',
+    {docs:['azpeer'], x:[TBL('Peering status', ['Side', 'State'], [['A → B', 'Connected'], ['B → A', 'Connected']], [0, 1], 'If one side is deleted the other shows Disconnected and traffic stops.', {disc:[]})]}),
+  N('NSG on VNet B', 'NSG', 'switch', 'VNet B', 'NSG INBOUND', 0.4, 'nsg-app', 'Rules run by priority, lowest number first. Default rules let the whole virtual network (including peered VNets) in, until someone adds a deny above them.',
+    {docs:['aznsg'], x:[TBL('Inbound rules', ['Priority', 'Name', 'Match', 'Action'], [['200', 'deny-8443', 'any → 8443', 'Deny'], ['65000', 'AllowVnetInBound', 'VirtualNetwork → any', 'Allow'], ['65500', 'DenyAllInBound', 'any → any', 'Deny']], [1], 'Peered VNets count as VirtualNetwork, so the default allow applies.', {nsg:[0]})]}),
+  N('VM in VNet B', 'VM', 'server', 'VNet B 10.2.0.0/16', 'DELIVERED', 0.6, '10.2.0.4', 'Delivered with the original source address: peering does not NAT.', {docs:['azpeer']})
+], [
+  {id:'overlap', at:1, type:'drop', label:'Overlapping address spaces', short:'OVERLAP', title:'The peer\'s prefix never becomes a route', body:'Peering cannot be created between VNets whose address spaces overlap, so there is no 10.2.0.0/16 route to the peering. The traffic goes to the default route instead and never arrives.', user:'$ az network vnet peering create ...\n(VnetAddressSpacesOverlap) Cannot create or update peering...', d:['azpeer']},
+  {id:'disc', at:2, type:'drop', label:'Peering is Disconnected', short:'DISCONNECTED', title:'One side of the peering was deleted', body:'Peering exists as two objects. If either is removed, the other shows Disconnected and the system route disappears. Recreate the peering on both sides.', user:'$ az network vnet peering list -g rg --vnet-name vnetA -o table\nName   PeeringState\nA-to-B Disconnected', d:['azpeer']},
+  {id:'nsg', at:3, type:'drop', label:'NSG rule denies the port', short:'NSG DENY', title:'A lower-numbered NSG rule denies the packet', body:'Rule 200 denies 8443 and wins over the default allow at 65000. NSG evaluation stops at the first match, so the "allow VNet" default never runs. Use effective security rules to see the final result.', user:'$ curl -m 5 http://10.2.0.4:8443\ntimed out\n$ az network watcher test-ip-flow ... → Access: Deny, Rule: deny-8443', d:['aznsg']}
+]),
+
+aznsg: J('Azure', 'Azure: NSG rule trace', 'Subnet NSG + NIC NSG', 'Internet → public IP → subnet NSG → NIC NSG → VM', ['aznsg', 'azudr'], [
+  N('Client', 'PC', 'host', 'Internet', 'ORIGIN', 0, '203.0.113.50', 'A client connects to a VM\'s public IP on port 8443.', {set:{ipSrc:'203.0.113.50', ipDst:'20.50.10.5', sport:51990, dport:8443}, docs:['aznsg']}),
+  N('Public IP', 'PIP', 'nat', 'Azure edge', '1:1 NAT TO PRIVATE IP', 7, '20.50.10.5', 'The public IP is translated to the NIC\'s private address by the platform. Standard SKU public IPs are closed to inbound traffic until an NSG allows it.', {router:true, set:{ipDst:'10.0.1.4'}, nat:{mode:'dst', a:'20.50.10.5', b:'10.0.1.4'}, docs:['aznsg']}),
+  N('Subnet NSG', 'NSG', 'switch', 'Subnet', 'EVALUATED FIRST (INBOUND)', 7.1, 'nsg-subnet', 'For inbound traffic the subnet NSG is evaluated first, then the NIC NSG. Both must allow the packet. For outbound it is the other way round.',
+    {docs:['aznsg'], x:[TBL('Subnet NSG · inbound', ['Priority', 'Name', 'Match', 'Action'], [['100', 'deny-office-range', '203.0.113.0/24 → 8443', 'Deny'], ['110', 'allow-8443', 'any → 8443', 'Allow'], ['65500', 'DenyAllInBound', 'any → any', 'Deny']], [1], 'Priority 100 denies before 110 can allow.', {subnet:[0]})]}),
+  N('NIC NSG', 'NSG', 'switch', 'Network interface', 'EVALUATED SECOND', 7.2, 'nsg-nic', 'The NIC-level NSG is a second filter. A common mistake is allowing the port only at the subnet and forgetting the NIC.',
+    {docs:['aznsg'], x:[TBL('NIC NSG · inbound', ['Priority', 'Name', 'Match', 'Action'], [['300', 'allow-443', 'any → 443', 'Allow'], ['65500', 'DenyAllInBound', 'any → any', 'Deny']], [1], 'No rule for 8443: the default deny applies.', {nic:[1]})]}),
+  N('VM', 'VM', 'server', 'Subnet 10.0.1.0/24', 'DELIVERED', 7.4, '10.0.1.4', 'After both NSGs allow the packet it reaches the guest OS. The guest firewall (iptables or Windows Firewall) is a third filter.', {docs:['aznsg']})
+], [
+  {id:'subnet', at:2, type:'drop', label:'Subnet NSG denies first', short:'SUBNET DENY', title:'A subnet NSG rule denies the client range', body:'Rule 100 denies the client\'s range and stops evaluation, so the allow at 110 never matches. Check the effective rules for the NIC: they merge both NSGs.', user:'$ az network watcher test-ip-flow ... --direction Inbound\nAccess: Deny  Rule: securityRules/deny-office-range', d:['aznsg']},
+  {id:'nic', at:3, type:'drop', label:'NIC NSG has no allow for the port', short:'NIC DENY', title:'The NIC-level NSG blocks the port', body:'The subnet NSG allows 8443, but the NIC NSG only allows 443. Nothing matches, so DenyAllInBound applies. Both layers must allow the traffic.', user:'$ curl -m 5 https://20.50.10.5:8443\ntimed out\n$ az network nic list-effective-nsg -g rg -n nic1', d:['aznsg']}
+], {banner:'Rule trace: the highlighted row is the rule that decides this packet.'}),
+
+azlb: J('Azure', 'Azure: Load Balancer', 'Layer 4 pass-through', 'Internet → Standard Load Balancer → NSG → backend VM', ['azlb', 'aznsg'], [
+  N('Client', 'PC', 'host', 'Internet', 'ORIGIN', 0, '203.0.113.50', 'The client connects to the load balancer\'s public frontend.', {set:{ipSrc:'203.0.113.50', ipDst:'20.50.10.9', sport:52010, dport:443}, docs:['azlb']}),
+  N('Azure Load Balancer', 'LB', 'lb', 'Azure edge', 'L4 · 5-TUPLE HASH', 6, '20.50.10.9', 'A Layer 4 pass-through balancer: it picks a healthy backend by hashing the 5-tuple and rewrites only the destination. It does not terminate the connection, so the backend sees the real client address.',
+    {router:true, set:{ipDst:'10.0.2.5', dport:8443}, nat:{mode:'dst', a:'20.50.10.9:443', b:'10.0.2.5:8443'}, docs:['azlb'], x:[TBL('Backend pool health', ['Backend', 'Probe', 'State'], [['10.0.2.5', 'HTTP :8443 /health', 'Up'], ['10.0.2.6', 'HTTP :8443 /health', 'Down']], [0], 'Only backends that pass the probe get new flows. With none up, traffic is dropped.', {probe:[]})]}),
+  N('Backend NSG', 'NSG', 'switch', 'Backend subnet', 'SECURE BY DEFAULT', 6.2, 'nsg-backend', 'Standard load balancers are closed to inbound traffic until an NSG allows it. The NSG must also allow the health probe, which comes from 168.63.129.16 (tag AzureLoadBalancer).',
+    {docs:['aznsg'], x:[TBL('Inbound rules', ['Priority', 'Match', 'Action'], [['100', 'Internet → 8443', 'Allow'], ['65001', 'AzureLoadBalancer → any', 'Allow'], ['65500', 'any → any', 'Deny']], [0], 'Without rule 100 the default deny blocks real traffic.', {nsg:[2]})]}),
+  N('Backend VM', 'VM', 'server', 'Backend pool', 'DELIVERED', 6.4, '10.0.2.5', 'The VM answers and the reply goes straight back, with the platform translating the source back to the frontend address.', {docs:['azlb']})
+], [
+  {id:'probe', at:1, type:'drop', label:'Health probe fails: no healthy backend', short:'NO HEALTHY BACKEND', title:'The load balancer has nowhere to send the flow', body:'The probe path or port is wrong, the app is down, or the NSG blocks 168.63.129.16. With no healthy backend a Standard load balancer drops new flows, so clients just time out.', user:'$ curl -m 5 https://20.50.10.9\ntimed out\n$ az network lb probe list -g rg --lb-name lb1 -o table', d:['azlb']},
+  {id:'nsg', at:2, type:'drop', label:'NSG blocks the backend port', short:'NSG DENY', title:'The backend subnet NSG has no allow rule', body:'Standard SKU is secure by default. Without an NSG rule allowing the port from the Internet tag, the packet is dropped after load balancing, even though the probe passes.', user:'$ az network watcher test-ip-flow ... → Access: Deny, Rule: DenyAllInBound', d:['aznsg', 'azlb']}
+]),
+
+azagw: J('Azure', 'Azure: Application Gateway + WAF', 'Layer 7 · WAF rules', 'Internet → Application Gateway (WAF) → backend VM', ['azagw', 'azwaf', 'aznsg', 'rfc9110'], [
+  N('Client', 'PC', 'host', 'Internet', 'ORIGIN', 0, '203.0.113.50', 'The browser requests app.example.com. DNS points at the gateway\'s public IP.', {set:{ipSrc:'203.0.113.50', ipDst:'20.50.10.20', sport:52210, dport:443}, docs:['rfc9110']}),
+  N('Application Gateway', 'AGW', 'proxy', 'Gateway subnet', 'TLS END · WAF · ROUTING', 8, '10.0.0.6', 'The gateway terminates TLS, runs WAF rules on the request, picks a backend by listener and rule, and opens a new connection. It adds X-Forwarded-For and X-Original-Host.',
+    {router:true, reset:true, set:{ipSrc:'10.0.0.6', ipDst:'10.0.2.5', sport:44120, dport:8080}, l7ops:{add:[['X-Forwarded-For', '203.0.113.50:52210'], ['X-Original-Host', 'app.example.com']]}, docs:['azagw', 'azwaf'], x:[TBL('Request pipeline', ['Stage', 'Result'], [['WAF managed rules (OWASP CRS)', 'pass'], ['Listener + routing rule', 'app-rule → pool-app'], ['Backend health', 'healthy']], [0, 1, 2], 'A WAF block or an unhealthy backend ends the request here.', {waf:[0], badgw:[2]})]}),
+  N('Backend NSG', 'NSG', 'switch', 'Backend subnet', 'ALLOW GATEWAY SUBNET', 8.2, 'nsg-app', 'The backend NSG must allow traffic from the gateway subnet. The gateway subnet itself needs inbound 65200-65535 from GatewayManager (v2) for platform health.', {docs:['aznsg'], x:[TBL('Backend NSG inbound', ['Priority', 'Match', 'Action'], [['100', '10.0.0.0/24 → 8080', 'Allow'], ['65500', 'any → any', 'Deny']], [0], '', {nsg:[1]})]}),
+  N('Backend VM', 'VM', 'server', 'Backend pool', 'DELIVERED', 8.5, '10.0.2.5', 'The app sees the gateway as the client, with the real address in X-Forwarded-For.', {docs:['azagw']})
+], [
+  {id:'waf', at:1, type:'l7', label:'WAF blocks the request (403)', short:'403 WAF', title:'The WAF rejects the request before the backend sees it', resp:{title:'HTTP/1.1 403 Forbidden', hdr:[['Server', 'Microsoft-Azure-Application-Gateway/v2'], ['Content-Type', 'text/html']]}, body:'A managed WAF rule matched part of the request (query string, body or header) and, in Prevention mode, blocked it. The network is fine: this is a Layer 7 decision. Check the WAF log for the rule ID, then tune with an exclusion instead of disabling the rule set.', user:'$ curl -i "https://app.example.com/?id=1\' OR 1=1--"\nHTTP/2 403\nserver: Microsoft-Azure-Application-Gateway/v2', d:['azwaf', 'rfc9110']},
+  {id:'badgw', at:1, type:'l7', label:'Backend unhealthy (502)', short:'502', title:'The gateway answers 502: no healthy backend', resp:{title:'HTTP/1.1 502 Bad Gateway', hdr:[['Server', 'Microsoft-Azure-Application-Gateway/v2'], ['Content-Type', 'text/html']]}, body:'The probe fails (wrong path, port or host header, or the NSG blocks the gateway subnet), so the pool has no healthy member. The gateway itself works and replies with 502.', user:'$ curl -i https://app.example.com\nHTTP/2 502\n$ az network application-gateway show-backend-health -g rg -n agw', d:['azagw', 'rfc9110']},
+  {id:'nsg', at:2, type:'drop', label:'Backend NSG blocks the gateway subnet', short:'NSG DENY', title:'The gateway\'s connection never reaches the VM', body:'The NSG on the backend subnet does not allow the gateway subnet. Probes fail, the backend turns unhealthy and clients see 502.', user:'$ az network application-gateway show-backend-health ...\n"health": "Unhealthy"', d:['aznsg']}
+]),
+
+azhub: J('Azure', 'Azure: hub-spoke + Firewall', 'UDR · forced tunnelling', 'Spoke VM → UDR → Azure Firewall → Internet', ['azhub', 'azfw', 'azudr'], [
+  N('Spoke VM', 'VM', 'host', 'Spoke VNet 10.1.0.0/16', 'ORIGIN', 0, '10.1.0.4', 'A workload in a spoke VNet calls an internet service. A user-defined route sends all internet-bound traffic to the firewall in the hub.', {set:{ipSrc:'10.1.0.4', ipDst:'203.0.113.10', sport:50990, dport:443}, docs:['azhub']}),
+  N('Route table (UDR)', 'UDR', 'switch', 'Spoke subnet', '0.0.0.0/0 → FIREWALL', 0.1, 'rt-spoke', 'The user-defined default route overrides the system route to the internet. Its next hop type is "Virtual appliance" with the firewall\'s private address.',
+    {docs:['azudr'], x:[TBL('Route table rt-spoke', ['Prefix', 'Next hop type', 'Next hop IP'], [['0.0.0.0/0', 'Virtual appliance', '10.0.0.4']], [0], 'Without this association traffic leaves by the default route and bypasses the firewall.')]}),
+  N('Azure Firewall', 'FW', 'nat', 'Hub VNet', 'RULES + SNAT', 0.8, '10.0.0.4', 'The firewall evaluates network and application rule collections, then source-NATs to its public IP for internet traffic. Anything not explicitly allowed is denied.',
+    {router:true, set:{ipSrc:'20.50.10.7'}, nat:{mode:'src', a:'10.1.0.4', b:'20.50.10.7'}, docs:['azfw'], x:[TBL('Rule collections', ['Priority', 'Type', 'Match', 'Action'], [['100', 'Application', 'FQDN api.example.com :443', 'Allow'], ['200', 'Network', 'spoke → 203.0.113.0/24 :443', 'Allow'], ['65000', 'Default', 'everything else', 'Deny']], [1], 'Rules are processed network first, then application; the first match decides.', {fwdeny:[2], fqdn:[2]})]}),
+  N('Internet', 'NET', 'router', 'Internet', 'PUBLIC IP', 12, 'many hops', 'The destination sees the firewall\'s public address, not the spoke VM\'s.', {router:true, docs:['rfc3022']}),
+  N('Web server', 'SRV', 'server', 'Internet', 'DELIVERED', 14, '203.0.113.10', 'The reply returns to the firewall\'s public IP, where the translation is undone.', {docs:['azfw']})
+], [
+  {id:'fwdeny', at:2, type:'drop', label:'No firewall rule allows it (default deny)', short:'FW DENY', title:'Azure Firewall drops the connection', body:'Azure Firewall is deny-by-default. With no matching network or application rule the packet is dropped and logged. The client sees a timeout, which looks like a routing fault until you check the firewall log.', user:'$ curl -m 5 https://203.0.113.10\ntimed out\n$ # AZFWNetworkRule | where DestinationIp == "203.0.113.10" → Action: Deny', d:['azfw']},
+  {id:'fqdn', at:2, type:'drop', label:'FQDN rule does not match the name', short:'FQDN DENY', title:'An application rule matches by name, and the name differs', body:'Application rules compare the TLS SNI or HTTP Host header. Connecting by IP, or to a different hostname, never matches, so the default deny applies. Add the FQDN or use a network rule for the address.', user:'$ curl -m 5 https://203.0.113.10\ntimed out   # SNI missing\n$ curl https://api.example.com   # works', d:['azfw']}
+]),
+
+/* ================================================================ OpenStack */
+osfip: J('OpenStack', 'Neutron: instance to internet', 'VXLAN tenant net · floating IP', 'Instance → security group → VXLAN → qrouter → internet', ['osnet', 'osovs', 'osmtu', 'rfc7348'], [
+  N('Instance', 'VM', 'host', 'Compute node 1', 'ORIGIN', 0, '192.168.10.12', 'A VM on a private tenant network calls an internet address. Its default gateway is the tenant router\'s interface, which lives on the network node.', {set:{ipSrc:'192.168.10.12', ipDst:'203.0.113.10', sport:50501, dport:443}, docs:['osnet']}),
+  N('Security group', 'SG', 'switch', 'Compute node 1', 'TAP · CONNTRACK RULES', 0.1, 'tap + OVS firewall', 'Security group rules are applied at the VM\'s port (iptables or the OVS firewall driver) with connection tracking. They are allow-only and stateful: egress is allowed by default, ingress is denied.',
+    {docs:['osnet'], x:[TBL('Security group · egress', ['Direction', 'Protocol', 'Remote', 'Action'], [['egress', 'any', '0.0.0.0/0', 'allow'], ['ingress', 'tcp 22', '10.0.0.0/8', 'allow']], [0], 'If the default egress rules are removed, outbound traffic stops.', {sg:[]})]}),
+  N('br-tun (VXLAN)', 'VXLAN', 'tunnel', 'Compute node 1', 'ENCAPSULATE', 0.3, 'br-int → br-tun', 'br-int tags the port, then br-tun wraps the frame in VXLAN toward the network node. The VNI identifies the tenant network. VXLAN adds about 50 bytes, so the tenant network MTU must be lower than the underlay.',
+    {set:{outer:'10.0.0.31 → 10.0.0.41 · VXLAN :4789 (+50 B)'}, docs:['rfc7348', 'osovs', 'osmtu'], x:[TBL('Tenant network', ['Item', 'Value'], [['Segmentation', 'VXLAN VNI 1042'], ['Network MTU', '1450 (1500 - 50)'], ['Instance MTU', '1450 via DHCP']], [1, 2], 'An instance configured with MTU 1500 breaks as soon as packets are large.', {mtu:[1, 2]})]}),
+  N('Tunnel network', 'NET', 'switch', 'Underlay', 'OUTER HEADERS ONLY', 0.5, '10.0.0.0/24', 'The physical network only sees UDP between the two nodes. Inner addresses are hidden.', {docs:['rfc7348']}),
+  N('Network node', 'NN', 'tunnel', 'Network node', 'DECAPSULATE', 0.7, '10.0.0.41', 'The network node removes the VXLAN header and delivers the original frame to the tenant router\'s namespace.', {set:{outer:''}, docs:['osovs']}),
+  N('qrouter namespace', 'QR', 'nat', 'Network node', 'ROUTE + SNAT', 0.9, 'qrouter-8f1c…', 'The tenant router runs in a Linux namespace. It routes to the external network and source-NATs the private address to the router\'s gateway address (or a 1:1 floating IP).', {router:true, set:{ipSrc:'203.0.113.55'}, nat:{mode:'src', a:'192.168.10.12', b:'203.0.113.55'}, docs:['osnet'], x:[TBL('qrouter NAT table', ['Rule', 'Translation'], [['SNAT', '192.168.10.0/24 → 203.0.113.55'], ['Floating IP', '203.0.113.60 ↔ 192.168.10.12']], [0], 'Without an external gateway there is no SNAT rule.', {nogw:[]})]}),
+  N('Provider network', 'GW', 'router', 'Datacenter edge', 'BR-EX · EXTERNAL', 3, '203.0.113.1', 'The packet leaves through br-ex onto the provider network and the physical gateway.', {router:true, docs:['osnet']}),
+  N('Web server', 'SRV', 'server', 'Internet', 'DELIVERED', 14, '203.0.113.10', 'The server replies to the router\'s external address; conntrack in the namespace maps the reply back to the instance.', {docs:['osnet']})
+], [
+  {id:'sg', at:1, type:'drop', label:'Egress rules were removed', short:'SG DROP', title:'The security group no longer allows egress', body:'New security groups allow all egress. If those rules were deleted for hardening, outbound connections are dropped at the port, before the packet ever reaches the tunnel. ICMP and DNS often fail first.', user:'$ ping -c 3 203.0.113.10\n(no output)\n$ openstack security group rule list default', d:['osnet']},
+  {id:'mtu', at:3, type:'mtu', label:'Instance MTU is larger than the VXLAN path allows', short:'MTU', title:'Large packets vanish after VXLAN encapsulation', body:'The instance uses MTU 1500, but the tenant network can carry only 1450 once VXLAN adds 50 bytes. Small requests work; large transfers and TLS handshakes hang. Fix by setting the tenant network MTU and letting DHCP or metadata advertise it.', user:'$ ping -M do -s 1472 203.0.113.10   # fails\n$ openstack network show net1 -c mtu', d:['osmtu', 'rfc7348']},
+  {id:'nogw', at:5, type:'drop', label:'Router has no external gateway', short:'NO GATEWAY', title:'The tenant router cannot reach the external network', body:'The router was created but never given an external gateway, so there is no SNAT rule and no route outward. The instance reaches its own router and nothing beyond it.', user:'$ openstack router show r1 -c external_gateway_info\nexternal_gateway_info | None', d:['osnet']}
+])
+
+});
+
+Object.assign(FMETA, {
+  'azpeer/overlap':{sym:['cross', 'timeout'], cmd:['az network vnet show -g RG -n VNET-A --query addressSpace.addressPrefixes', 'az network vnet peering list -g RG --vnet-name VNET-A -o table']},
+  'azpeer/disc':{sym:['cross', 'timeout'], cmd:['az network vnet peering list -g RG --vnet-name VNET-A --query "[].{name:name,state:peeringState}" -o table', 'az network nic show-effective-route-table -g RG -n NIC -o table']},
+  'azpeer/nsg':{sym:['timeout', 'scope', 'cross'], cmd:['az network nic list-effective-nsg -g RG -n NIC', 'az network watcher test-ip-flow -g RG --vm VM-B --direction Inbound --protocol TCP --local 10.2.0.4:8443 --remote 10.1.0.4:50801']},
+  'aznsg/subnet':{sym:['timeout', 'scope'], cmd:['az network nsg rule list -g RG --nsg-name nsg-subnet -o table', 'az network watcher test-ip-flow -g RG --vm VM --direction Inbound --protocol TCP --local 10.0.1.4:8443 --remote 203.0.113.50:50000']},
+  'aznsg/nic':{sym:['timeout', 'scope'], cmd:['az network nic list-effective-nsg -g RG -n NIC', 'az network nsg rule create -g RG --nsg-name nsg-nic -n allow-8443 --priority 310 --access Allow --protocol Tcp --destination-port-ranges 8443']},
+  'azlb/probe':{sym:['timeout'], cmd:['az network lb probe list -g RG --lb-name LB -o table', 'curl -v http://10.0.2.5:8443/health', 'az monitor metrics list --resource LB_ID --metric DipAvailability']},
+  'azlb/nsg':{sym:['timeout', 'scope'], cmd:['az network nic list-effective-nsg -g RG -n NIC', 'az network watcher test-ip-flow -g RG --vm VM --direction Inbound --protocol TCP --local 10.0.2.5:8443 --remote 203.0.113.50:50000']},
+  'azagw/waf':{sym:['http'], cmd:['az network application-gateway waf-policy show -g RG -n POLICY', 'curl -i "https://app.example.com/?id=1%27%20OR%201=1--"']},
+  'azagw/badgw':{sym:['http'], cmd:['az network application-gateway show-backend-health -g RG -n AGW', 'curl -i http://10.0.2.5:8080/health']},
+  'azagw/nsg':{sym:['http', 'timeout'], cmd:['az network application-gateway show-backend-health -g RG -n AGW', 'az network nic list-effective-nsg -g RG -n NIC']},
+  'azhub/fwdeny':{sym:['timeout', 'scope'], cmd:['az network route-table route list -g RG --route-table-name rt-spoke -o table', 'az network nic show-effective-route-table -g RG -n NIC -o table', 'az network firewall network-rule collection list -g RG -f FW --policy-name POLICY']},
+  'azhub/fqdn':{sym:['timeout', 'scope'], cmd:['curl -v https://api.example.com', 'curl -vk --resolve api.example.com:443:203.0.113.10 https://api.example.com']},
+  'osfip/sg':{sym:['timeout', 'scope'], cmd:['openstack security group rule list default', 'openstack server show VM -c security_groups', 'sudo ovs-appctl ofproto/trace br-int in_port=tapXXXX,tcp,nw_src=192.168.10.12,nw_dst=203.0.113.10,tp_dst=443']},
+  'osfip/mtu':{sym:['big'], cmd:['openstack network show NET -c mtu', 'ip link show eth0 | grep mtu', 'ping -M do -s 1422 192.168.10.1']},
+  'osfip/nogw':{sym:['timeout', 'cross'], cmd:['openstack router show ROUTER -c external_gateway_info', 'sudo ip netns exec qrouter-UUID ip route', 'sudo ip netns exec qrouter-UUID iptables -t nat -S']}
+});
+
+"use strict";
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -1063,13 +1233,13 @@ const stepInfo = (s, g) => s <= g.F ? {dir:'f', j:s} : {dir:'r', j:2 * g.F + 1 -
 function nodePos(s, g){ return s <= g.F ? s : 2 * g.F + 1 - s; }
 
 /* ================= packet states ================= */
-function ttlNeeded(S, at){ let c = 0; for (let k = 1; k <= at; k++){ const n = S.nodes[k]; if (n.reset) c = 0; else if (n.router) c++; } return c; }
+function ttlNeeded(S, at){ let c = 0; for (let k = 1; k <= at; k++){ const n = S.nodes[k]; if (n.reset) c = 0; else if (n.router) c += (n.dec || 1); } return c; }
 function ttlFwd(S, f, i){
   let t0 = f && f.type === 'ttl' ? ttlNeeded(S, f.at) : S.ttl;
-  for (let k = 1; k <= i; k++){ const n = S.nodes[k]; if (n.reset) t0 = S.ttl; else if (n.router) t0--; }
+  for (let k = 1; k <= i; k++){ const n = S.nodes[k]; if (n.reset) t0 = S.ttl; else if (n.router) t0 -= (n.dec || 1); }
   return Math.max(0, t0);
 }
-function ttlRet(S, R, j){ let t0 = 64; for (let k = R - 1; k >= j; k--){ const n = S.nodes[k]; if (n.reset) t0 = 64; else if (n.router) t0--; } return Math.max(0, t0); }
+function ttlRet(S, R, j){ let t0 = 64; for (let k = R - 1; k >= j; k--){ const n = S.nodes[k]; if (n.reset) t0 = 64; else if (n.router) t0 -= (n.dec || 1); } return Math.max(0, t0); }
 function fwdState(S, f, i){
   const st = Object.assign({}, S.base);
   for (let k = 0; k <= i; k++) Object.assign(st, S.nodes[k].set || {});
@@ -1347,7 +1517,7 @@ function decodePkt(p){
     const f = [F('Destination', mac(0), 0, 6), F('Source', mac(6), 6, 6)]; et = u16(12); off = 14;
     while ((et === 0x8100 || et === 0x88a8) && off + 4 <= d.length){ f.push(F('VLAN ID', u16(off) & 0xfff, off, 2)); et = u16(off + 2); off += 4; }
     f.push(F('EtherType', '0x' + et.toString(16).padStart(4, '0'), off - 2, 2, et === 0x0800 ? 'IPv4' : et === 0x86dd ? 'IPv6' : et === 0x0806 ? 'ARP' : ''));
-    L.push({name:'Ethernet II', c:'eth', s:0, e:off, f}); R.src = mac(6); R.dst = mac(0); R.proto = 'Ethernet';
+    L.push({name:'Ethernet II', c:'eth', s:0, e:off, f}); R.src = mac(6); R.dst = mac(0); R.proto = 'Ethernet'; R.mac = {s:mac(6), d:mac(0)};
   } else if (p.lt === 113){ et = u16(14); off = 16; L.push({name:'Linux cooked capture', c:'eth', s:0, e:16, f:[F('Protocol', '0x' + et.toString(16), 14, 2)]}); }
   else if (p.lt === 101 || p.lt === 12){ et = (d[0] >> 4) === 6 ? 0x86dd : 0x0800; }
   else { R.info = 'Unsupported link type ' + p.lt; return R; }
@@ -1384,12 +1554,12 @@ function decodePkt(p){
     pay = l4 + hl; const plen = Math.max(0, end - pay);
     L.push({name:'TCP', c:'l4', s:l4, e:Math.min(pay, d.length), f:[F('Source port', sp, l4, 2), F('Destination port', dp, l4 + 2, 2), F('Sequence', sq, l4 + 4, 4), F('Acknowledgment', ak, l4 + 8, 4), F('Header length', hl + ' bytes', l4 + 12, 1), F('Flags', tcpFlagStr(fg) || 'none', l4 + 13, 1), F('Window', win, l4 + 14, 2), F('Checksum', hx4(ck) + ckState(sum, 'tcp'), l4 + 16, 2, 'Covers a pseudo-header (addresses), so NAT must recompute it.'), ...(opts.length ? [F('Options', opts.join(', '), l4 + 20, hl - 20)] : [])]});
     R.sport = sp; R.dport = dp; R.src = (v6 ? `[${sIP}]` : sIP) + ':' + sp; R.dst = (v6 ? `[${dIP}]` : dIP) + ':' + dp;
-    R.key = `tcp ${[R.src, R.dst].sort().join(' ')}`; R.info = `${sp} → ${dp} [${tcpFlagStr(fg) || 'none'}] Seq=${sq}${fg & 0x10 ? ' Ack=' + ak : ''} Win=${win} Len=${plen}`;
+    R.key = `tcp ${[R.src, R.dst].sort().join(' ')}`; R.m = {proto:'tcp', sport:sp, dport:dp, seq:sq, ack:ak, flags:fg, plen}; R.sig = `t|${sq}|${ak}|${fg}|${plen}`; R.info = `${sp} → ${dp} [${tcpFlagStr(fg) || 'none'}] Seq=${sq}${fg & 0x10 ? ' Ack=' + ak : ''} Win=${win} Len=${plen}`;
     app_payload(R, d, pay, end, sp, dp, 'tcp', L);
   } else if (proto === 17 && l4 + 8 <= d.length){
     const sp = u16(l4), dp = u16(l4 + 2), ul = u16(l4 + 4), ck = u16(l4 + 6); let sum = 0;
     if (fullL4 && ck) sum = onesSum(d.subarray(l4, l4 + R.l4len), onesSum(pseudo(R.l4len)));
-    pay = l4 + 8;
+    pay = l4 + 8; const up = d.subarray(pay, end); R.m = {proto:'udp', sport:sp, dport:dp, pay:up}; R.sig = 'u|' + up.length + '|' + [...up.subarray(0, 48)].map(h2).join('');
     L.push({name:'UDP', c:'l4', s:l4, e:pay, f:[F('Source port', sp, l4, 2), F('Destination port', dp, l4 + 2, 2), F('Length', ul, l4 + 4, 2), F('Checksum', ck ? hx4(ck) + ckState(sum, 'udp') : '0x0000 (not used)', l4 + 6, 2)]});
     R.src = (v6 ? `[${sIP}]` : sIP) + ':' + sp; R.dst = (v6 ? `[${dIP}]` : dIP) + ':' + dp; R.key = `udp ${[R.src, R.dst].sort().join(' ')}`; R.info = `${sp} → ${dp} Len=${ul - 8}`;
     app_payload(R, d, pay, end, sp, dp, 'udp', L);
@@ -1398,9 +1568,10 @@ function decodePkt(p){
     const f = [F('Type', ty + ' ' + (ICMPT[ty] || ''), l4, 1), F('Code', cd + (ty === 3 && ICMPU[cd] ? ' ' + ICMPU[cd] : ''), l4 + 1, 1), F('Checksum', hx4(u16(l4 + 2)) + (v6 ? '' : ckState(sum, 'icmp')), l4 + 2, 2)];
     if (ty === 0 || ty === 8){ f.push(F('Identifier', u16(l4 + 4), l4 + 4, 2, 'NAT rewrites this to keep echo flows apart.'), F('Sequence', u16(l4 + 6), l4 + 6, 2)); }
     L.push({name:v6 ? 'ICMPv6' : 'ICMP', c:'l4', s:l4, e:Math.min(l4 + 8, d.length), f}); pay = l4 + 8;
-    R.key = `icmp ${[sIP, dIP].sort().join(' ')}`;
+    R.key = `icmp ${[sIP, dIP].sort().join(' ')}`; if (!v6 && (ty === 0 || ty === 8)){ const ip_ = d.subarray(l4 + 8, end); R.m = {proto:'icmp', type:ty, code:cd, id:u16(l4 + 4), iseq:u16(l4 + 6), pay:ip_}; R.sig = `i|${ty}|${u16(l4 + 6)}|` + [...ip_.subarray(0, 32)].map(h2).join(''); }
     R.info = (ICMPT[ty] || 'Type ' + ty) + (ty === 3 && ICMPU[cd] ? ': ' + ICMPU[cd] : '') + ((ty === 0 || ty === 8) ? `  id=${u16(l4 + 4)} seq=${u16(l4 + 6)}` : '') + (ty === 11 ? ' (a router dropped the packet: TTL reached 0)' : '');
   } else R.key = `ip ${sIP} ${dIP}`;
+  if (R.m && !v6){ Object.assign(R.m, {ethSrc:R.mac && R.mac.s, ethDst:R.mac && R.mac.d, ipSrc:sIP, ipDst:dIP, ttl:R.ttl}); }
   if (pay < end && !L.some(x => x.c === 'pay')) L.push({name:'Payload', c:'pay', s:pay, e:end, f:[F('Length', end - pay + ' bytes', pay, end - pay)]});
   return R;
 }
@@ -1426,24 +1597,74 @@ function app_payload(R, d, pay, end, sp, dp, tp, L){
   L.push({name:'Payload', c:'pay', s:pay, e:end, f:[{l:'Length', v:(end - pay) + ' bytes', o:pay, n:end - pay}]});
 }
 
-function pcapLoad(name, pkts){
-  PC.name = name; PC.sel = -1; PC.conv = null; PC.filter = '';
+const PCS = [];
+function makeCap(name, pkts){
   const t0 = pkts.length ? pkts[0].ts : 0;
-  PC.pk = pkts.map((p, i) => { const r = decodePkt(p); r.n = i + 1; r.t = p.ts - t0; return r; });
+  const pk = pkts.map((p, i) => { const r = decodePkt(p); r.n = i + 1; r.t = p.ts - t0; r.ts = p.ts; return r; });
   const cm = new Map();
-  PC.pk.forEach(r => { if (!r.key) return; let c = cm.get(r.key); if (!c){ c = {key:r.key, proto:r.proto, a:r.src, b:r.dst, n:0, bytes:0, ttl:{}, first:r.t, last:r.t, idx:[]}; cm.set(r.key, c); } c.n++; c.bytes += r.len; c.last = r.t; c.idx.push(r.n - 1); if (r.ttl != null && r.src && c.ttl[r.src] === undefined) c.ttl[r.src] = r.ttl; if (r.proto !== 'TCP' && r.proto !== 'UDP' && r.proto !== 'ICMP') c.proto = r.proto; });
-  PC.convs = [...cm.values()].sort((x, y) => y.n - x.n);
+  pk.forEach(r => { if (!r.key) return; let c = cm.get(r.key); if (!c){ c = {key:r.key, proto:r.proto, a:r.src, b:r.dst, n:0, bytes:0, ttl:{}, first:r.t, last:r.t, idx:[]}; cm.set(r.key, c); } c.n++; c.bytes += r.len; c.last = r.t; c.idx.push(r.n - 1); if (r.ttl != null && r.src && c.ttl[r.src] === undefined) c.ttl[r.src] = r.ttl; if (r.proto !== 'TCP' && r.proto !== 'UDP' && r.proto !== 'ICMP') c.proto = r.proto; });
+  return {name, pk, convs:[...cm.values()].sort((x, y) => y.n - x.n)};
 }
+function useCap(i){ const c = PCS[i]; PC.active = i; PC.pk = c.pk; PC.convs = c.convs; PC.name = c.name; PC.sel = -1; PC.conv = null; PC.filter = ''; }
+function pcapLoad(name, pkts, append){ if (!append) PCS.length = 0; PCS.push(makeCap(name, pkts)); useCap(PCS.length - 1); }
 function hopsFromTTL(t){ const init = [32, 64, 128, 255].find(x => x >= t) || 255; return {init, hops:init - t}; }
 
+function toPcap(frames, t0){
+  const total = 24 + frames.reduce((a, b) => a + 16 + b.d.length, 0), buf = new ArrayBuffer(total), dv = new DataView(buf), u8 = new Uint8Array(buf);
+  dv.setUint32(0, 0xa1b2c3d4, true); dv.setUint16(4, 2, true); dv.setUint16(6, 4, true); dv.setUint32(16, 65535, true); dv.setUint32(20, 1, true);
+  let o = 24; frames.forEach(f => { const sec = Math.floor(f.t), us = Math.round((f.t - sec) * 1e6); dv.setUint32(o, sec, true); dv.setUint32(o + 4, us, true); dv.setUint32(o + 8, f.d.length, true); dv.setUint32(o + 12, f.d.length, true); u8.set(f.d, o + 16); o += 16 + f.d.length; });
+  return buf;
+}
 function samplePcap(){
   const keep = {j:app.j, f:app.f}, frames = [];
-  ['web', 'dns', 'ping'].forEach(j => { app.j = j; app.f = 'none'; CACHE.clear(); const c = geom().count; for (let s = 0; s < c; s++) frames.push(Uint8Array.from(view(s).pk.bytes)); });
+  ['web', 'dns', 'ping'].forEach(j => { app.j = j; app.f = 'none'; CACHE.clear(); const c = geom().count; for (let s = 0; s < c; s++) frames.push({d:Uint8Array.from(view(s).pk.bytes), t:1730000000 + s * 0.02}); });
   app.j = keep.j; app.f = keep.f; CACHE.clear();
-  const total = 24 + frames.reduce((a, b) => a + 16 + b.length, 0), buf = new ArrayBuffer(total), dv = new DataView(buf), u8 = new Uint8Array(buf);
-  dv.setUint32(0, 0xa1b2c3d4, true); dv.setUint16(4, 2, true); dv.setUint16(6, 4, true); dv.setUint32(16, 65535, true); dv.setUint32(20, 1, true);
-  let o = 24; frames.forEach((f, i) => { dv.setUint32(o, 1730000000 + Math.floor(i / 50), true); dv.setUint32(o + 4, (i % 50) * 20000, true); dv.setUint32(o + 8, f.length, true); dv.setUint32(o + 12, f.length, true); u8.set(f, o + 16); o += 16 + f.length; });
-  return buf;
+  return toPcap(frames);
+}
+/* the web journey seen from six capture points, one file per point */
+function samplePoints(){
+  const keep = {j:app.j, f:app.f}; app.j = 'web'; app.f = 'none'; CACHE.clear();
+  const g = geom(), S = g.S, pts = [[0, 'laptop'], [1, 'home-router-wan'], [2, 'isp-cgnat'], [4, 'exchange-point'], [5, 'edge-lb'], [6, 'web-server']], out = [];
+  pts.forEach(([k, nm]) => {
+    const fr = [];
+    for (let s = 0; s < g.count; s++) if (nodePos(s, g) === k) fr.push({d:Uint8Array.from(view(s).pk.bytes), t:1730000000 + S.nodes[k].ms / 1000 + (s > g.F ? 0.002 : 0)});
+    out.push({name:nm + '.pcap', buf:toPcap(fr)});
+  });
+  app.j = keep.j; app.f = keep.f; CACHE.clear(); return out;
+}
+
+/* ===== replay one packet, seen at several capture points, as a journey ===== */
+const hex2 = a => [...a].map(h2).join('');
+function replayFromCaptures(sig){
+  const seen = [], missing = [];
+  PCS.forEach((c, ci) => { const p = c.pk.find(r => r.sig === sig && r.m); (p ? seen : missing).push({c, ci, p}); });
+  if (seen.length < 2){ toast('This packet appears in only ' + seen.length + ' capture. Load the same flow captured at another point.'); return false; }
+  seen.sort((a, b) => (b.p.m.ttl - a.p.m.ttl) || (a.ci - b.ci));
+  const f0 = seen[0].p.m, isSyn = f0.proto === 'tcp' && (f0.flags & 2) && !(f0.flags & 16);
+  const span = (seen[seen.length - 1].p.ts - seen[0].p.ts) * 1000, useT = span >= 0 && span < 5000;
+  const nodes = seen.map((x, i) => {
+    const m = x.p.m, pm = i ? seen[i - 1].p.m : null, last = i === seen.length - 1, d = [];
+    const ch = k => pm && pm[k] !== m[k];
+    if (pm){
+      if (ch('ipSrc') || ch('ipDst')) d.push(`addresses ${pm.ipSrc} → ${pm.ipDst} became ${m.ipSrc} → ${m.ipDst}`);
+      if (ch('sport') || ch('dport')) d.push(`ports ${pm.sport} → ${pm.dport} became ${m.sport} → ${m.dport}`);
+      if (m.proto === 'icmp' && ch('id')) d.push(`ICMP id ${pm.id} became ${m.id}`);
+      if (ch('ethSrc') || ch('ethDst')) d.push('MAC addresses changed (a router or gateway sits between the two points)');
+      const dec = pm.ttl - m.ttl; if (dec > 0) d.push(`TTL fell by ${dec}: about ${dec} router${dec === 1 ? '' : 's'} between the two points`); else if (dec < 0) d.push('TTL went up: the packet was re-created in between');
+    }
+    const addrCh = pm && (ch('ipSrc') || ch('ipDst') || ch('sport') || ch('dport') || (m.proto === 'icmp' && ch('id')));
+    const dec = pm ? Math.max(0, pm.ttl - m.ttl) : 0;
+    const set = {ethSrc:m.ethSrc, ethDst:m.ethDst, ipSrc:m.ipSrc, ipDst:m.ipDst}; if (m.proto !== 'icmp'){ set.sport = m.sport; set.dport = m.dport; } else set.id = m.id;
+    const nm = x.c.name.replace(/\.(pcapng|pcap|cap)$/i, '');
+    return N(nm, 'P' + (i + 1), !i ? 'host' : last ? 'server' : addrCh ? 'nat' : dec ? 'router' : 'switch', nm, !i ? 'ORIGIN' : last ? 'LAST CAPTURE POINT' : addrCh ? 'ADDRESSES REWRITTEN' : dec ? 'ROUTED' : 'UNCHANGED', useT ? Math.max(0, (x.p.ts - seen[0].p.ts) * 1000) : i, `${m.ipSrc}${m.sport != null ? ':' + m.sport : ''}`,
+      !i ? 'The first capture point that saw this packet (highest TTL). Everything after it is compared with this.' : d.length ? 'Compared with the previous capture point: ' + d.join('; ') + '.' : 'Nothing changed between the previous capture point and this one.',
+      Object.assign({set, router:dec > 0, dec:dec > 1 ? dec : undefined, docs:['rfc791', 'rfc3022'], x:[TBL('Seen at this capture point', ['Field', 'Value'], [['Source', `${m.ipSrc}${m.sport != null ? ':' + m.sport : ''}`], ['Destination', `${m.ipDst}${m.dport != null ? ':' + m.dport : ''}`], ['TTL', m.ttl], ['MACs', `${m.ethSrc} → ${m.ethDst}`]], [], 'Decoded from ' + x.c.name + '.')]}, {}));
+  });
+  const base = f0.proto === 'tcp' ? {proto:'tcp', flags:f0.flags, seq:f0.seq, ack:f0.ack} : f0.proto === 'udp' ? {proto:'udp', payload:[...f0.pay.subarray(0, 200)], payName:'UDP payload'} : {proto:'icmp', type:f0.type, code:f0.code, id:f0.id, seq:f0.iseq, payload:[...f0.pay.subarray(0, 56)], payName:'Echo data'};
+  const reply = f0.proto === 'tcp' ? {flags:isSyn ? 0x12 : 0x10, seq:isSyn ? 0x2b90de10 : f0.ack, ack:(f0.seq + (isSyn ? 1 : f0.plen)) >>> 0} : f0.proto === 'udp' ? {payload:[]} : {type:0};
+  SC.pcap = {group:'Your capture', short:'Captured packet', sub:`${seen.length} capture points`, title:`${f0.ipSrc} → ${f0.ipDst}`, ttl:f0.ttl, base, reply, nodes:fillL2(nodes), faults:[], docs:['rfc791', 'rfc3022'],
+    banner:'Rebuilt from decoded header fields (options and payload simplified). ' + (missing.length ? 'Not seen at: ' + missing.map(x => x.c.name).join(', ') + ' (dropped, filtered, or captured too late).' : 'Seen at every capture point.')};
+  setJourney('pcap'); return true;
 }
 
 function pcapFiltered(){
@@ -1463,6 +1684,7 @@ function drawPcapDecode(sel){
   if (PC.sel < 0){ el.innerHTML = '<p class="hint">Select a packet to decode it layer by layer, with checksum verification.</p>'; return; }
   const r = PC.pk[PC.sel], cl = {eth:'L2', ip:'L3', l4:'L4', pay:'L7'};
   let h = `<div class="stamp">PACKET ${r.n} · ${esc(r.proto)}<small>${r.len} BYTES${r.ttl != null ? ' · TTL ' + r.ttl : ''}</small></div>`;
+  if (r.sig) h += PCS.length >= 2 ? `<div class="replay"><button class="btn pri" data-replay>Trace this packet across ${PCS.length} captures →</button><span class="hint">Finds the same packet in every loaded capture and replays what changed between them.</span></div>` : `<p class="hint replay">Add a second capture taken elsewhere on the path (same traffic, different place) to replay this packet as a journey.</p>`;
   if (r.ttl != null){ const x = hopsFromTTL(r.ttl); h += `<p class="hint">TTL ${r.ttl} suggests the sender started at ${x.init}, so it is about <b>${x.hops}</b> router hop${x.hops === 1 ? '' : 's'} away (a guess: some systems use other starting values).</p>`; }
   r.layers.forEach((l, li) => {
     h += `<div class="grp"><div class="gh"><span class="lay ${cl[l.c]}">${cl[l.c]}</span>${esc(l.name)}<small>${l.e - l.s} bytes</small></div>`;
@@ -1503,29 +1725,37 @@ function drawLadder(ci){
   pk.forEach((r, i) => { const y = 62 + i * 26, fw = r.src === ends[0], x1 = X[fw ? 0 : 1], x2 = X[fw ? 1 : 0] + (fw ? -4 : 4); let tx = r.info.length > 58 ? r.info.slice(0, 57) + '…' : r.info; h += `<g class="lar ${fw ? '' : 'r'}" data-pi="${r.n - 1}"><line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" marker-end="url(#lah)"/><text x="${W / 2}" y="${y - 5}" class="ll">${esc(r.n + '  ' + tx)}</text></g>`; });
   el.innerHTML = h + '</svg>' + (c.idx.length > 60 ? `<p class="hint">First 60 of ${c.idx.length} packets.</p>` : '');
 }
+function drawPcaps(){
+  $('#pcaps').innerHTML = PCS.length ? `<div class="capchips">${PCS.map((c, i) => `<span class="capchip ${i === PC.active ? 'on' : ''}" data-cap="${i}">${esc(c.name)}<em>${c.pk.length}</em><button data-capx="${i}" aria-label="Remove ${esc(c.name)}">×</button></span>`).join('')}</div>` : '<span class="hint">No capture loaded</span>';
+}
 function drawPcapTiles(){
   const bad = PC.pk.filter(r => r.bad).length, dur = PC.pk.length ? PC.pk[PC.pk.length - 1].t : 0;
   $('#ptiles').innerHTML = [[PC.pk.length, 'packets'], [dur.toFixed(3) + ' s', 'duration'], [PC.convs.length, 'conversations'], [bad, 'bad checksums']].map(([v, l]) => `<div class="tile"><b>${esc(v)}</b><span>${l}</span></div>`).join('');
-  $('#pname').textContent = PC.name ? PC.name : 'No capture loaded';
+  drawPcaps();
 }
 function drawPcap(){ drawPcapTiles(); drawPcapTable(); drawPcapDecode(null); drawPcapHex(null); drawPcapConvs(); drawLadder(null); }
 
-function pcapFile(file){
-  if (!file) return;
-  if (file.size > MAXBYTES){ toast('File is over 25 MB: trim it first (for example with editcap)'); return; }
-  const fr = new FileReader();
-  fr.onload = () => { try{ pcapLoad(file.name, parsePcap(fr.result)); drawPcap(); toast(PC.pk.length + ' packets decoded locally'); }catch(e){ toast(e.message); } };
-  fr.readAsArrayBuffer(file);
+function readFile(file){ return new Promise((res, rej) => { if (file.size > MAXBYTES) return rej(new Error('File is over 25 MB: trim it first (for example with editcap)')); const fr = new FileReader(); fr.onload = () => { try{ res(parsePcap(fr.result)); }catch(e){ rej(e); } }; fr.onerror = () => rej(new Error('Could not read file')); fr.readAsArrayBuffer(file); }); }
+async function pcapFiles(files){
+  let n = 0;
+  for (const f of files){ try{ pcapLoad(f.name, await readFile(f), true); n++; }catch(e){ toast(f.name + ': ' + e.message); } }
+  if (n){ drawPcap(); toast(n + ' capture' + (n === 1 ? '' : 's') + ' decoded locally'); }
 }
 function bindPcap(){
-  $('#pfile').addEventListener('change', e => pcapFile(e.target.files[0]));
-  $('#psample').addEventListener('click', () => { pcapLoad('sample-journeys.pcap (generated here)', parsePcap(samplePcap())); drawPcap(); });
+  $('#pfile').addEventListener('change', e => { pcapFiles([...e.target.files]); e.target.value = ''; });
+  $('#psample').addEventListener('click', () => { pcapLoad('sample-journeys.pcap', parsePcap(samplePcap())); drawPcap(); });
+  $('#psample6').addEventListener('click', () => { PCS.length = 0; samplePoints().forEach(x => pcapLoad(x.name, parsePcap(x.buf), true)); useCap(0); drawPcap(); toast('6 capture points loaded: select the SYN packet and trace it'); });
+  $('#pclear').addEventListener('click', () => { PCS.length = 0; PC.pk = []; PC.convs = []; PC.sel = -1; PC.conv = null; PC.name = ''; drawPcap(); });
   $('#pfilter').addEventListener('input', e => { PC.filter = e.target.value; drawPcapTable(); });
   const dz = $('#pdrop');
   ['dragover', 'dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('over'); }));
   ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('over'); }));
-  dz.addEventListener('drop', e => pcapFile(e.dataTransfer.files[0]));
+  dz.addEventListener('drop', e => pcapFiles([...e.dataTransfer.files]));
   $('#pcappane').addEventListener('click', e => {
+    const rp = e.target.closest('[data-replay]'), cx = e.target.closest('[data-capx]'), cp = e.target.closest('[data-cap]');
+    if (rp){ if (PC.sel >= 0) replayFromCaptures(PC.pk[PC.sel].sig); return; }
+    if (cx){ PCS.splice(+cx.dataset.capx, 1); if (PCS.length) useCap(Math.min(PC.active, PCS.length - 1)); else { PC.pk = []; PC.convs = []; PC.name = ''; PC.sel = -1; } drawPcap(); return; }
+    if (cp){ useCap(+cp.dataset.cap); drawPcap(); return; }
     const tr = e.target.closest('tr[data-pi]'), lad = e.target.closest('[data-ladder]'), cv = e.target.closest('tr[data-pc]'), fl = e.target.closest('[data-fl]'), lg = e.target.closest('g[data-pi]');
     if (lad){ PC.conv = +lad.dataset.ladder; drawPcapTable(); drawPcapConvs(); drawLadder(PC.conv); return; }
     if (cv){ PC.conv = PC.conv === +cv.dataset.pc ? null : +cv.dataset.pc; drawPcapTable(); drawPcapConvs(); return; }
@@ -1544,7 +1774,8 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ZC = ['#4cc9f0', '#ffb020', '#c792ea', '#3ddc97', '#ff7a90', '#8b9cff'];
 const TOPH = {host:32, pod:26, server:30, router:36, switch:14, nat:20, lb:24, proxy:24, tunnel:18};
 const PZ = 52;
-let scene = null, raf = null, lastT = 0, playTimer = null;
+let scene = null, raf = null, lastT = 0, playTimer = null, trailPts = [], ROLL = false;
+const TRAILN = 16;
 
 function boxAt(p, cx, cy, w, d, h, z0, cls){
   const x0 = cx - w / 2, x1 = cx + w / 2, y0 = cy - d / 2, y1 = cy + d / 2, za = z0, zb = z0 + h;
@@ -1593,7 +1824,7 @@ function drawMap(){
     const [x0, y0] = scr[k], [x1, y1] = scr[k + 1], dm = S.nodes[k + 1].ms - S.nodes[k].ms;
     SV('line', {x1:x0, y1:y0 - 2, x2:x1, y2:y1 - 2, class:'lnk', id:'L' + k, 'stroke-width':(2 + 3.5 * dm / maxD).toFixed(1)}, root);
     SV('line', {x1:x0, y1:y0 - 2, x2:x1, y2:y1 - 2, class:'lnk flow', id:'F' + k, style:'display:none'}, root);
-    const lb = SV('text', {x:(x0 + x1) / 2, y:(y0 + y1) / 2 - 8, class:'lbl'}, root); lb.textContent = '+' + (Math.round(dm * 10) / 10) + ' ms';
+    const lb = SV('text', {x:(x0 + x1) / 2, y:(y0 + y1) / 2 - 8, class:'lbl', id:'LB' + k}, root); lb.textContent = '+' + (Math.round(dm * 10) / 10) + ' ms';
   }
   S.nodes.forEach((nd, k) => {
     const ng = SV('g', {class:'node', id:'nd' + k, tabindex:0, role:'button', 'aria-label':`Hop ${k}: ${nd.name}`}, root);
@@ -1606,7 +1837,7 @@ function drawMap(){
     ng.addEventListener('click', () => goto(nodeFirstStep(k)));
     ng.addEventListener('keydown', e => { if (e.key === 'Enter') goto(nodeFirstStep(k)); });
   });
-  SV('g', {id:'fx'}, svg); SV('g', {id:'tag'}, svg);
+  SV('g', {id:'fx'}, svg); SV('g', {id:'tag'}, svg); const tr = SV('g', {id:'trail'}, svg); for (let q = 0; q < TRAILN; q++) SV('circle', {r:3, class:'trl', cx:-999, cy:-999}, tr); trailPts = [];
   const pk = SV('g', {id:'pkt'}, svg); SV('g', {id:'pbody', class:'pk'}, pk); SV('text', {id:'ptxt', class:'ptxt', x:0, y:-4}, pk);
   scene = {pts, scr, zones, fit, vb:Object.assign({}, fit)};
   svg.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`);
@@ -1617,6 +1848,18 @@ function drawMap(){
 }
 const nodeFirstStep = k => k <= geom().F ? k : 0;
 
+function tweenNum(el, from, to, pre, ms = 420){
+  if (!el) return; const fin = pre + to;
+  if (reduced || from === to || isNaN(from)){ el.textContent = fin; return; }
+  const t0 = performance.now(); el._tw = t0;
+  (function f(now){ if (el._tw !== t0) return; const k = Math.min(1, (now - t0) / ms); el.textContent = pre + Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); else el.textContent = fin; })(t0);
+}
+function rollEl(el, ms = 380){
+  if (reduced) return; const fin = el.textContent, t0 = performance.now(), H = '0123456789abcdef';
+  (function f(now){ const k = Math.min(1, (now - t0) / ms); let o = ''; const settle = Math.floor(fin.length * k * 1.15);
+    for (let i = 0; i < fin.length; i++){ const c = fin[i]; o += i < settle || !/[0-9a-fA-F]/.test(c) ? c : H[(Math.random() * 16) | 0]; }
+    el.textContent = o; if (k < 1) requestAnimationFrame(f); else el.textContent = fin; })(t0);
+}
 function drawPacketBody(o, prev){
   const pb = $('#pbody'); pb.innerHTML = '';
   const v = o.pk.v, pv = prev && prev.info.dir === o.info.dir ? prev.pk.v : null;
@@ -1635,7 +1878,9 @@ function drawPacketBody(o, prev){
     const gg = SV('g', {opacity:app.layer === 'all' || app.layer === l.L ? 1 : 0.28}, pb);
     boxAt(gg, 0, 0, l.w, l.d, 4.5, z, 'sl ' + l.c + (l.f ? ' flash' : '')); z += 5.5;
   });
-  $('#ptxt').setAttribute('y', -(z + 8)); $('#ptxt').textContent = (o.info.dir === 'r' ? '↩ ' : '') + 'TTL ' + v.ttl;
+  $('#ptxt').setAttribute('y', -(z + 8));
+  const pt = (o.info.dir === 'r' ? '↩ ' : '') + 'TTL ', from = prev && prev.info.dir === o.info.dir ? +prev.pk.v.ttl : +v.ttl;
+  tweenNum($('#ptxt'), from, +v.ttl, pt);
   pb.setAttribute('class', 'pk' + (o.info.dir === 'r' ? ' ret' : ''));
 }
 
@@ -1645,6 +1890,7 @@ function placePacket(){
   const a = scene.scr[nodePos(s0, g)], b = scene.scr[nodePos(s1, g)];
   const rev = Math.round(t0) > g.F, x = a[0] + (b[0] - a[0]) * fr + (rev ? 10 : 0), y = a[1] + (b[1] - a[1]) * fr - PZ + (rev ? 12 : 0);
   $('#pkt').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+  pushTrail(x, y, rev);
   const f = scene.fit; let vb = f;
   if (app.zoom === 'follow'){ const w = f.w * 0.46, h = f.h * 0.46; vb = {x:Math.max(f.x, Math.min(f.x + f.w - w, x - w / 2)), y:Math.max(f.y, Math.min(f.y + f.h - h, y + 30 - h / 2)), w, h}; }
   $('#map').setAttribute('viewBox', `${vb.x.toFixed(1)} ${vb.y.toFixed(1)} ${vb.w.toFixed(1)} ${vb.h.toFixed(1)}`);
@@ -1652,17 +1898,38 @@ function placePacket(){
   $('#scrub').value = t0;
 }
 
+function pushTrail(x, y, rev){
+  const l = trailPts[trailPts.length - 1];
+  if (l && Math.hypot(l[0] - x, l[1] - y) > 140) trailPts = [];
+  if (!l || Math.hypot(l[0] - x, l[1] - y) > 4) trailPts.push([x, y]);
+  if (trailPts.length > TRAILN) trailPts.shift();
+  const cs = $('#trail') && $('#trail').children, n = trailPts.length;
+  if (!cs) return;
+  for (let i = 0; i < cs.length; i++){
+    const q = trailPts[i - (cs.length - n)];
+    if (q){ const k = (i - (cs.length - n) + 1) / n; cs[i].setAttribute('cx', q[0].toFixed(1)); cs[i].setAttribute('cy', (q[1] + 8).toFixed(1)); cs[i].setAttribute('r', (1 + 3 * k).toFixed(1)); cs[i].setAttribute('opacity', (0.5 * k * k).toFixed(2)); cs[i].setAttribute('class', 'trl' + (rev ? ' r' : '')); }
+    else cs[i].setAttribute('opacity', 0);
+  }
+}
+function applyLod(){
+  const m = $('#map'); if (!m || !scene) return;
+  const vb = m.getAttribute('viewBox').split(' ').map(Number), w = m.getBoundingClientRect().width || 1, sc = w / (vb[2] || 1);
+  m.classList.toggle('lod-far', sc < 0.55); m.classList.toggle('lod-near', sc > 1.15);
+}
 function updateMap(animate){
   const g = geom(), o = view(app.s), prev = app.s > 0 ? view(app.s - 1) : null, pos = nodePos(app.s, g);
   g.S.nodes.forEach((nd, k) => {
     const e = $('#nd' + k); if (!e) return;
     e.classList.toggle('cur', k === pos); e.classList.toggle('future', k > g.F);
     e.classList.toggle('dim', app.layer !== 'all' && !LAYERS[nd.type].includes(app.layer));
+    e.classList.toggle('near', Math.abs(k - pos) <= 1);
     $('#mn' + k) && $('#mn' + k).classList.toggle('on', k === pos);
   });
   for (let k = 0; k < g.S.nodes.length - 1; k++){
     const fwdDone = o.info.dir === 'f' ? k < pos : k < g.F;
     $('#L' + k).classList.toggle('done', fwdDone);
+    $('#L' + k).classList.toggle('ahead', !!g.f && g.f.type !== 'l7' && app.s >= g.F && k >= g.F);
+    $('#LB' + k) && $('#LB' + k).classList.toggle('adj', k === pos || k === pos - 1);
     const fl = $('#F' + k); const showFlow = o.info.dir === 'r' && k >= pos && k < g.F;
     fl.style.display = showFlow ? '' : 'none'; fl.classList.toggle('rv', showFlow);
   }
@@ -1671,19 +1938,22 @@ function updateMap(animate){
   if (g.f && app.s >= g.F){
     const [x, y] = scene.scr[g.F];
     SV('ellipse', {cx:x, cy:y, rx:36, ry:20.5, class:'fring'}, fx);
+    [0, 0.45].forEach(dl => SV('ellipse', {cx:x, cy:y, rx:36, ry:20.5, class:'ripple', style:`animation-delay:${dl}s`}, fx));
     if (g.f.type !== 'l7'){ SV('line', {x1:x - 11, y1:y - 52, x2:x + 11, y2:y - 30, class:'xmark'}, fx); SV('line', {x1:x + 11, y1:y - 52, x2:x - 11, y2:y - 30, class:'xmark'}, fx); }
     const ft = SV('text', {x, y:y + 62, class:'ftxt'}, fx); ft.textContent = g.f.short;
   }
   // change tag
+  $('#stage').classList.toggle('faulted', !!(g.f && app.s >= g.F && g.f.type !== 'l7'));
   const tg = $('#tag'); tg.innerHTML = '';
   const tx = tagText(app.s);
   if (tx){
     const [x, y] = scene.scr[pos], wd = Math.max(...tx.map(l => l.length)) * 5.6 + 14, h = 8 + tx.length * 12, ty = y - PZ - 64 - tx.length * 2;
     const w = SV('g', {class:'tagwrap'}, tg);
+    SV('ellipse', {cx:x, cy:y, rx:36, ry:20.5, class:'rwpulse'}, tg);
     SV('rect', {x:x - wd / 2, y:ty, width:wd, height:h, rx:3, class:'tagbg'}, w);
     tx.forEach((l, i) => { const e = SV('text', {x:x - wd / 2 + 7, y:ty + 14 + i * 12, class:'tagtx'}, w); e.textContent = l; });
   }
-  drawPacketBody(o, prev);
+  drawPacketBody(o, prev); applyLod();
   if (animate) kick(); else { app.t = app.s; placePacket(); }
 }
 function stepAnim(now){
@@ -1735,7 +2005,7 @@ function drawFault(){
   el.innerHTML = bn + `<div class="faultbox"><h3>${esc(g.f.title)}</h3><p>${esc(g.f.body)}</p><pre>${esc(g.f.user)}</pre>${cmdBlock(faultCmds(g))}<div class="chips" style="margin-top:8px">${(g.f.d || []).map(docChip).join('')}</div></div>`;
 }
 const badge = (c, s) => `<span class="bg ${c}">${s}</span>`;
-function drawPassport(){
+function drawPassportFull(){
   const g = geom(), o = view(app.s), p = app.s > 0 ? view(app.s - 1) : null, nd = g.S.nodes[o.info.j];
   const dead = g.f && app.s === g.F, dir = o.info.dir === 'f' ? t('forward') : t('ret');
   const why = !dead ? esc(nd.tag) : g.f.type === 'ttl' ? 'DROPPED · TTL EXPIRED' : g.f.type === 'mtu' ? 'DROPPED · MTU EXCEEDED' : g.f.type === 'l7' ? 'REJECTED · ' + esc(g.f.short) : 'DROPPED · FILTERED';
@@ -1760,6 +2030,22 @@ function drawPassport(){
   if (!shown) h += `<p class="hint">Layer 7 has no fixed header fields: open the L7 tab.</p>`;
   else h += `<p class="hint">${t('clickRow')}</p>`;
   return h;
+}
+const firstSentence = x => { const i = x.search(/[.!?](\s|$)/); return i > 0 ? x.slice(0, i + 1) : x; };
+function changedList(o, p){
+  const out = []; if (!p) return out;
+  groupsFor(o.st.proto).forEach(gr => gr.f.forEach(k => { const F = FINFO[k], now = o.pk.v[k], was = p.pk.v[k]; if (was !== undefined && was !== now) out.push({F, was, now, L:gr.L}); }));
+  if ((o.pk.v.outer || '') !== (p.pk.v.outer || '')) out.push({F:{l:'Tunnel header', n:'The whole original packet is wrapped inside a new one, or unwrapped again. The network in between only sees the outer addresses.', d:['rfc7348']}, was:p.pk.v.outer || 'none', now:o.pk.v.outer || 'none', L:'L2'});
+  return out;
+}
+function drawPassport(){
+  if (app.detail) return drawPassportFull();
+  const full = drawPassportFull(), head = full.slice(0, full.indexOf('</p>') + 4), o = view(app.s), p = app.s > 0 ? view(app.s - 1) : null, list = changedList(o, p);
+  let h = head + `<div class="gh">${p ? 'What changed here' : 'Where it starts'}</div>`;
+  if (!p) h += `<p class="hint">This is the packet exactly as the sender builds it. Step forward to see what each device changes.</p>`;
+  else if (!list.length) h += `<p class="hint">Nothing in the headers changed at this step: the device only passed the packet on.</p>`;
+  else h += list.map(c => `<div class="chg-item"><div class="ci-h"><span class="lay ${c.L}">${c.L}</span><b>${esc(c.F.l)}</b><span class="ci-v"><s>${esc(c.was)}</s> → <b>${esc(c.now)}</b></span></div><p>${esc(firstSentence(c.F.n))}</p>${(c.F.d || []).slice(0, 1).map(docChip).join('')}</div>`).join('');
+  return h + `<div class="moreb"><button class="btn" data-det="1">Show every header field</button><button class="btn" data-bytes>Show packet bytes</button></div>`;
 }
 function drawL7(){
   const d = l7Diff(app.s);
@@ -1794,7 +2080,9 @@ function drawDocsTab(){
 function drawInspector(){
   const tabs = [['passport', t('passport')], ['l7', t('l7')], ['how', t('how')], ['xray', t('xray')], ['docs', t('docs')]];
   $('#itabs').innerHTML = tabs.map(([k, l]) => `<button data-t="${k}" class="${app.itab === k ? 'on' : ''}">${esc(l)}</button>`).join('');
-  $('#ibody').innerHTML = app.itab === 'passport' ? drawPassport() : app.itab === 'l7' ? drawL7() : app.itab === 'how' ? drawHow() : app.itab === 'xray' ? drawXray() : drawDocsTab();
+  const _h = app.itab === 'passport' ? drawPassport() : app.itab === 'l7' ? drawL7() : app.itab === 'how' ? drawHow() : app.itab === 'xray' ? drawXray() : drawDocsTab();
+  $('#ibody').innerHTML = _h;
+  if (ROLL){ ROLL = false; $$('#ibody .fr.chg .n, #ibody .fr.der .n, #ibody .ci-v b').forEach(e => rollEl(e)); }
 }
 function drawHops(){
   const g = geom(); let h = `<table><thead><tr><th>${t('no')}</th><th>${t('time')}</th><th>${t('device')}</th><th>${t('src')}</th><th>${t('dst')}</th><th>${t('proto')}</th><th>${t('info')}</th><th>${t('size')}</th></tr></thead><tbody>`;
@@ -1836,12 +2124,13 @@ function drawHeader(){
   $('#nowTitle').textContent = g.S.short;
   $('#nowDots').innerHTML = g.S.nodes.map((_, i) => `<i class="${i <= pos ? 'on' : ''}"></i>`).join('');
   $('#layerSel').innerHTML = ['all', 'L2', 'L3', 'L4', 'L7'].map(l => `<button data-l="${l}" class="${app.layer === l ? 'on' : ''}">${l === 'all' ? t('all') : l}</button>`).join('');
-  const keys = Object.keys(SC), done = keys.filter(k => (app.prog[k] || {}).done).length, prog = keys.filter(k => !(app.prog[k] || {}).done && (app.prog[k] || {}).max > 0).length;
+  const keys = Object.keys(SC).filter(k => k !== 'pcap'), done = keys.filter(k => (app.prog[k] || {}).done).length, prog = keys.filter(k => !(app.prog[k] || {}).done && (app.prog[k] || {}).max > 0).length;
   $('#progPct').textContent = Math.round(done / keys.length * 100) + '%';
   $('#progBar').innerHTML = keys.map(k => `<i class="${(app.prog[k] || {}).done ? 'done' : (app.prog[k] || {}).max > 0 ? 'prog' : ''}"></i>`).join('');
   $('#progTxt').textContent = `${done}/${keys.length} ${t('complete')} · ${prog} ${t('inProgress')}`;
   $('#viewSel').innerHTML = [['map', t('map')], ['seq', t('sequence')]].map(([k, l]) => `<button data-v="${k}" class="${app.view === k ? 'on' : ''}">${l}</button>`).join('');
   $('#zoomSel').innerHTML = [['fit', t('fit')], ['follow', t('follow')]].map(([k, l]) => `<button data-z="${k}" class="${app.zoom === k ? 'on' : ''}">${l}</button>`).join('');
+  $('#detSel').innerHTML = [[0, 'Simple'], [1, 'Detailed']].map(([k, l]) => `<button data-d="${k}" class="${(+app.detail) === k ? 'on' : ''}">${l}</button>`).join('');
   $('#zoomSel').style.visibility = app.view === 'map' ? 'visible' : 'hidden';
   $('#stage').style.display = app.view === 'map' ? '' : 'none'; $('#seq').style.display = app.view === 'seq' ? 'block' : 'none';
   $('#mini').style.display = app.view === 'map' && app.zoom === 'follow' ? '' : 'none';
@@ -1867,7 +2156,7 @@ function applyI18n(){
 
 /* ================= render orchestration ================= */
 function syncHash(){
-  const p = new URLSearchParams({p:app.page, j:app.j, s:app.s, f:app.f, v:app.view, l:app.layer, i:app.itab, z:app.zoom, g:app.lang});
+  const p = new URLSearchParams({p:app.page, j:app.j, s:app.s, f:app.f, v:app.view, l:app.layer, i:app.itab, z:app.zoom, g:app.lang, d:app.detail ? 1 : 0});
   try{ history.replaceState(null, '', '#' + p.toString()); }catch(_){}
 }
 function renderPanels(){
@@ -1877,7 +2166,7 @@ function renderPanels(){
 }
 const PAGES = {why:'Why is it failing?', pcap:'PCAP viewer', trace:'Traceroute decoder'};
 function renderAll(animate){
-  const pg = app.page, jr = pg === 'journey';
+  const pg = app.page, jr = pg === 'journey'; ROLL = !!animate;
   $('#app').classList.toggle('trace', !jr);
   $('#center').hidden = $('#right').hidden = !jr;
   ['trace', 'why', 'pcap'].forEach(k => { $('#' + k + 'pane').hidden = pg !== k; });
@@ -1911,6 +2200,10 @@ function exportPNG(){
   img.onerror = () => toast('Export failed in this browser');
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone));
 }
+function applyDetail(){ const a = $('#secHops'), b = $('#secBytes'); if (a) a.open = app.detail; if (b) b.open = app.detail; }
+const THEMES = ['dark', 'light', 'hc'], TNAME = {dark:'Dark', light:'Light', hc:'Contrast'};
+function setTheme(t){ app.theme = t; document.documentElement.dataset.theme = t; try{ localStorage.setItem('hbh-theme', t); }catch(_){} const b = $('#bTheme'); if (b){ b.textContent = TNAME[t]; b.title = 'Theme: ' + TNAME[t] + ' (click to change)'; } }
+function setDetail(v){ app.detail = !!v; try{ localStorage.setItem('hbh-detail', v ? '1' : '0'); }catch(_){} applyDetail(); if (app.page === 'journey') renderPanels(); }
 function closeMenu(){ $('#rail').classList.remove('open'); }
 function toast(m){ const e = $('#toast'); e.textContent = m; e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 1600); }
 
@@ -1992,6 +2285,9 @@ function bind(){
   $('#itabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; app.itab = b.dataset.t; drawInspector(); syncHash(); });
   $('#ibody').addEventListener('click', e => {
     const fr = e.target.closest('.fr[data-k]'); if (fr && !e.target.closest('a')){ app.sel = app.sel === fr.dataset.k ? null : fr.dataset.k; drawInspector(); drawBytes(); return; }
+    const dt = e.target.closest('[data-det]'), by = e.target.closest('[data-bytes]');
+    if (dt){ setDetail(true); return; }
+    if (by){ const sb = $('#secBytes'); sb.open = true; sb.scrollIntoView({behavior:reduced ? 'auto' : 'smooth', block:'start'}); return; }
     const cp = e.target.closest('[data-copy]'); if (cp){ const b = howBlocks(app.s)[+cp.dataset.copy]; try{ navigator.clipboard.writeText(b.c); toast('Copied'); }catch(_){ toast('Copy not available'); } }
   });
   $('#hops').addEventListener('click', e => { const r = e.target.closest('tr[data-s]'); if (r){ stopPlay(); goto(+r.dataset.s); } });
@@ -2006,7 +2302,8 @@ function bind(){
   $('#scrub').addEventListener('input', e => { stopPlay(); cancelAnimationFrame(raf); raf = null; app.t = +e.target.value; const s = Math.round(app.t); if (s !== app.s){ app.s = s; markProg(); renderPanels(); updateMap(false); app.t = +e.target.value; } placePacket(); });
   $('#bShare').addEventListener('click', async () => { syncHash(); try{ await navigator.clipboard.writeText(location.href); toast(t('linkCopied')); }catch(_){ toast('Copy the address bar link'); } });
   $('#bExport').addEventListener('click', () => { if (app.page === 'journey' && app.view === 'map') exportPNG(); else toast('Switch to the Map view to export'); });
-  $('#bTheme').addEventListener('click', () => { app.theme = app.theme === 'light' ? 'dark' : 'light'; document.documentElement.dataset.theme = app.theme; try{ localStorage.setItem('hbh-theme', app.theme); }catch(_){} });
+  $('#bTheme').addEventListener('click', () => setTheme(THEMES[(THEMES.indexOf(app.theme) + 1) % THEMES.length]));
+  $('#detSel').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (b) setDetail(b.dataset.d === '1'); });
   $('#lang').addEventListener('change', e => { app.lang = e.target.value; try{ localStorage.setItem('hbh-lang', app.lang); }catch(_){} renderAll(false); });
   $('#tin').addEventListener('input', drawTrace);
   bindPcap();
@@ -2023,6 +2320,7 @@ function bind(){
     if (e.key === 'ArrowRight'){ stopPlay(); goto(app.s + 1); } else if (e.key === 'ArrowLeft'){ stopPlay(); goto(app.s - 1); }
     else if (e.key === 'Home'){ stopPlay(); goto(0); } else if (e.key === 'End'){ stopPlay(); goto(geom().count - 1); }
     else if (e.key === ' '){ e.preventDefault(); if (app.playing) stopPlay(); else startPlay(); }
+    else if (e.key.toLowerCase() === 'd'){ setDetail(!app.detail); }
     else if (e.key.toLowerCase() === 'x'){ app.itab = 'xray'; drawInspector(); }
   });
 }
@@ -2030,8 +2328,9 @@ function bind(){
 /* ================= boot ================= */
 (function init(){
   const q = new URLSearchParams(location.hash.slice(1));
-  try{ app.theme = localStorage.getItem('hbh-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); app.lang = localStorage.getItem('hbh-lang') || 'en'; }catch(_){}
-  document.documentElement.dataset.theme = app.theme;
+  try{ const st = localStorage.getItem('hbh-theme'); app.theme = THEMES.includes(st) ? st : matchMedia('(prefers-contrast: more)').matches ? 'hc' : matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; app.lang = localStorage.getItem('hbh-lang') || 'en'; app.detail = localStorage.getItem('hbh-detail') === '1'; }catch(_){}
+  if (q.get('d')) app.detail = q.get('d') === '1';
+  setTheme(app.theme); applyDetail();
   loadProg();
   if (SC[q.get('j')]) app.j = q.get('j');
   if (I18N[q.get('g')]) app.lang = q.get('g');
@@ -2046,7 +2345,7 @@ function bind(){
   bind(); drawMap();
   app.s = Math.max(0, Math.min(geom().count - 1, parseInt(q.get('s') || '0', 10) || 0)); app.t = app.s;
   markProg(); renderAll(false);
-  window.__hbh = {PC, parsePcap, decodePkt, pcapLoad, samplePcap, drawPcap, drawWhy, app, geom, view, infoText, howBlocks, l7Of, buildPacket, cksum16, goto, setJourney, setFault, SC, drawSeq, exportPNG};
+  window.__hbh = {PC, PCS, samplePoints, pcapLoad, replayFromCaptures, parsePcap, decodePkt, pcapLoad, samplePcap, drawPcap, drawWhy, app, geom, view, infoText, howBlocks, l7Of, buildPacket, cksum16, goto, setJourney, setFault, SC, drawSeq, exportPNG};
 })();
 </script>
 </body>

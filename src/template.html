@@ -14,13 +14,14 @@
   <div class="now"><b id="nowTitle"></b><span id="nowDots" class="ndots"></span></div>
   <div class="hgrp"><div class="seg" id="layerSel" aria-label="Layer focus"></div>
   <div class="seg" id="viewSel"></div>
-  <div class="seg" id="zoomSel"></div></div>
+  <div class="seg" id="zoomSel"></div>
+    <div class="seg" id="detSel" aria-label="Detail level"></div></div>
   <select id="selF" aria-label="Fault"></select>
   <div class="prog" title="Progress"><b id="progPct"></b><span id="progBar" class="pbar"></span><small id="progTxt"></small></div>
   <button class="btn" id="bShare" data-i="share">Share</button>
   <button class="btn" id="bExport" data-i="export">PNG</button>
   <select id="lang" aria-label="Language"><option value="en">EN</option><option value="te">తెలుగు</option><option value="hi">हिन्दी</option></select>
-  <button class="btn" id="bTheme" aria-label="Toggle theme">◐</button>
+  <button class="btn" id="bTheme" aria-label="Change theme">Theme</button>
 </header>
 <main class="app" id="app">
   <nav class="rail" id="rail" aria-label="Journeys"></nav>
@@ -42,11 +43,11 @@
     </div>
     <div class="narr">
       <div class="sdots" id="sdots"></div><div class="ctr" id="stepTxt"></div>
-      <p id="cap" class="cap"></p><div class="chips" id="capDocs"></div>
+      <p id="cap" class="cap" aria-live="polite"></p><div class="chips" id="capDocs"></div>
     </div>
     <div id="faultBox"></div>
-    <div class="tw" id="hops"></div>
-    <div id="bytes" class="bytes"></div>
+    <details class="sec" id="secHops"><summary>Hop table</summary><div class="tw" id="hops"></div></details>
+    <details class="sec" id="secBytes"><summary>Packet bytes</summary><div id="bytes" class="bytes"></div></details>
   </section>
   <aside class="right" id="right">
     <div class="itabs" id="itabs"></div>
@@ -63,8 +64,9 @@
   <section class="tracepane" id="whypane" hidden></section>
   <section class="tracepane" id="pcappane" hidden>
     <h2>PCAP viewer</h2>
-    <p class="hint">Open a .pcap or .pcapng capture (Ethernet, up to 25 MB). Decoding, checksum checks and the ladder diagram all run in your browser: the file is never uploaded.</p>
-    <div class="drop" id="pdrop"><label class="btn pri" for="pfile">Choose a capture</label><input type="file" id="pfile" accept=".pcap,.pcapng,.cap" hidden><span>or drop it here</span><button class="btn" id="psample">Load sample</button><b id="pname"></b></div>
+    <p class="hint">Open one or more .pcap / .pcapng captures (Ethernet, up to 25 MB each). Load the same traffic captured at several points on the path to replay one packet as a journey. Decoding, checksum checks and the ladder diagram all run in your browser: the file is never uploaded.</p>
+    <div class="drop" id="pdrop"><label class="btn pri" for="pfile">Choose a capture</label><input type="file" id="pfile" accept=".pcap,.pcapng,.cap" multiple hidden><span>or drop one or more here</span><button class="btn" id="psample">Sample: one capture</button><button class="btn" id="psample6">Sample: 6 capture points</button><button class="btn" id="pclear">Clear</button></div>
+    <div id="pcaps"></div>
     <div class="tiles" id="ptiles"></div>
     <input type="search" id="pfilter" placeholder="Filter: address, protocol or text in Info (e.g. 443, dns, syn)" aria-label="Filter packets">
     <div class="pcmain"><div class="tw" id="ptable"></div><div class="pside"><div id="pdecode"></div><div id="phex"></div></div></div>

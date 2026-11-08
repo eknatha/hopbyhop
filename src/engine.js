@@ -30,13 +30,13 @@ const stepInfo = (s, g) => s <= g.F ? {dir:'f', j:s} : {dir:'r', j:2 * g.F + 1 -
 function nodePos(s, g){ return s <= g.F ? s : 2 * g.F + 1 - s; }
 
 /* ================= packet states ================= */
-function ttlNeeded(S, at){ let c = 0; for (let k = 1; k <= at; k++){ const n = S.nodes[k]; if (n.reset) c = 0; else if (n.router) c++; } return c; }
+function ttlNeeded(S, at){ let c = 0; for (let k = 1; k <= at; k++){ const n = S.nodes[k]; if (n.reset) c = 0; else if (n.router) c += (n.dec || 1); } return c; }
 function ttlFwd(S, f, i){
   let t0 = f && f.type === 'ttl' ? ttlNeeded(S, f.at) : S.ttl;
-  for (let k = 1; k <= i; k++){ const n = S.nodes[k]; if (n.reset) t0 = S.ttl; else if (n.router) t0--; }
+  for (let k = 1; k <= i; k++){ const n = S.nodes[k]; if (n.reset) t0 = S.ttl; else if (n.router) t0 -= (n.dec || 1); }
   return Math.max(0, t0);
 }
-function ttlRet(S, R, j){ let t0 = 64; for (let k = R - 1; k >= j; k--){ const n = S.nodes[k]; if (n.reset) t0 = 64; else if (n.router) t0--; } return Math.max(0, t0); }
+function ttlRet(S, R, j){ let t0 = 64; for (let k = R - 1; k >= j; k--){ const n = S.nodes[k]; if (n.reset) t0 = 64; else if (n.router) t0 -= (n.dec || 1); } return Math.max(0, t0); }
 function fwdState(S, f, i){
   const st = Object.assign({}, S.base);
   for (let k = 0; k <= i; k++) Object.assign(st, S.nodes[k].set || {});
