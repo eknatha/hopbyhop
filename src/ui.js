@@ -50,6 +50,7 @@ function drawMap(){
   zones.forEach((z, zi) => {
     const zg = SV('g', {style:`--zc:${ZC[zi % ZC.length]}`, id:'Z' + zi, class:'zg'}, root);
     boxAt(zg, (z.x0 + z.x1) / 2, (z.y0 + z.y1) / 2, z.x1 - z.x0, z.y1 - z.y0, 6, -6, 'zp');
+    if (app.fx.atm) atmosphere(zg, z, zi);
     const [lx, ly] = Pj(z.x0, z.y1, 0); const tx = SV('text', {x:lx + 16, y:ly - 6, class:'zl'}, zg); tx.textContent = z.name;
   });
   const maxD = Math.max(...S.nodes.map((nd, k) => k ? nd.ms - S.nodes[k - 1].ms : 0), 1);
@@ -68,7 +69,7 @@ function drawMap(){
     const nm = SV('text', {x:sx, y:sy + 36, class:'nname'}, ng); nm.textContent = nd.name;
     const ad = SV('text', {x:sx, y:sy + 49, class:'naddr'}, ng); ad.textContent = nd.addr || '';
     if (QTYPES.includes(nd.type)){ const q = SV('g', {class:'q', id:'Q' + k}, ng); for (let i = 0; i < 6; i++) SV('rect', {x:sx + 27 + i * 5, y:sy - 2, width:3.4, height:8, rx:1, class:'qc'}, q); const qp = SV('text', {x:sx + 27, y:sy - 6, class:'qpop'}, q); qp.textContent = 'tail-drop'; }
-    ng.addEventListener('click', () => goto(nodeFirstStep(k)));
+    ng.addEventListener('click', () => { devHide(); goto(nodeFirstStep(k)); });
     ng.addEventListener('keydown', e => { if (e.key === 'Enter') goto(nodeFirstStep(k)); });
   });
   SV('g', {id:'fx'}, svg); SV('g', {id:'tag'}, svg); const tr = SV('g', {id:'trail'}, svg); for (let q = 0; q < TRAILN; q++) SV('circle', {r:3, class:'trl', cx:-999, cy:-999}, tr); trailPts = [];
@@ -76,7 +77,7 @@ function drawMap(){
   const pk = SV('g', {id:'pkt'}, svg); SV('g', {id:'pbody', class:'pk'}, pk); SV('text', {id:'ptxt', class:'ptxt', x:0, y:-4}, pk); SV('text', {id:'pms', class:'pms', x:0, y:15}, pk); PREV_LAYERS = [];
   const zoneOf = []; zones.forEach((z, zi) => { for (let k = z.i; k <= z.j; k++) zoneOf[k] = zi; });
   scene = {pts, scr, zones, fit, vb:Object.assign({}, fit), zoneOf, maxD, cam:null, camT:null, slow:false};
-  svg.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`);
+  svg.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`); scene.ex = !!app.explode; geoSetup();
   // minimap
   const mi = $('#mini'); mi.innerHTML = ''; mi.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`);
   scr.forEach((s, k) => SV('circle', {cx:s[0], cy:s[1], r:9, class:'mn', id:'mn' + k}, mi));
@@ -118,7 +119,8 @@ function drawPacketBody(o, prev, animate){
     }
     boxAt(gg, 0, 0, l.w, l.d, 4.5, z, 'sl ' + l.c + (l.f ? ' flash' : ''));
     if (animate && prev && old && l.f){ const gh = SV('g', {class:'slab ghost'}, pb); boxAt(gh, 0, 0, l.w, l.d, 4.5, z, 'sl ' + l.c); }
-    cur.push({c:l.c, w:l.w, d:l.d, z}); z += 5.5;
+    if (app.explode){ const tx = SV('text', {x:l.w + 14, y:-(z + 3), class:'xl'}, gg); tx.textContent = layerLabel(l, v, o); }
+    cur.push({c:l.c, w:l.w, d:l.d, z}); z += app.explode ? 17 : 5.5;
   });
   PL.forEach(x => { if (!cur.find(y => y.c === x.c)){ const gh = SV('g', {class:'slab leave'}, pb); boxAt(gh, 0, 0, x.w, x.d, 4.5, x.z, 'sl ' + x.c); } });
   PREV_LAYERS = cur;
@@ -134,10 +136,10 @@ function placePacket(){
   const a = scene.scr[nodePos(s0, g)], b = scene.scr[nodePos(s1, g)];
   const rev = Math.round(t0) > g.F, x = a[0] + (b[0] - a[0]) * fr + (rev ? 10 : 0), y = a[1] + (b[1] - a[1]) * fr - PZ + (rev ? 12 : 0);
   $('#pkt').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
-  pushTrail(x, y, rev);
+  pushTrail(x, y, rev); if (GEO.pts) geoDraw();
   const f = scene.fit; let vb = f;
-  const kz = app.zoom === 'follow' ? (scene.slow ? 0.34 : 0.46) : (scene.slow && app.fx.cam ? 0.62 : 0);
-  if (kz){ const w = f.w * kz, h = f.h * kz; vb = {x:Math.max(f.x, Math.min(f.x + f.w - w, x - w / 2)), y:Math.max(f.y, Math.min(f.y + f.h - h, y + 30 - h / 2)), w, h}; }
+  const kz = app.zoom === 'follow' ? (app.story ? 0.7 : scene.slow ? 0.34 : 0.46) : (scene.slow && app.fx.cam ? 0.62 : 0);
+  if (kz){ const w = f.w * kz, h = f.h * kz; vb = {x:Math.max(f.x, Math.min(f.x + f.w - w, x - w / 2)), y:Math.max(f.y, Math.min(f.y + f.h - h, y + (app.story ? 90 : 30) - h / 2)), w, h}; }
   camTo(vb);
   const pm = $('#pms'); if (pm) pm.textContent = '+' + msAt(t0, g).toFixed(1) + ' ms';
   $('#scrub').value = t0;
@@ -200,6 +202,7 @@ function updateMap(animate){
   }
   drawPacketBody(o, prev, animate); applyLod(); updateQueues(g, pos);
   if (animate) fxOnStep(g, o, prev, pos);
+  if (animate) celebrate();
   if (animate) kick(); else { app.t = app.s; placePacket(); }
 }
 function stepAnim(now){
@@ -324,9 +327,9 @@ function drawDocsTab(){
   return `<p class="hint" style="margin:0 0 8px">Only official sources are linked: standards bodies, project and cloud-vendor documentation.</p><div class="dl">${ids.map(id => { const d = DOCS[id]; return `<a href="${d.u}" target="_blank" rel="noopener"><span>${esc(d.l)}</span><em>${d.k}</em><small>${esc(d.s ? d.s + ' · ' : '')}${esc(d.u.replace(/^https?:\/\//, ''))}</small></a>`; }).join('')}</div>`;
 }
 function drawInspector(){
-  const tabs = [['passport', t('passport')], ['l7', t('l7')], ['how', t('how')], ['xray', t('xray')], ['docs', t('docs')]];
+  const tabs = [['passport', t('passport')], ['l7', t('l7')], ['how', t('how')], ['xray', t('xray')], ['whatif', 'What if…'], ['docs', t('docs')]];
   $('#itabs').innerHTML = tabs.map(([k, l]) => `<button data-t="${k}" class="${app.itab === k ? 'on' : ''}">${esc(l)}</button>`).join('');
-  const _h = app.itab === 'passport' ? drawPassport() : app.itab === 'l7' ? drawL7() : app.itab === 'how' ? drawHow() : app.itab === 'xray' ? drawXray() : drawDocsTab();
+  const _h = app.itab === 'passport' ? drawPassport() : app.itab === 'l7' ? drawL7() : app.itab === 'how' ? drawHow() : app.itab === 'xray' ? drawXray() : app.itab === 'whatif' ? drawWhatIf() : drawDocsTab();
   $('#ibody').innerHTML = _h;
   if (ROLL){ ROLL = false; $$('#ibody .fr.chg .n, #ibody .fr.der .n, #ibody .ci-v b').forEach(e => rollEl(e)); }
 }
@@ -374,11 +377,11 @@ function drawHeader(){
   $('#progPct').textContent = Math.round(done / keys.length * 100) + '%';
   $('#progBar').innerHTML = keys.map(k => `<i class="${(app.prog[k] || {}).done ? 'done' : (app.prog[k] || {}).max > 0 ? 'prog' : ''}"></i>`).join('');
   $('#progTxt').textContent = `${done}/${keys.length} ${t('complete')} · ${prog} ${t('inProgress')}`;
-  $('#viewSel').innerHTML = [['map', t('map')], ['seq', t('sequence')]].map(([k, l]) => `<button data-v="${k}" class="${app.view === k ? 'on' : ''}">${l}</button>`).join('');
+  $('#viewSel').innerHTML = [['map', t('map')], ['seq', t('sequence')], ['lanes', 'Layers']].map(([k, l]) => `<button data-v="${k}" class="${app.view === k ? 'on' : ''}">${l}</button>`).join('');
   $('#zoomSel').innerHTML = [['fit', t('fit')], ['follow', t('follow')]].map(([k, l]) => `<button data-z="${k}" class="${app.zoom === k ? 'on' : ''}">${l}</button>`).join('');
   $('#detSel').innerHTML = [[0, 'Simple'], [1, 'Detailed']].map(([k, l]) => `<button data-d="${k}" class="${(+app.detail) === k ? 'on' : ''}">${l}</button>`).join('');
   $('#zoomSel').style.visibility = app.view === 'map' ? 'visible' : 'hidden';
-  $('#stage').style.display = app.view === 'map' ? '' : 'none'; $('#seq').style.display = app.view === 'seq' ? 'block' : 'none';
+  $('#stage').style.display = app.view === 'map' ? '' : 'none'; $('#seq').style.display = app.view === 'seq' ? 'block' : 'none'; $('#lanes').style.display = app.view === 'lanes' ? 'block' : 'none'; $('#bExplode').style.display = app.view === 'map' ? '' : 'none';
   $('#mini').style.display = app.view === 'map' && app.zoom === 'follow' ? '' : 'none';
   const sf = $('#selF'); sf.innerHTML = `<option value="none">${t('noFault')}</option>` + g.S.faults.map(f => `<option value="${f.id}">${esc(f.label)}</option>`).join(''); sf.value = app.f;
 }
@@ -412,7 +415,7 @@ function syncHash(){ if (!app.touched) return; const h = hashParams(false); try{
 function shareURL(){ return location.href.split('#')[0] + '#' + hashParams(true); }
 function renderPanels(){
   drawHeader(); drawRail(); drawNarration(); drawFault(); drawInspector(); drawHops(); drawBytes();
-  if (app.view === 'seq') drawSeq();
+  if (app.view === 'seq') drawSeq(); if (app.view === 'lanes') drawLanes(); if (app.story) drawStory();
   syncHash();
 }
 const PAGES = {why:'Why is it failing?', pcap:'PCAP viewer', trace:'Traceroute decoder'};
@@ -431,9 +434,9 @@ function renderAll(animate){
 }
 function goto(s){ const g = geom(); app.s = Math.max(0, Math.min(g.count - 1, s)); markProg(); renderAll(true); }
 function stopPlay(){ app.playing = false; clearTimeout(playTimer); if (app.page === 'journey') drawNarration(); }
-function playTick(){ if (!app.playing) return; const g = geom(); if (app.s >= g.count - 1){ stopPlay(); return; } goto(app.s + 1); playTimer = setTimeout(playTick, 1800 / app.speed); }
+function playTick(){ if (!app.playing) return; const g = geom(); if (app.s >= g.count - 1){ stopPlay(); return; } goto(app.s + 1); playTimer = setTimeout(playTick, app.story ? storyDelay() : 1800 / app.speed); }
 function startPlay(){ ovStop(); const g = geom(); if (app.s >= g.count - 1){ app.s = 0; app.t = 0; } app.playing = true; playTick(); }
-function setJourney(j){ stopPlay(); ovStop(); app.j = j; app.f = 'none'; app.s = 0; app.t = 0; app.sel = null; app.page = 'journey'; CACHE.clear(); drawMap(); markProg(); renderAll(false); }
+function setJourney(j){ stopPlay(); ovStop(); purgeWi(); devHide(); app.j = j; app.f = 'none'; app.s = 0; app.t = 0; app.sel = null; app.page = 'journey'; CACHE.clear(); drawMap(); markProg(); renderAll(false); }
 function setFault(f){ stopPlay(); app.f = f; const g = geom(); app.s = f === 'none' ? 0 : Math.min(g.F, app.s); CACHE.clear(); drawMap(); renderAll(false); if (f !== 'none') goto(g.F); }
 
 /* ================= export PNG ================= */
@@ -453,7 +456,7 @@ function exportPNG(){
 }
 function applyDetail(){ const a = $('#secHops'), b = $('#secBytes'); if (a) a.open = app.detail; if (b) b.open = app.detail; }
 const THEMES = ['dark', 'light', 'hc'], TNAME = {dark:'Dark', light:'Light', hc:'Contrast'};
-function setTheme(t){ app.theme = t; document.documentElement.dataset.theme = t; try{ localStorage.setItem('hbh-theme', t); }catch(_){} const b = $('#bTheme'); if (b){ b.textContent = TNAME[t]; b.title = 'Theme: ' + TNAME[t] + ' (click to change)'; } }
+function setTheme(t){ app.theme = t; document.documentElement.dataset.theme = t; GEO.base = null; if (typeof geoDraw === 'function' && GEO.pts) setTimeout(geoDraw, 30); try{ localStorage.setItem('hbh-theme', t); }catch(_){} const b = $('#bTheme'); if (b){ b.textContent = TNAME[t]; b.title = 'Theme: ' + TNAME[t] + ' (click to change)'; } }
 function setDetail(v){ app.detail = !!v; try{ localStorage.setItem('hbh-detail', v ? '1' : '0'); }catch(_){} applyDetail(); if (app.page === 'journey') renderPanels(); }
 function closeMenu(){ $('#rail').classList.remove('open'); }
 function toast(m){ const e = $('#toast'); e.textContent = m; e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 1600); }
@@ -558,7 +561,7 @@ function bind(){
   $('#detSel').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (b) setDetail(b.dataset.d === '1'); });
   $('#lang').addEventListener('change', e => { app.lang = e.target.value; try{ localStorage.setItem('hbh-lang', app.lang); }catch(_){} renderAll(false); });
   $('#tin').addEventListener('input', drawTrace);
-  bindPcap(); bindFx();
+  bindPcap(); bindFx(); bindFx2();
   $('#bMenu').addEventListener('click', () => $('#rail').classList.toggle('open'));
   $('#whypane').addEventListener('click', e => {
     const sy = e.target.closest('[data-sym]'), rj = e.target.closest('[data-rj]');
@@ -575,6 +578,8 @@ function bind(){
     else if (e.key === ' '){ e.preventDefault(); if (app.playing) stopPlay(); else startPlay(); }
     else if (e.key.toLowerCase() === 'd'){ setDetail(!app.detail); }
     else if (e.key.toLowerCase() === 'a'){ if (app.fx.amb) ambStop(); else ambStart(); }
+    else if (e.key.toLowerCase() === 's'){ app.story ? storyOff() : storyOn(); }
+    else if (e.key.toLowerCase() === 'e'){ toggleExplode(); }
     else if (e.key.toLowerCase() === 'x'){ app.itab = 'xray'; drawInspector(); }
   });
 }
@@ -589,9 +594,9 @@ function bind(){
   if (SC[q.get('j')]) app.j = q.get('j');
   if (I18N[q.get('g')]) app.lang = q.get('g');
   if (SCN().faults.some(f => f.id === q.get('f'))) app.f = q.get('f');
-  if (['map', 'seq'].includes(q.get('v'))) app.view = q.get('v');
+  if (['map', 'seq', 'lanes'].includes(q.get('v'))) app.view = q.get('v');
   if (['all', 'L2', 'L3', 'L4', 'L7'].includes(q.get('l'))) app.layer = q.get('l');
-  if (['passport', 'l7', 'how', 'xray', 'docs'].includes(q.get('i'))) app.itab = q.get('i');
+  if (['passport', 'l7', 'how', 'xray', 'whatif', 'docs'].includes(q.get('i'))) app.itab = q.get('i');
   if (['fit', 'follow'].includes(q.get('z'))) app.zoom = q.get('z');
   if (['trace', 'why', 'pcap'].includes(q.get('p'))) app.page = q.get('p');
   if (!q.get('z') && matchMedia('(max-width:860px)').matches) app.zoom = 'follow';

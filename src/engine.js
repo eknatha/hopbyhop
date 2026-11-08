@@ -55,7 +55,7 @@ function retState(S, f, g, j){
     Object.assign(st, {proto:'icmp', type:11, code:0, id:0, seq:0, payload:lp.bytes.slice(14, 42), payName:'Quoted original packet'});
     st.ipSrc = S.nodes[g.R].addr;
     delete st.sport; delete st.dport; delete st.flags;
-  } else Object.assign(st, S.reply || {});
+  } else { Object.assign(st, S.reply || {}); if (f && f.rep) Object.assign(st, f.rep); }
   st.ttl = ttlRet(S, g.R, j); st.rev = true;
   return st;
 }

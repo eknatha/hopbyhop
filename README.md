@@ -31,3 +31,13 @@ Docs links must come from official sources only (see `DOCS`).
 - **FX menu**: latency physics, queues, camera effects, sound (off by default), ambient demo (key `a`, or `#amb=1`).
 - Guided tour on first visit (replay from FX), scrubber markers for NAT, tunnels, faults and the return path, live animated traceroute, glass panels, illustrated empty and error states.
 - The address bar stays clean on load; it only shows non-default state after you interact. The Share button copies the full link.
+
+## v4 additions
+- **Story mode** (header button or `S`): full-screen narrated tour of the current journey with chapter captions and Auto/Back/Next. Hand-written stories for web, dns, ping, aws, k8s, api, quic, wg, dhcp, netfilter, cdn, cftun; other journeys use an automatic caption.
+- **What if…** tab: TTL, MTU and DROP-vs-REJECT sliders with live outcomes and a replay on the map.
+- **Explode** (`E`): pulls the header stack apart with labelled layers.
+- **Layers view**: swimlane timeline of what happens at L7/L4/L3/L2 at every step; click a cell to jump.
+- **Device card**: hover a device to see its table.
+- **World view**: dot-matrix map with live day/night shading, the packet's path and a time-of-day slider (web, dns, ping, cftun, cdn).
+- Zone atmosphere (FX menu), confetti-free completion bloom.
+- 11 new journeys: QUIC, WireGuard, BGP flap, DoH, DHCP, service mesh, GCP Cloud NAT, GCP external LB, Cloudflare Tunnel, CDN cache, Linux netfilter.

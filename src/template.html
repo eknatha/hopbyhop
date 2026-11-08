@@ -22,11 +22,13 @@
   <button class="btn" id="bExport" data-i="export">PNG</button>
   <select id="lang" aria-label="Language"><option value="en">EN</option><option value="te">తెలుగు</option><option value="hi">हिन्दी</option></select>
   <button class="btn" id="bTheme" aria-label="Change theme">Theme</button>
+  <button class="btn" id="bStory" title="Story mode (S)">Story</button><button class="btn" id="bExplode" title="Explode the header stack (E)">Explode</button>
   <span class="fxwrap"><button class="btn" id="bFx" aria-label="Effects" aria-haspopup="true">FX</button>
     <div id="fxPop" class="fxpop" hidden>
       <label><input type="checkbox" data-fx="lat"><span>Latency physics<small>slow links look slow</small></span></label>
       <label><input type="checkbox" data-fx="q"><span>Queue view<small>buffers on routers and switches</small></span></label>
       <label><input type="checkbox" data-fx="cam"><span>Camera effects<small>parallax tilt and bullet time</small></span></label>
+      <label><input type="checkbox" data-fx="atm"><span>Zone atmosphere<small>ambient life in each network</small></span></label>
       <label><input type="checkbox" data-fx="snd"><span>Sound<small>quiet cues, off by default</small></span></label>
       <label><input type="checkbox" data-fx="amb"><span>Ambient demo<small>hands-free loop (key A)</small></span></label>
       <button class="btn" id="fxTour">Replay the tour</button>
@@ -38,7 +40,7 @@
     <div class="stagewrap">
       <div id="stage"><svg id="map" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Isometric packet path"></svg></div>
       <div id="ztoast" class="ztoast" aria-hidden="true"></div><div id="ovmsg" class="ovmsg" aria-live="polite"></div>
-      <div id="seq" class="seq" style="display:none"></div>
+      <div id="seq" class="seq" style="display:none"></div><div id="lanes" class="lanes" style="display:none"></div><div id="devcard" class="devcard" aria-hidden="true"></div>
       <svg id="mini" class="mini" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
     </div>
     <div class="ctl">
@@ -58,6 +60,7 @@
     </div>
     <div id="faultBox"></div>
     <details class="sec" id="secHops"><summary>Hop table</summary><div class="tw" id="hops"></div></details>
+    <details class="sec" id="secGeo" hidden><summary>World view · day and night</summary><div class="geo"><canvas id="geoC" aria-label="World map with the packet's path"></canvas><div class="geol"><span id="geoNote"></span><label>Time of day <input type="range" id="geoT" min="0" max="1439" step="5"> <b id="geoTl">now</b></label><button class="btn" id="geoNow">Now</button></div></div></details>
     <details class="sec" id="secBytes"><summary>Packet bytes</summary><div id="bytes" class="bytes"></div></details>
   </section>
   <aside class="right" id="right">
@@ -85,6 +88,7 @@
     <div class="tw" id="pconvs"></div><div id="pladder"></div>
   </section>
 </main>
+<div id="storycap" class="storycap" hidden role="status" aria-live="polite"><div class="sk" id="sKick"></div><h3 id="sTitle"></h3><p id="sText"></p><div class="spips" id="sPips"></div><div class="sbtn"><button class="btn" id="sPrev">Back</button><button class="btn pri" id="sAuto">Auto</button><button class="btn" id="sNext">Next</button><button class="btn" id="sExit">Exit</button></div></div>
 <div id="ambBadge" class="ambbadge" hidden>● Ambient demo · click anywhere to stop</div>
 <div id="tour" class="tour" hidden role="dialog" aria-modal="true" aria-label="Quick tour"><div id="thole" class="thole"></div><div id="tcard" class="tcard"><small id="tstep"></small><h3 id="tt"></h3><p id="td"></p><div class="tbtn"><button class="btn" id="tskip">Skip</button><span></span><button class="btn" id="tback">Back</button><button class="btn pri" id="tnext">Next</button></div></div></div>
 <footer class="foot"><b>Private by design.</b> Everything runs in your browser. Nothing you paste or open (traceroute output, captures) is uploaded, and there are no cookies or analytics. Only your theme, language and progress are saved on this device. Journeys are simplified teaching models: real devices vary.</footer>

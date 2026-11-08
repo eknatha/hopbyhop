@@ -508,6 +508,68 @@ body.amb .rail,body.amb .right{filter:saturate(.85)}
 .tdot{fill:var(--accent);stroke:var(--bg);stroke-width:2}
 @media (prefers-reduced-motion:reduce){.ripple,.rwpulse,#stage.faulted::after,.slab,.ztoast.on,.esa svg,.ambbadge,.node.est .nglow,.node.rcv .nglow,.node.lock .nglow{animation:none!important}#map{transition:none}}
 @media (max-width:860px){.fxpop{position:fixed;left:12px;right:12px;width:auto;top:56px}.ovmsg{font-size:12px}}
+/* ===== v4 ===== */
+.atm{pointer-events:none}
+.atm .ad{fill:var(--zc,var(--chg));opacity:.0;animation:adr 6s ease-in-out infinite}
+@keyframes adr{0%,100%{opacity:0;transform:translateY(0)}50%{opacity:.45;transform:translateY(-6px)}}
+.atm .ar{fill:none;stroke:var(--zc,var(--chg));stroke-width:1.2;opacity:0;transform-box:fill-box;transform-origin:center;animation:arr 5s ease-out infinite}
+@keyframes arr{0%{opacity:.5;transform:scale(.5)}100%{opacity:0;transform:scale(1.5)}}
+.atm .al{fill:var(--ok);opacity:.15;animation:alb 2.4s steps(2,end) infinite}
+@keyframes alb{50%{opacity:.75}}
+.atm .ah{fill:none;stroke:var(--zc,var(--accent));stroke-width:1.2;opacity:.18}
+/* explode */
+.xl{fill:var(--dim);font:600 9.5px var(--mono);letter-spacing:.04em}
+#bExplode.on,#bStory.on{border-color:var(--accent);color:var(--accent)}
+.slab{transition:transform .5s cubic-bezier(.3,1.2,.4,1)}
+/* device card */
+.devcard{position:absolute;z-index:6;pointer-events:none;opacity:0;transform:translate(0,calc(-100% + 6px)) scale(.97);transform-origin:50% 100%;transition:opacity .16s,transform .18s;background:color-mix(in srgb,var(--panel) 90%,transparent);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:10px;padding:10px 12px;box-shadow:0 18px 40px -10px rgba(0,0,0,.6);font-size:12px}
+.devcard.below{transform:translate(0,6px) scale(.97);transform-origin:50% 0}
+.devcard.on{opacity:1;transform:translate(0,-100%) scale(1)}.devcard.below.on{transform:translate(0,0) scale(1)}
+.devcard .dh{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}.devcard .dh span{font:600 9.5px var(--mono);color:var(--accent);letter-spacing:.1em}
+.devcard .dt{font:600 10px var(--mono);color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.devcard table{border-collapse:collapse;width:100%;font:11px var(--mono)}.devcard td{padding:2px 4px;border-bottom:1px solid var(--line);color:var(--dim)}
+.devcard tr.hit td{color:var(--text);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.devcard p{margin:0;color:var(--dim);line-height:1.45}.devcard .dk{margin-top:6px;font-size:10px;color:var(--chg)}
+.dfl{display:flex;flex-wrap:wrap;gap:3px;align-items:center;font:11px var(--mono)}.dfl span{padding:1px 5px;border:1px solid var(--line);border-radius:4px}.dfl span.hit{border-color:var(--accent);color:var(--accent)}.dfl i{color:var(--dim);font-style:normal}
+.node.lift{filter:drop-shadow(0 0 7px var(--accent))}
+/* bloom */
+.bloom .blr{fill:none;stroke:var(--ok);stroke-width:2;transform-box:fill-box;transform-origin:center;animation:blr 1.6s ease-out both}
+@keyframes blr{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(1.9)}}
+.bloom .blc{animation:blc 2.2s ease-out both}.bloom .blb{fill:var(--ok)}.bloom .blk{fill:none;stroke:var(--bg);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@keyframes blc{0%{opacity:0;transform:translate(var(--bx,0),0) scale(.3)}20%{opacity:1}100%{opacity:0}}
+.prog.pulse{animation:ppulse .9s ease-out}@keyframes ppulse{40%{box-shadow:0 0 0 6px color-mix(in srgb,var(--ok) 30%,transparent)}}
+/* geo */
+.geo{padding:8px 0}.geo canvas{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;background:var(--panel2)}
+.geol{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--dim)}.geol label{display:flex;gap:6px;align-items:center}.geol #geoNote{color:var(--text);font-weight:600}
+/* lanes */
+.lanes{position:absolute;inset:0;overflow:auto;padding:14px;background:var(--panel)}
+.lgrid{display:grid;grid-template-columns:96px repeat(var(--n),minmax(92px,1fr));gap:4px;min-width:min-content}
+.lc{padding:6px 8px;border-radius:6px;font-size:11px;min-height:46px;display:flex;align-items:center;text-align:left}
+.lh{flex-direction:column;align-items:flex-start;justify-content:center;background:var(--panel2);border:1px solid var(--line);color:var(--text);cursor:pointer;min-height:42px}.lh b{font:700 10px var(--mono);color:var(--dim)}.lh.r{border-style:dashed}
+.ll{flex-direction:column;align-items:flex-start;justify-content:center}.ll small{color:var(--dim)}
+.lay{font:700 11px var(--mono);color:var(--accent)}
+.lcell{border:1px solid var(--line);background:var(--panel2);color:var(--text);cursor:pointer;opacity:0;animation:lin .35s ease-out forwards;animation-delay:calc(var(--i)*35ms)}
+@keyframes lin{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+.lcell.chg{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--panel2))}.lcell.tun{border-color:var(--chg);background:color-mix(in srgb,var(--chg) 14%,var(--panel2))}.lcell.act{border-color:var(--ok)}.lcell.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,var(--panel2))}
+.lempty.r,.lcell.r{border-style:dashed}
+.lc.past{opacity:.6}.lc.cur{box-shadow:0 0 0 2px var(--accent);opacity:1}
+/* what if */
+.wcard{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0;background:var(--panel2)}.wcard h4{margin:0 0 6px;font-size:12px;display:flex;gap:8px;align-items:baseline}.wcard input[type=range]{width:100%}
+.wc-row{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0}.wc{display:grid;justify-items:center;min-width:36px;padding:3px 5px;border:1px solid var(--line);border-radius:6px;font:11px var(--mono)}.wc i{font-style:normal;color:var(--dim);font-size:9px}.wc.bad{border-color:var(--bad);color:var(--bad)}.wc.gone{opacity:.35}
+.wo{margin:6px 0;padding:8px 10px;border-radius:8px;border-left:3px solid var(--ok);background:color-mix(in srgb,var(--ok) 9%,transparent);line-height:1.5}.wo.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 9%,transparent)}.wo.warn{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.wl{display:block;margin:6px 0;font-size:12px}.wl input{width:100%}.wrow{display:flex;gap:12px;flex-wrap:wrap;margin:6px 0;font-size:12px;align-items:center}.wrow .dis{opacity:.5}
+/* story */
+body.story .rail,body.story #right,body.story .ctl,body.story .narr,body.story .sec,body.story #faultBox,body.story .hgrp,body.story .brand small,body.story .prog,body.story #bShare,body.story #bExport,body.story #lang,body.story .fxwrap,body.story #bExplode{display:none!important}
+body.story .app{grid-template-columns:1fr!important}
+.storycap{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);width:min(620px,calc(100vw - 24px));z-index:30;padding:16px 20px 14px;border-radius:14px;background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(14px);border:1px solid var(--line);box-shadow:0 30px 60px -16px rgba(0,0,0,.7)}
+.storycap[hidden]{display:none}.storycap .sk{font:700 10px var(--mono);letter-spacing:.14em;color:var(--accent);text-transform:uppercase}.storycap.bad .sk{color:var(--bad)}
+.storycap h3{margin:4px 0 6px;font-size:20px}.storycap p{margin:0 0 12px;color:var(--dim);font-size:15px;line-height:1.55}
+.storycap.swap h3,.storycap.swap p,.storycap.swap .sk{animation:swp .5s ease-out}@keyframes swp{from{opacity:0;transform:translateY(8px)}}
+.spips{display:flex;gap:4px;margin-bottom:10px}.spips i{flex:1;height:3px;border-radius:2px;background:var(--line)}.spips i.past{background:var(--dim)}.spips i.on{background:var(--accent)}.spips i.r{opacity:.6}
+.sbtn{display:flex;gap:8px;justify-content:flex-end}
+@media (prefers-reduced-motion:reduce){.atm *,.bloom *,.lcell,.storycap *{animation:none!important}.devcard,.slab{transition:none}}
+.devcard td{word-break:break-word}.devcard table{table-layout:auto;max-width:100%}
+body.story .foot{display:none}body.story .stagewrap{height:calc(100vh - 70px)}body.story #stage{height:100%}body.story #stage svg{height:100%;width:100%}body.story #mini{display:none}
 </style>
 </head>
 <body>
@@ -525,11 +587,13 @@ body.amb .rail,body.amb .right{filter:saturate(.85)}
   <button class="btn" id="bExport" data-i="export">PNG</button>
   <select id="lang" aria-label="Language"><option value="en">EN</option><option value="te">తెలుగు</option><option value="hi">हिन्दी</option></select>
   <button class="btn" id="bTheme" aria-label="Change theme">Theme</button>
+  <button class="btn" id="bStory" title="Story mode (S)">Story</button><button class="btn" id="bExplode" title="Explode the header stack (E)">Explode</button>
   <span class="fxwrap"><button class="btn" id="bFx" aria-label="Effects" aria-haspopup="true">FX</button>
     <div id="fxPop" class="fxpop" hidden>
       <label><input type="checkbox" data-fx="lat"><span>Latency physics<small>slow links look slow</small></span></label>
       <label><input type="checkbox" data-fx="q"><span>Queue view<small>buffers on routers and switches</small></span></label>
       <label><input type="checkbox" data-fx="cam"><span>Camera effects<small>parallax tilt and bullet time</small></span></label>
+      <label><input type="checkbox" data-fx="atm"><span>Zone atmosphere<small>ambient life in each network</small></span></label>
       <label><input type="checkbox" data-fx="snd"><span>Sound<small>quiet cues, off by default</small></span></label>
       <label><input type="checkbox" data-fx="amb"><span>Ambient demo<small>hands-free loop (key A)</small></span></label>
       <button class="btn" id="fxTour">Replay the tour</button>
@@ -541,7 +605,7 @@ body.amb .rail,body.amb .right{filter:saturate(.85)}
     <div class="stagewrap">
       <div id="stage"><svg id="map" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Isometric packet path"></svg></div>
       <div id="ztoast" class="ztoast" aria-hidden="true"></div><div id="ovmsg" class="ovmsg" aria-live="polite"></div>
-      <div id="seq" class="seq" style="display:none"></div>
+      <div id="seq" class="seq" style="display:none"></div><div id="lanes" class="lanes" style="display:none"></div><div id="devcard" class="devcard" aria-hidden="true"></div>
       <svg id="mini" class="mini" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
     </div>
     <div class="ctl">
@@ -561,6 +625,7 @@ body.amb .rail,body.amb .right{filter:saturate(.85)}
     </div>
     <div id="faultBox"></div>
     <details class="sec" id="secHops"><summary>Hop table</summary><div class="tw" id="hops"></div></details>
+    <details class="sec" id="secGeo" hidden><summary>World view · day and night</summary><div class="geo"><canvas id="geoC" aria-label="World map with the packet's path"></canvas><div class="geol"><span id="geoNote"></span><label>Time of day <input type="range" id="geoT" min="0" max="1439" step="5"> <b id="geoTl">now</b></label><button class="btn" id="geoNow">Now</button></div></div></details>
     <details class="sec" id="secBytes"><summary>Packet bytes</summary><div id="bytes" class="bytes"></div></details>
   </section>
   <aside class="right" id="right">
@@ -588,6 +653,7 @@ body.amb .rail,body.amb .right{filter:saturate(.85)}
     <div class="tw" id="pconvs"></div><div id="pladder"></div>
   </section>
 </main>
+<div id="storycap" class="storycap" hidden role="status" aria-live="polite"><div class="sk" id="sKick"></div><h3 id="sTitle"></h3><p id="sText"></p><div class="spips" id="sPips"></div><div class="sbtn"><button class="btn" id="sPrev">Back</button><button class="btn pri" id="sAuto">Auto</button><button class="btn" id="sNext">Next</button><button class="btn" id="sExit">Exit</button></div></div>
 <div id="ambBadge" class="ambbadge" hidden>● Ambient demo · click anywhere to stop</div>
 <div id="tour" class="tour" hidden role="dialog" aria-modal="true" aria-label="Quick tour"><div id="thole" class="thole"></div><div id="tcard" class="tcard"><small id="tstep"></small><h3 id="tt"></h3><p id="td"></p><div class="tbtn"><button class="btn" id="tskip">Skip</button><span></span><button class="btn" id="tback">Back</button><button class="btn pri" id="tnext">Next</button></div></div></div>
 <footer class="foot"><b>Private by design.</b> Everything runs in your browser. Nothing you paste or open (traceroute output, captures) is uploaded, and there are no cookies or analytics. Only your theme, language and progress are saved on this device. Journeys are simplified teaching models: real devices vary.</footer>
@@ -1348,6 +1414,385 @@ Object.assign(FMETA, {
 });
 
 "use strict";
+/* ============ v4 docs (official sources only) ============ */
+Object.assign(DOCS, {
+  rfc9000:{l:'RFC 9000 · QUIC transport',u:R(9000),k:'Standard',s:'Proposed Standard'},
+  rfc9114:{l:'RFC 9114 · HTTP/3',u:R(9114),k:'Standard',s:'Proposed Standard'},
+  rfc9113:{l:'RFC 9113 · HTTP/2',u:R(9113),k:'Standard',s:'Proposed Standard'},
+  rfc9111:{l:'RFC 9111 · HTTP caching',u:R(9111),k:'Standard',s:'Internet Standard'},
+  rfc8484:{l:'RFC 8484 · DNS over HTTPS',u:R(8484),k:'Standard',s:'Proposed Standard'},
+  rfc7858:{l:'RFC 7858 · DNS over TLS',u:R(7858),k:'Standard',s:'Proposed Standard'},
+  rfc2131:{l:'RFC 2131 · DHCP',u:R(2131),k:'Standard',s:'Draft Standard'},
+  rfc3046:{l:'RFC 3046 · DHCP relay agent information',u:R(3046),k:'Standard',s:'Proposed Standard'},
+  rfc2439:{l:'RFC 2439 · BGP route flap damping',u:R(2439),k:'Standard',s:'Proposed Standard'},
+  rfc7196:{l:'RFC 7196 · Making route flap damping usable',u:R(7196),k:'Standard',s:'Proposed Standard'},
+  rfc5880:{l:'RFC 5880 · BFD',u:R(5880),k:'Standard',s:'Proposed Standard'},
+  wgp:{l:'WireGuard · Protocol and cryptography',u:'https://www.wireguard.com/protocol/',k:'Vendor'},
+  wgq:{l:'WireGuard · Quick start',u:'https://www.wireguard.com/quickstart/',k:'Vendor'},
+  istiosec:{l:'Istio · Security concepts (mTLS, authorization)',u:'https://istio.io/latest/docs/concepts/security/',k:'Vendor'},
+  envoyarch:{l:'Envoy · Architecture overview',u:'https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/intro/intro',k:'Vendor'},
+  grpccore:{l:'gRPC · Core concepts',u:'https://grpc.io/docs/what-is-grpc/core-concepts/',k:'Vendor'},
+  gcpnat:{l:'Google Cloud · Cloud NAT overview',u:'https://cloud.google.com/nat/docs/overview',k:'Vendor'},
+  gcpfw:{l:'Google Cloud · VPC firewall rules',u:'https://cloud.google.com/firewall/docs/firewalls',k:'Vendor'},
+  gcproutes:{l:'Google Cloud · Routes',u:'https://cloud.google.com/vpc/docs/routes',k:'Vendor'},
+  gcplb:{l:'Google Cloud · External Application Load Balancer',u:'https://cloud.google.com/load-balancing/docs/https',k:'Vendor'},
+  gcphc:{l:'Google Cloud · Health checks',u:'https://cloud.google.com/load-balancing/docs/health-check-concepts',k:'Vendor'},
+  cftun:{l:'Cloudflare · Tunnel',u:'https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/',k:'Vendor'},
+  cfcache:{l:'Cloudflare · Default cache behavior',u:'https://developers.cloudflare.com/cache/concepts/default-cache-behavior/',k:'Vendor'},
+  nfhooks:{l:'nftables · Netfilter hooks',u:'https://wiki.nftables.org/wiki-nftables/index.php/Netfilter_hooks',k:'Vendor'},
+  ctools:{l:'conntrack-tools · Manual',u:'https://conntrack-tools.netfilter.org/manual.html',k:'Vendor'},
+  kipsys:{l:'Linux kernel · IP sysctl',u:'https://www.kernel.org/doc/html/latest/networking/ip-sysctl.html',k:'Vendor'}
+});
+
+/* ---- DHCP payload builder (real BOOTP layout, magic cookie, options) ---- */
+function dhcpBytes(op, type, o){
+  const b = new Array(240).fill(0), xid = [0x3a, 0x7c, 0x19, 0xe2], mac = [0x3c, 0x22, 0xfb, 0xa1, 0x09, 0x23];
+  b[0] = op; b[1] = 1; b[2] = 6; b[3] = 0; xid.forEach((v, i) => { b[4 + i] = v; });
+  if (op === 1) b[10] = 0x80;
+  (o.yi || [0, 0, 0, 0]).forEach((v, i) => { b[16 + i] = v; }); (o.si || [0, 0, 0, 0]).forEach((v, i) => { b[20 + i] = v; }); (o.gi || [0, 0, 0, 0]).forEach((v, i) => { b[24 + i] = v; });
+  mac.forEach((v, i) => { b[28 + i] = v; }); [99, 130, 83, 99].forEach((v, i) => { b[236 + i] = v; });
+  const opt = [53, 1, type]; if (op === 1) opt.push(55, 3, 1, 3, 6); else opt.push(1, 4, 255, 255, 255, 0, 3, 4, ...(o.rt || [0, 0, 0, 0]), 6, 4, 192, 168, 20, 2, 51, 4, 0, 1, 81, 128);
+  return b.concat(opt, [255]);
+}
+const DHCP_DISC = dhcpBytes(1, 1, {}), DHCP_DISC_RELAY = dhcpBytes(1, 1, {gi:[192, 168, 20, 1]}), DHCP_OFFER = dhcpBytes(2, 2, {yi:[192, 168, 20, 77], si:[192, 168, 20, 2], gi:[192, 168, 20, 1], rt:[192, 168, 20, 1]});
+const QUIC_INIT = [0xc3, 0, 0, 0, 1, 8, 0x83, 0x94, 0xc8, 0xf0, 0x3e, 0x51, 0x57, 0x08, 0, 0, 0x44, 0x20, ...new Array(44).fill(0x5a)];
+const QUIC_REPLY = [0xc3, 0, 0, 0, 1, 0, 8, 0xf0, 0x67, 0xa5, 0x50, 0x2a, 0x42, 0x62, 0xb5, 0, 0x44, 0x20, ...new Array(44).fill(0x3c)];
+
+Object.assign(SC, {
+
+/* ================================================================ Modern transport */
+quic: J('Modern transport', 'QUIC / HTTP/3', 'UDP :443 · no TCP handshake', 'Browser → CDN edge over QUIC (HTTP/3)', ['rfc9000', 'rfc9114', 'rfc768', 'rfc3022'], [
+  N('Browser', 'PC', 'host', 'Home', 'ORIGIN · QUIC INITIAL', 0, '192.168.1.23', 'The browser has seen "Alt-Svc: h3" from this site before, so it tries QUIC first: one UDP datagram that carries the TLS ClientHello inside a QUIC Initial packet. There is no separate TCP handshake. A real Initial is padded to at least 1200 bytes (shortened here).',
+    {set:{ipSrc:'192.168.1.23', ipDst:'104.18.20.10', sport:53811, dport:443, ethDst:'F4:F2:6D:5E:11:A0'}, docs:['rfc9000', 'rfc9114'], x:[TBL('Connection attempt', ['Step', 'What happens'], [['1', 'UDP 443 Initial (ClientHello inside)'], ['2', 'Server answers with its own Initial + Handshake'], ['3', 'HTTP/3 request in the first 1-RTT packet'], ['4', 'If no answer in ~300 ms, race TCP 443']], [0], 'Browsers race or fall back to TCP when UDP is blocked.', {udpblock:[0, 3]})]}),
+  N('Home router', 'NAT', 'nat', 'Home', 'NAT · UDP MAPPING', 2, '192.168.1.1', 'UDP has no connection state on the wire, so the router keeps a timer-based mapping. QUIC uses connection IDs, which lets a session survive a changed address (a phone moving from Wi-Fi to mobile).',
+    {router:true, set:{ipSrc:'100.72.18.5', sport:33811, ethSrc:'F4:F2:6D:5E:11:A1', ethDst:'00:1B:54:C2:7A:01'}, nat:{mode:'src', a:'192.168.1.23:53811', b:'100.72.18.5:33811'}, docs:['rfc3022', 'rfc9000'], x:[TBL('NAT table', ['Proto', 'Inside', 'Outside', 'Timeout'], [['udp', '192.168.1.23:53811', '100.72.18.5:33811', '30 s idle']], [0], 'Idle UDP mappings expire quickly. QUIC sends keep-alives or the server must handle a new source address.', {nattimeout:[0]})]}),
+  N('ISP CGNAT', 'CG', 'nat', 'ISP', 'CGNAT · 2ND NAT', 9, '100.72.0.1', 'The carrier translates to a shared public address. Aggressive CGNAT timeouts for UDP are a common reason QUIC sessions silently die after a short idle period.',
+    {router:true, set:{ipSrc:'117.200.45.9', sport:21877, ethSrc:'00:1B:54:C2:7A:02', ethDst:'00:1B:54:C2:7B:10'}, nat:{mode:'src', a:'100.72.18.5:33811', b:'117.200.45.9:21877'}, docs:['rfc6598']}),
+  N('Edge firewall', 'FW', 'switch', 'Transit', 'UDP 443 ALLOWED?', 12, 'enterprise / campus', 'Some corporate and campus firewalls only allow TCP 443 and drop UDP 443. The client then falls back to HTTP/2 over TCP after a timeout. This is invisible to users except as a slower first load.',
+    {docs:['rfc9000'], x:[TBL('Egress policy', ['Proto', 'Port', 'Action'], [['tcp', '443', 'ALLOW'], ['udp', '443', 'DROP']], [1], 'Dropping UDP 443 forces TCP fallback.', {udpblock:[1]})]}),
+  N('Backbone', 'R', 'router', 'Transit', 'L3 FORWARD', 16, '198.51.100.1', 'Plain IP forwarding. A QUIC packet is an ordinary UDP packet to the network. Path MTU still matters: QUIC avoids fragmentation, so an Initial that is too big for the path is simply lost.',
+    {router:true, docs:['rfc1812', 'rfc9000'], x:[TBL('Path MTU', ['Link', 'MTU'], [['Home', '1500'], ['Transit', '1500'], ['Tunnel segment', '1280']], [2], 'QUIC requires the path to carry at least 1200-byte UDP payloads.', {mtu:[2]})]}),
+  N('CDN edge', 'CDN', 'server', 'CDN', 'DELIVERED · QUIC TERMINATOR', 17, '104.18.20.10', 'The CDN terminates QUIC, completes TLS 1.3, and answers over HTTP/3. Loss on one stream does not block the others, which is QUIC\'s main advantage over TCP.', {docs:['rfc9114']})
+], [
+  {id:'udpblock', at:3, type:'drop', label:'Firewall drops UDP 443', short:'UDP 443 DROP', title:'QUIC is blocked, the browser falls back to TCP', body:'The firewall allows TCP 443 but not UDP 443. The first QUIC Initial never gets an answer, so the browser waits (hundreds of milliseconds to seconds) and retries over TCP. The site works, just slower on first visit.', user:'$ curl --http3 -I https://example.com\ncurl: (28) Failed to connect: Timeout\n$ curl --http2 -I https://example.com\nHTTP/2 200', d:['rfc9000']},
+  {id:'mtu', at:4, type:'mtu', label:'Path carries less than 1200-byte UDP', short:'MTU < 1280', title:'The QUIC Initial is too big for the path', body:'QUIC Initial packets must be padded to about 1200 bytes and cannot be fragmented. A tunnel or misconfigured link with a smaller MTU drops them, and ICMP errors are often filtered, so the handshake just times out.', user:'$ ping -M do -s 1252 example.com\nping: local error: message too long, mtu=1280', d:['rfc9000', 'rfc1191']},
+  {id:'nattimeout', at:2, type:'drop', label:'CGNAT forgot the UDP mapping', short:'MAPPING GONE', title:'The carrier expired the idle UDP mapping', body:'After a short idle period the CGNAT removed its mapping. Packets from the server now have no matching entry and are dropped. QUIC recovers only if the client sends again (keep-alives) and the server accepts the new source address.', user:'# page loads, then hangs after ~30 s idle\n$ conntrack -L -p udp | grep 443\n(entry missing)', d:['rfc6598', 'rfc9000']}
+], {base:{proto:'udp', payload:QUIC_INIT, payName:'QUIC Initial (CRYPTO frame)'}, reply:{payload:QUIC_REPLY, payName:'QUIC Initial + Handshake'}, msg:{f:'QUIC Initial (ClientHello)', r:'QUIC Initial + Handshake'},
+  l7:{title:'QUIC Initial (illustrative)', note:'The payload is encrypted with keys derived from the connection ID, so on the wire only the long header is readable.', hdr:[['Header form', 'Long header, type Initial'], ['Version', '0x00000001 (QUIC v1)'], ['Destination connection ID', '8 bytes'], ['ALPN (inside, encrypted)', 'h3']]},
+  l7r:{title:'QUIC server Initial', hdr:[['Header form', 'Long header, type Initial'], ['Server connection ID', '8 bytes'], ['Next', 'Handshake packets then 1-RTT HTTP/3']]}}),
+
+/* ================================================================ VPN & tunnels */
+wg: J('VPN & tunnels', 'WireGuard to the office', 'UDP :51820 · AllowedIPs', 'Laptop → WireGuard tunnel → office gateway → internal service', ['wgp', 'wgq', 'rfc3022', 'rfc1191'], [
+  N('Laptop', 'PC', 'host', 'Coffee shop', 'ORIGIN · INNER PACKET', 0, '10.8.0.2', 'The app connects to an internal service at 10.20.0.15. The routing table sends 10.20.0.0/24 to the wg0 interface, so the kernel hands the packet to WireGuard instead of the Wi-Fi interface.',
+    {set:{ipSrc:'10.8.0.2', ipDst:'10.20.0.15', sport:49721, dport:8443}, docs:['wgq'], x:[TBL('Routing table', ['Destination', 'Interface'], [['10.20.0.0/24', 'wg0'], ['default', 'wlan0']], [0], 'If the destination is not covered by a route into wg0, it leaves through the normal path and never enters the tunnel.', {allowed:[1]})]}),
+  N('wg0', 'WG', 'tunnel', 'Coffee shop', 'ENCRYPT + ENCAPSULATE', 0.3, 'wg0 · 10.8.0.2', 'WireGuard picks the peer whose AllowedIPs contains the destination, encrypts the whole inner packet with ChaCha20-Poly1305, and wraps it in a new UDP datagram to the peer\'s endpoint. This costs about 60 bytes, so the default tunnel MTU is 1420.',
+    {set:{outer:'192.168.0.44 → 198.51.100.9 · UDP :51820 · WireGuard (+60 B)', ethSrc:'3C:22:FB:A1:09:23', ethDst:'F4:F2:6D:5E:11:A0'}, docs:['wgp', 'wgq'], x:[TBL('wg show', ['Peer', 'Allowed IPs', 'Endpoint'], [['office-gw', '10.20.0.0/24', '198.51.100.9:51820']], [0], 'AllowedIPs is both the routing filter and the access control list.', {allowed:[0]})]}),
+  N('Cafe NAT', 'NAT', 'nat', 'Coffee shop', 'NAT · UDP MAPPING', 3, '192.168.0.1', 'The cafe router NATs the outer UDP packet like any other. The mapping expires when idle, which is why WireGuard offers PersistentKeepalive for peers behind NAT.',
+    {router:true, set:{outer:'203.0.113.77 → 198.51.100.9 · UDP :51820 · WireGuard (+60 B)', ethSrc:'F4:F2:6D:5E:11:A1', ethDst:'00:1B:54:C2:7A:01'}, nat:{mode:'src', a:'192.168.0.44:51820', b:'203.0.113.77:40912'}, docs:['rfc3022', 'wgq'], x:[TBL('NAT table', ['Proto', 'Inside', 'Outside', 'Timeout'], [['udp', '192.168.0.44:51820', '203.0.113.77:40912', '30 s idle']], [0], 'Without keepalives the mapping disappears and the server cannot reach the laptop.', {keepalive:[0]})]}),
+  N('Internet', 'NET', 'router', 'Internet', 'OUTER HEADERS ONLY', 22, 'many hops', 'The internet sees an opaque UDP flow between two public addresses. Inner addresses, ports and content are hidden. If the path MTU is smaller than outer packet size, large inner packets are lost.',
+    {router:true, docs:['rfc1191', 'wgp'], x:[TBL('Sizes', ['Item', 'Bytes'], [['Inner packet', '1420 max'], ['WireGuard overhead', '60'], ['Outer packet', '1480 max']], [2], 'A path MTU under 1480 breaks full-size packets silently.', {mtu:[2]})]}),
+  N('Office gateway', 'GW', 'tunnel', 'Office', 'DECRYPT + DECAPSULATE', 24, '198.51.100.9', 'The gateway authenticates the packet by the sender\'s public key, decrypts it, and checks that the inner source address is in that peer\'s AllowedIPs. Then it routes the inner packet into the office network.',
+    {set:{outer:'', ethSrc:'00:1B:54:C2:7B:10', ethDst:'A4:7B:2C:00:19:77'}, docs:['wgp']}),
+  N('Internal service', 'SRV', 'server', 'Office', 'DELIVERED', 25, '10.20.0.15', 'The service sees a client from 10.8.0.2. Its reply is routed back to the gateway, encrypted and sent to the peer\'s latest known endpoint.', {docs:['wgp']})
+], [
+  {id:'allowed', at:1, type:'drop', label:'Destination is not in AllowedIPs', short:'ROUTE MISSING', title:'The packet never enters the tunnel', body:'The peer\'s AllowedIPs does not include 10.20.0.15, so there is no route into wg0. The packet leaves on the coffee-shop network, where a private address goes nowhere. Fix AllowedIPs and the route on both sides.', user:'$ ip route get 10.20.0.15\n10.20.0.15 via 192.168.0.1 dev wlan0   # not wg0\n$ sudo wg show wg0 allowed-ips\nPEER  10.20.1.0/24', d:['wgq']},
+  {id:'keepalive', at:2, type:'drop', label:'NAT mapping expired, no keepalive', short:'MAPPING GONE', title:'The NAT forgot the tunnel', body:'Without PersistentKeepalive, an idle tunnel behind NAT loses its mapping. Traffic from the office can no longer find the laptop, and the first packet from the laptop must re-create it. Set PersistentKeepalive = 25 on the peer behind NAT.', user:'$ sudo wg show wg0 latest-handshakes\nPEER  2 minutes, 41 seconds ago\n$ ping 10.20.0.15\n(no reply until the laptop sends first)', d:['wgq', 'rfc3022']},
+  {id:'mtu', at:3, type:'mtu', label:'Path MTU below tunnel MTU + overhead', short:'MTU', title:'Large inner packets vanish inside the tunnel', body:'Small requests work, large transfers hang. The inner packet plus 60 bytes of WireGuard overhead exceeds the path MTU, and the ICMP "fragmentation needed" message does not make it back. Lower the wg0 MTU (for example 1380).', user:'$ ping -M do -s 1392 10.20.0.15\n(no reply)\n$ ping -M do -s 1352 10.20.0.15\n64 bytes from 10.20.0.15', d:['rfc1191', 'wgp']}
+]),
+
+/* ================================================================ Routing & naming */
+bgpflap: J('Routing & naming', 'BGP route flap', 'Withdrawal · damping · BFD', 'Client → ISP edge → transit provider → server', ['rfc4271', 'rfc2439', 'rfc7196', 'rfc5880'], [
+  N('Client', 'PC', 'host', 'Customer', 'ORIGIN', 0, '192.0.2.10', 'A customer in an ISP network opens a connection to a server in another autonomous system. Nothing here knows about BGP; it only follows its default route.',
+    {set:{ipSrc:'192.0.2.10', ipDst:'203.0.113.80', sport:50220, dport:443}, docs:['rfc4271']}),
+  N('ISP edge', 'R', 'router', 'AS 64500', 'BGP BEST PATH', 4, '198.51.100.1', 'The edge router holds a BGP table with several paths to 203.0.113.0/24 and forwards along the best one (shortest AS path, then other tie-breakers). If that path is withdrawn, it must reconverge before traffic flows again.',
+    {router:true, docs:['rfc4271', 'rfc2439'], x:[TBL('BGP table 203.0.113.0/24', ['Next hop', 'AS path', 'Status'], [['198.51.100.2', '64501 64510', 'best'], ['198.51.100.6', '64502 64503 64510', 'backup']], [0], 'The best path is chosen per prefix. A flapping best path causes repeated switching.', {damp:[0, 1], withdraw:[0]})]}),
+  N('Transit A', 'TR', 'router', 'AS 64501', 'PRIMARY TRANSIT', 11, '198.51.100.2', 'The primary upstream. If its link to the destination fails, it sends a BGP withdrawal. Without fast failure detection (BFD), the failure may take tens of seconds to notice.',
+    {router:true, docs:['rfc4271', 'rfc5880'], x:[TBL('Session health', ['Mechanism', 'Detection time'], [['BGP hold timer', '90 s (default)'], ['BFD', '< 1 s']], [0], 'BFD is why modern networks fail over in under a second.', {withdraw:[0]})]}),
+  N('Destination AS', 'AS', 'router', 'AS 64510', 'ORIGIN AS', 16, '203.0.113.1', 'The network that originates the prefix. Repeated announce/withdraw cycles from here are what route flap damping tries to calm.',
+    {router:true, docs:['rfc4271']}),
+  N('Server', 'SRV', 'server', 'AS 64510', 'DELIVERED', 17, '203.0.113.80', 'The server is reachable once a valid path exists end to end. The reply may use a different path (asymmetric routing), which is normal in BGP.', {docs:['rfc4271']})
+], [
+  {id:'withdraw', at:2, type:'drop', label:'Primary path withdrawn, still converging', short:'BLACKHOLE', title:'Traffic is blackholed while BGP reconverges', body:'The primary path failed. Until the edge router learns about it (hold timer) or BFD tears the session down, it keeps forwarding into the dead path. Packets vanish for seconds to minutes, then flow again over the backup path.', user:'$ mtr -rwc 20 203.0.113.80\n  2. 198.51.100.1   0.0% loss\n  3. 198.51.100.2   100% loss\n# recovers after BGP withdraws the route', d:['rfc4271', 'rfc5880']},
+  {id:'damp', at:1, type:'drop', label:'Flap damping suppressed the prefix', short:'DAMPED', title:'The prefix is suppressed after repeated flaps', body:'Route flap damping penalises a prefix each time it flaps. Past a threshold the router stops using the route even after it is stable, until the penalty decays. This can keep a healthy destination unreachable for tens of minutes.', user:'router# show bgp ipv4 unicast dampening flap-statistics\n203.0.113.0/24  flaps 7  penalty 2400  suppressed', d:['rfc2439', 'rfc7196']}
+]),
+
+dohj: J('Routing & naming', 'DNS over HTTPS', 'Resolver lookups hidden in TLS', 'Browser → DoH resolver (HTTPS :443)', ['rfc8484', 'rfc7858', 'rfc1035', 'rfc9110'], [
+  N('Browser', 'PC', 'host', 'Home', 'ORIGIN · DOH CLIENT', 0, '192.168.1.23', 'Instead of sending a plain UDP query to the router, the browser wraps the DNS message in an HTTPS request to a resolver URL. On the wire it is just TCP 443 and TLS.',
+    {set:{ipSrc:'192.168.1.23', ipDst:'104.16.248.249', sport:50612, dport:443, ethDst:'F4:F2:6D:5E:11:A0'}, docs:['rfc8484']}),
+  N('Home router', 'NAT', 'nat', 'Home', 'SOURCE NAT', 2, '192.168.1.1', 'The router can no longer see or filter which names are looked up: the query is encrypted. Parental controls and local DNS overrides that depend on seeing port 53 stop working for this traffic.',
+    {router:true, set:{ipSrc:'100.72.18.5', sport:33211, ethSrc:'F4:F2:6D:5E:11:A1', ethDst:'00:1B:54:C2:7A:01'}, nat:{mode:'src', a:'192.168.1.23:50612', b:'100.72.18.5:33211'}, docs:['rfc3022']}),
+  N('ISP network', 'ISP', 'router', 'ISP', 'CANNOT READ QUERIES', 9, '100.72.0.1', 'The ISP sees a TLS connection to a resolver address and the SNI name, but not the DNS names inside. Blocking DoH means blocking the resolver\'s IP addresses or hostnames.',
+    {router:true, set:{ipSrc:'117.200.45.9', sport:21890, ethSrc:'00:1B:54:C2:7A:02', ethDst:'00:1B:54:C2:7B:10'}, docs:['rfc6598'], x:[TBL('What the ISP sees', ['Visible', 'Hidden'], [['Resolver IP and SNI', 'Names being looked up'], ['Volume and timing', 'Answers'], ['TCP 443', 'DNS record types']], [0], 'Metadata is visible; DNS content is not.', {blocked:[0]})]}),
+  N('DoH resolver', 'DOH', 'proxy', 'Resolver', 'HTTP/2 → DNS', 19, '104.16.248.249', 'The resolver decodes the HTTP request (GET with ?dns= or POST with application/dns-message), runs the DNS lookup, and returns the answer as an HTTP response. Caching and DNSSEC validation happen here.',
+    {reset:true, docs:['rfc8484', 'rfc9110'], x:[TBL('Request', ['Header', 'Value'], [['method', 'POST /dns-query'], ['content-type', 'application/dns-message'], ['accept', 'application/dns-message']], [0, 1], 'The body is a standard DNS wire-format message.', {splith:[0]})]}),
+  N('Authoritative server', 'NS', 'server', 'Authority', 'DELIVERED', 40, '198.51.100.53', 'On a cache miss the resolver walks the DNS tree itself. The client only talks to the DoH resolver.', {docs:['rfc1035']})
+], [
+  {id:'blocked', at:2, type:'drop', label:'Network blocks the DoH resolver', short:'BLOCKED', title:'The DoH endpoint is blocked, so the browser falls back', body:'A firewall blocks the resolver\'s IP or SNI. Depending on settings the browser either falls back to the system resolver (losing encryption) or fails closed and every lookup fails while ordinary TCP 443 sites still work.', user:'$ curl -sv https://cloudflare-dns.com/dns-query?name=example.com -H "accept: application/dns-json"\n* connect to 104.16.248.249 port 443 failed: Connection timed out', d:['rfc8484']},
+  {id:'splith', at:3, type:'l7', label:'Internal names do not resolve publicly', short:'NXDOMAIN', title:'The public DoH resolver cannot answer internal names', resp:{title:'DNS response (via DoH)', hdr:[['Question', 'intranet.corp.example IN A'], ['Status', 'NXDOMAIN'], ['Reason', 'private zone not visible to public resolvers']]}, body:'With DoH enabled in the browser, lookups skip the company resolver that knows internal zones. Public sites work, intranet names fail. Fix with a managed DoH resolver, a canary domain, or disabling DoH for the corporate network.', user:'$ dig intranet.corp.example\n;; status: NOERROR (system resolver)\n# browser with DoH on: "server not found"', d:['rfc8484', 'rfc1035']}
+], {l7:HTTPQ([['Host', 'cloudflare-dns.com'], ['Content-Type', 'application/dns-message'], ['Accept', 'application/dns-message']]), l7r:{title:'HTTP/2 200 (DNS answer)', hdr:[['content-type', 'application/dns-message'], ['cache-control', 'max-age=300']]}}),
+
+/* ================================================================ Local network */
+dhcp: J('Local network', 'DHCP on a LAN', 'Broadcast · relay · snooping', 'New laptop → switch → relay router → DHCP server', ['rfc2131', 'rfc3046', 'rfc768'], [
+  N('New laptop', 'PC', 'host', 'VLAN 20', 'ORIGIN · DISCOVER', 0, '0.0.0.0', 'A laptop with no address broadcasts DHCPDISCOVER: source 0.0.0.0 port 68, destination 255.255.255.255 port 67, Ethernet destination FF:FF:FF:FF:FF:FF. Everyone on the VLAN hears it.',
+    {set:{ipSrc:'0.0.0.0', ipDst:'255.255.255.255', sport:68, dport:67, ethSrc:'3C:22:FB:A1:09:23', ethDst:'FF:FF:FF:FF:FF:FF'}, docs:['rfc2131']}),
+  N('Access switch', 'SW', 'switch', 'VLAN 20', 'FLOOD + DHCP SNOOPING', 0.1, '24-port access', 'The switch floods the broadcast within the VLAN. With DHCP snooping enabled it also checks which ports may send DHCP server messages (OFFER, ACK). Only the uplink toward the real server is trusted.',
+    {docs:['rfc2131'], x:[TBL('Snooping trust', ['Port', 'Role', 'Server replies'], [['Gi1/0/5 (laptop)', 'untrusted', 'blocked'], ['Gi1/0/24 (uplink)', 'trusted', 'allowed']], [1], 'A rogue DHCP server on an access port is dropped here.', {snoop:[0]})]}),
+  N('Relay router', 'RLY', 'router', 'VLAN 20 gateway', 'DHCP RELAY (IP HELPER)', 0.4, '192.168.20.1', 'Routers do not forward broadcasts. With ip helper-address configured, the router converts the broadcast into a unicast to the DHCP server and fills giaddr with its own address on the client VLAN, so the server knows which pool to use.',
+    {router:true, reset:true, set:{ipSrc:'192.168.20.1', ipDst:'192.168.20.2', sport:67, dport:67, ethSrc:'00:1B:54:C2:7A:01', ethDst:'00:1B:54:C2:7B:10', payload:DHCP_DISC_RELAY}, docs:['rfc3046', 'rfc2131'], x:[TBL('Relay config', ['Setting', 'Value'], [['interface', 'VLAN 20'], ['ip helper-address', '192.168.20.2'], ['giaddr', '192.168.20.1']], [1, 2], 'Without a helper address the DISCOVER dies at this router.', {nohelper:[1]})]}),
+  N('DHCP server', 'DHCP', 'server', 'Services', 'DELIVERED · OFFER', 0.6, '192.168.20.2', 'The server picks a free lease from the scope matching giaddr and answers with DHCPOFFER carrying the address, mask, router, DNS and lease time.',
+    {docs:['rfc2131'], x:[TBL('Scope 192.168.20.0/24', ['Setting', 'Value'], [['Range', '.50 - .200'], ['Free leases', '124'], ['Lease time', '24 h']], [1], 'An exhausted pool means no OFFER at all.', {pool:[1]})]})
+], [
+  {id:'nohelper', at:2, type:'drop', label:'No ip helper-address on the router', short:'NO RELAY', title:'The broadcast stops at the router', body:'Routers never forward broadcasts. Without a relay (ip helper-address) the DHCPDISCOVER stays inside the VLAN and the client keeps retrying, eventually self-assigning a 169.254.x.x address.', user:'$ ipconfig /all   (client)\nAutoconfiguration IPv4 Address: 169.254.37.12\nDHCP Server . . . : (none)', d:['rfc3046']},
+  {id:'snoop', at:1, type:'drop', label:'Snooping drops the server reply', short:'UNTRUSTED PORT', title:'DHCP snooping blocks a reply from an untrusted port', body:'A DHCP server (or a consumer router plugged in by mistake) sits on an access port. Snooping marks that port untrusted and discards its OFFER and ACK messages, protecting clients from rogue servers.', user:'switch# show ip dhcp snooping statistics\nPackets dropped from untrusted ports: 12\n%DHCP_SNOOPING-5-DHCP_SNOOPING_UNTRUSTED_PORT: DHCPOFFER on Gi1/0/5', d:['rfc2131']},
+  {id:'pool', at:3, type:'l7', label:'Address pool exhausted', short:'NO OFFER', title:'The server has no free address to offer', resp:{title:'No DHCPOFFER', hdr:[['Server log', 'no free leases in 192.168.20.0/24'], ['Result', 'client retries, then self-assigns 169.254.x.x']]}, body:'The request reaches the server but the scope is full (long leases, many devices, or leaked addresses). Clients get no answer and fall back to link-local addresses.', user:'$ dhcpd log\nDHCPDISCOVER from 3c:22:fb:a1:09:23 via 192.168.20.1: network 192.168.20.0/24: no free leases', d:['rfc2131']}
+], {base:{proto:'udp', payload:DHCP_DISC, payName:'DHCPDISCOVER'}, reply:{payload:DHCP_OFFER, payName:'DHCPOFFER'}, msg:{f:'DHCP Discover - Transaction ID 0x3a7c19e2', r:'DHCP Offer 192.168.20.77'}, ttl:128,
+  l7:{title:'DHCPDISCOVER', hdr:[['Option 53', 'DHCP Discover'], ['Option 55', 'request subnet mask, router, DNS'], ['chaddr', '3c:22:fb:a1:09:23'], ['Flags', 'broadcast']]},
+  l7r:{title:'DHCPOFFER', hdr:[['yiaddr', '192.168.20.77'], ['Option 1 subnet mask', '255.255.255.0'], ['Option 3 router', '192.168.20.1'], ['Lease', '24 h']]}}),
+
+/* ================================================================ Service mesh */
+mesh: J('Service mesh', 'gRPC through Envoy sidecars', 'mTLS · authorization', 'Pod A → Envoy sidecar → mTLS → Envoy sidecar → Pod B', ['istiosec', 'envoyarch', 'grpccore', 'rfc9113'], [
+  N('orders (app)', 'APP', 'pod', 'Pod A', 'ORIGIN · PLAIN gRPC', 0, '10.244.1.8', 'The app calls payments:8080 over plain HTTP/2 (gRPC). It has no TLS code and no idea a mesh exists. iptables rules in the pod redirect its outbound traffic to the local sidecar.',
+    {set:{ipSrc:'10.244.1.8', ipDst:'10.96.14.20', sport:46210, dport:8080}, docs:['grpccore', 'istiosec']}),
+  N('Envoy sidecar A', 'ENV', 'proxy', 'Pod A', 'ORIGINATE mTLS', 0.4, '127.0.0.1:15001', 'The sidecar terminates the app connection, picks a healthy endpoint, and opens a new mutual-TLS connection using the workload certificate issued by the mesh. It can also retry, time out and record metrics.',
+    {reset:true, set:{ipSrc:'10.244.1.8', ipDst:'10.244.2.15', sport:50122, dport:15006}, docs:['envoyarch', 'istiosec'], x:[TBL('Outbound policy', ['Setting', 'Value'], [['cluster', 'payments.default.svc'], ['TLS mode', 'ISTIO_MUTUAL'], ['retries', '2 on connect-failure'], ['timeout', '15 s']], [1], 'The sidecar, not the app, decides retries and TLS.', {mtls:[1]})]}),
+  N('Cluster network', 'CNI', 'router', 'Cluster', 'POD NETWORK', 1.2, 'CNI overlay', 'The cluster network just routes an ordinary encrypted TCP connection between pod IPs. It cannot read the gRPC calls. NetworkPolicies here still apply to the sidecar-to-sidecar connection on port 15006.',
+    {router:true, docs:['k8snet']}),
+  N('Envoy sidecar B', 'ENV', 'proxy', 'Pod B', 'TERMINATE mTLS · AUTHORIZE', 1.6, '10.244.2.15:15006', 'The receiving sidecar verifies the client certificate, checks AuthorizationPolicy using the caller\'s identity (a SPIFFE ID), and forwards allowed requests to the app on localhost.',
+    {reset:true, set:{ipSrc:'127.0.0.6', ipDst:'127.0.0.1', sport:49822, dport:8080}, docs:['istiosec', 'envoyarch'], x:[TBL('AuthorizationPolicy', ['Principal', 'Operation', 'Action'], [['cluster.local/ns/default/sa/orders', 'POST /payments.Charge/*', 'ALLOW'], ['*', '*', 'DENY']], [0], 'No matching ALLOW rule means 403 RBAC: access denied.', {authz:[1]})]}),
+  N('payments (app)', 'APP', 'pod', 'Pod B', 'DELIVERED', 1.8, '127.0.0.1:8080', 'The app receives a plain request from localhost and replies; the sidecars handle encryption, identity and retries in both directions.', {docs:['grpccore']})
+], [
+  {id:'mtls', at:3, type:'l7', label:'Plain-text client hits a STRICT mTLS workload', short:'RESET', title:'The sidecar refuses a connection without a client certificate', resp:{title:'Connection reset (TLS handshake failed)', hdr:[['Envoy', 'filter chain match failed: no TLS context'], ['Client sees', 'upstream connect error or disconnect/reset before headers'], ['Cause', 'PeerAuthentication STRICT, caller has no sidecar']]}, body:'The destination enforces STRICT mutual TLS, but the caller is outside the mesh or has injection disabled, so it sends plain bytes. The sidecar drops the connection during the handshake.', user:'$ curl http://payments.default:8080/\ncurl: (56) Recv failure: Connection reset by peer\n$ kubectl get peerauthentication -A\nNAME default  MODE STRICT', d:['istiosec']},
+  {id:'authz', at:3, type:'l7', label:'AuthorizationPolicy denies the caller', short:'403 RBAC', title:'RBAC: access denied', resp:{title:'HTTP/2 403 (grpc-status 7 PERMISSION_DENIED)', hdr:[['body', 'RBAC: access denied'], ['principal', 'cluster.local/ns/default/sa/orders'], ['policy', 'no ALLOW rule matched']]}, body:'mTLS succeeded, so the network path is fine. The receiving sidecar compared the caller\'s identity with its AuthorizationPolicy and found no allowing rule. This is a policy problem, not a network one.', user:'$ grpcurl -plaintext payments:8080 payments.Charge/Create\nERROR: Code: PermissionDenied  Message: RBAC: access denied', d:['istiosec']},
+  {id:'noep', at:1, type:'l7', label:'No healthy upstream endpoints', short:'503 UH', title:'The sidecar has no healthy endpoint to call', resp:{title:'HTTP/2 503 (response flag UH)', hdr:[['body', 'no healthy upstream'], ['response flags', 'UH (no healthy upstream)'], ['cause', 'all endpoints failed readiness or were ejected']]}, body:'Envoy\'s cluster for payments has zero healthy endpoints (pods not ready, or outlier detection ejected them). The request fails inside the caller\'s own sidecar and never leaves the pod.', user:'$ istioctl proxy-config endpoints deploy/orders --cluster "outbound|8080||payments.default.svc.cluster.local"\nENDPOINT  STATUS\n10.244.2.15:8080  UNHEALTHY', d:['envoyarch']}
+], {l7:{title:'gRPC call (HTTP/2)', note:'The packet shown is the TCP SYN; the gRPC call travels inside HTTP/2 frames.', hdr:[[':method', 'POST'], [':path', '/payments.Charge/Create'], ['content-type', 'application/grpc'], ['te', 'trailers']]}, l7r:{title:'gRPC response', hdr:[[':status', '200'], ['content-type', 'application/grpc'], ['grpc-status', '0 (OK)']]}}),
+
+/* ================================================================ Google Cloud */
+gcpnat: J('Google Cloud', 'VM to internet via Cloud NAT', 'Egress firewall · routes · NAT ports', 'VM (no external IP) → VPC firewall → default route → Cloud NAT → internet', ['gcpnat', 'gcpfw', 'gcproutes', 'rfc3022'], [
+  N('VM', 'VM', 'host', 'Subnet 10.128.0.0/20', 'ORIGIN · NO EXTERNAL IP', 0, '10.128.0.5', 'A VM with only an internal address calls a public API. Without an external IP it cannot reach the internet unless a NAT is configured.',
+    {set:{ipSrc:'10.128.0.5', ipDst:'203.0.113.30', sport:48822, dport:443}, docs:['gcpnat']}),
+  N('VPC firewall', 'FW', 'switch', 'VPC network', 'EGRESS RULES', 0.1, 'distributed firewall', 'Google Cloud firewall rules are stateful and applied at the VM\'s network interface. Egress is allowed by default, but a higher-priority deny rule (lower number) overrides the implied allow.',
+    {docs:['gcpfw'], x:[TBL('Egress rules (priority order)', ['Priority', 'Action', 'Destination'], [['900', 'DENY', '0.0.0.0/0 tcp:443'], ['65535', 'ALLOW', '0.0.0.0/0 (implied)']], [0], 'Lowest number wins. A hardening rule can block egress by accident.', {fw:[0]})]}),
+  N('VPC routing', 'RT', 'router', 'VPC network', 'DEFAULT ROUTE', 0.3, '0.0.0.0/0 → default-internet-gateway', 'The VPC routes 0.0.0.0/0 to the default internet gateway. Cloud NAT works with that route: it does not exist as a device in the path but as a service attached to the router.',
+    {router:true, docs:['gcproutes'], x:[TBL('Routes', ['Destination', 'Next hop', 'Priority'], [['10.128.0.0/20', 'subnet', '0'], ['0.0.0.0/0', 'default-internet-gateway', '1000']], [1], 'Delete or override the default route and the NAT is bypassed.', {noroute:[1]})]}),
+  N('Cloud NAT', 'NAT', 'nat', 'Cloud router', 'SOURCE NAT · PORT BLOCK', 0.6, '34.80.12.7', 'Cloud NAT translates the VM\'s internal address to a NAT IP and gives each VM a block of source ports (64 by default for each destination tuple setup). Too many parallel connections to one destination can exhaust that block.',
+    {set:{ipSrc:'34.80.12.7', sport:1034}, nat:{mode:'src', a:'10.128.0.5:48822', b:'34.80.12.7:1034'}, docs:['gcpnat'], x:[TBL('NAT allocation', ['VM', 'NAT IP', 'Ports'], [['10.128.0.5', '34.80.12.7', '1024-1087 (64 ports)']], [0], 'Allocation is per VM; monitor dropped_sent_packets_count for OUT_OF_RESOURCES.', {ports:[0]})]}),
+  N('Internet', 'NET', 'router', 'Internet', 'ROUTES TO PUBLIC IP', 12, 'many hops', 'The destination only sees the NAT address, which is stable and can be allow-listed by partners.', {router:true, docs:['rfc3022']}),
+  N('API server', 'SRV', 'server', 'Internet', 'DELIVERED', 14, '203.0.113.30', 'The server replies to the NAT IP; Cloud NAT maps the reply back to the VM.', {docs:['gcpnat']})
+], [
+  {id:'fw', at:1, type:'drop', label:'Egress deny rule blocks 443', short:'DENY EGRESS', title:'A higher-priority egress deny rule drops the packet', body:'A deny rule with a lower priority number than the implied allow matches tcp:443. The connection hangs. Firewall logging shows the rule that matched.', user:'$ curl -m 5 https://api.example.com\ncurl: (28) Connection timed out\n$ gcloud compute firewall-rules list --filter="direction=EGRESS" --format="table(name,priority,denied)"', d:['gcpfw']},
+  {id:'noroute', at:2, type:'drop', label:'Default route missing', short:'NO ROUTE', title:'There is no route to the internet', body:'The default route (0.0.0.0/0 to the internet gateway) was deleted or replaced with a tag-scoped route that does not match this VM. With no route, the packet is dropped at the VPC edge and NAT is never involved.', user:'$ gcloud compute routes list --filter="destRange=0.0.0.0/0"\nListed 0 items.', d:['gcproutes']},
+  {id:'ports', at:3, type:'drop', label:'Cloud NAT out of source ports', short:'OUT_OF_RESOURCES', title:'NAT port exhaustion drops new connections', body:'Each VM gets a limited set of source ports per NAT IP and destination. A burst of connections to the same API exhausts them, so new connections time out while existing ones keep working. Increase ports per VM, add NAT IPs, or reuse connections.', user:'$ gcloud logging read \'resource.type="nat_gateway" AND jsonPayload.allocation_status="DROPPED"\'\ngcp_details: OUT_OF_RESOURCES', d:['gcpnat']}
+]),
+
+gcplb: J('Google Cloud', 'External HTTPS load balancer', 'Health checks · backend timeout', 'Client → Google Front End → HTTPS LB → backend VM', ['gcplb', 'gcphc', 'gcpfw', 'rfc9110'], [
+  N('Client', 'PC', 'host', 'Internet', 'ORIGIN', 0, '203.0.113.50', 'A browser calls the load balancer\'s anycast IP. The first Google Front End near the user terminates the connection.',
+    {set:{ipSrc:'203.0.113.50', ipDst:'34.120.10.20', sport:52480, dport:443}, docs:['gcplb']}),
+  N('Google Front End', 'GFE', 'proxy', 'Google edge', 'TERMINATE TLS', 6, '34.120.10.20', 'The GFE completes TLS and applies the URL map, Cloud Armor policy and backend service selection, then opens a new connection to a healthy backend from Google\'s proxy ranges.',
+    {reset:true, set:{ipSrc:'35.191.0.4', ipDst:'10.128.0.20', sport:41120, dport:8080}, docs:['gcplb']}),
+  N('Backend firewall', 'FW', 'switch', 'VPC network', 'ALLOW LB + HEALTH CHECKS', 7, 'VPC firewall', 'Backends need an ingress rule that allows Google\'s proxy and health-check ranges (35.191.0.0/16 and 130.211.0.0/22) to the serving port. Without it health checks fail and the backend is marked unhealthy.',
+    {docs:['gcpfw', 'gcphc'], x:[TBL('Ingress rules', ['Source', 'Port', 'Action'], [['35.191.0.0/16, 130.211.0.0/22', 'tcp:8080', 'ALLOW'], ['0.0.0.0/0', 'tcp:22', 'ALLOW']], [0], 'Missing health-check range = every backend UNHEALTHY.', {hc:[]})]}),
+  N('Backend VM', 'VM', 'server', 'Managed instance group', 'DELIVERED', 8, '10.128.0.20', 'The application replies within the backend service timeout (30 s by default). Slow endpoints, such as exports or uploads, can exceed it and be cut off by the load balancer.', {docs:['gcphc']})
+], [
+  {id:'hc', at:2, type:'l7', label:'Health-check ranges blocked', short:'502 NO HEALTHY', title:'The load balancer has no healthy backends', resp:{title:'HTTP/2 502 Bad Gateway', hdr:[['x-goog-error', 'failed_to_connect_to_backend'], ['backend status', 'UNHEALTHY (health check timeout)']]}, body:'A firewall rule does not allow Google\'s health-check ranges, so every probe fails and the backend service has no healthy instances. The load balancer returns 502 even though the VMs are fine.', user:'$ curl -I https://www.example.com\nHTTP/2 502\n$ gcloud compute backend-services get-health web-backend --global\nhealthState: UNHEALTHY', d:['gcphc', 'gcpfw']},
+  {id:'timeout', at:3, type:'l7', label:'Backend slower than the service timeout', short:'504', title:'The backend service timeout is shorter than the response time', resp:{title:'HTTP/2 504 Gateway Timeout', hdr:[['x-goog-error', 'backend_timeout'], ['backend service timeout', '30 s'], ['actual response time', '45 s']]}, body:'The request reached the backend but the response took longer than the backend service timeout, so the load balancer gave up and returned 504 while the app was still working.', user:'$ curl -w "%{time_total}\\n" https://www.example.com/export\n30.01\nHTTP/2 504', d:['gcplb']}
+]),
+
+/* ================================================================ Edge & CDN */
+cftun: J('Edge & CDN', 'Cloudflare Tunnel (no open ports)', 'Outbound-only origin connection', 'Visitor → CDN edge → tunnel → cloudflared → private app', ['cftun', 'rfc9110', 'rfc9000'], [
+  N('Visitor', 'PC', 'host', 'Internet', 'ORIGIN', 0, '192.0.2.40', 'A visitor opens app.example.com. DNS points at the CDN\'s anycast addresses, not at the origin server, which has no public address at all.',
+    {set:{ipSrc:'192.0.2.40', ipDst:'104.21.5.9', sport:51930, dport:443}, docs:['rfc9110'], geo:[12.97, 77.59]}),
+  N('CDN edge', 'EDGE', 'proxy', 'CDN edge', 'TERMINATE TLS · ACCESS POLICY', 8, '104.21.5.9', 'The edge terminates TLS, applies WAF and Access policies, and looks up which tunnel serves this hostname. It forwards the request through a connection the origin opened earlier.',
+    {reset:true, set:{ipSrc:'172.68.10.3', ipDst:'172.68.10.200', sport:49822, dport:7844}, docs:['cftun'], geo:[13.08, 80.27], x:[TBL('Edge decisions', ['Check', 'Result'], [['WAF', 'pass'], ['Access policy', 'user allowed'], ['Tunnel for app.example.com', 'connected']], [1, 2], 'A disconnected tunnel returns error 1033.', {down:[2], access:[1]})]}),
+  N('Tunnel connection', 'TUN', 'tunnel', 'Internet', 'OUTBOUND-ONLY LINK', 20, 'QUIC :7844', 'The origin connects out to the edge with several long-lived QUIC (or HTTP/2) connections. Requests travel back down these connections, so no inbound firewall port or public IP is required.',
+    {router:true, set:{outer:'172.68.10.3 → 203.0.113.9 · QUIC :7844 (tunnel)'}, docs:['cftun', 'rfc9000'], geo:[50.11, 8.68]}),
+  N('cloudflared', 'CFD', 'proxy', 'Private network', 'INGRESS RULES', 22, '203.0.113.9 (private)', 'The cloudflared daemon matches the request hostname against its ingress rules and forwards it to a local service. The final rule must be a catch-all, or the config is invalid.',
+    {reset:true, set:{outer:'', ipSrc:'10.0.0.9', ipDst:'10.0.0.50', sport:41010, dport:8080}, docs:['cftun'], geo:[50.11, 8.68], x:[TBL('config.yml ingress', ['Hostname', 'Service'], [['app.example.com', 'http://10.0.0.50:8080'], ['(catch-all)', 'http_status:404']], [0], 'A hostname missing from ingress falls through to the 404 catch-all.', {ingress:[1]})]}),
+  N('Private app', 'APP', 'server', 'Private network', 'DELIVERED', 23, '10.0.0.50', 'The app only listens on a private address and never talks to the public internet directly. Its attack surface is the tunnel, not an open port.', {docs:['cftun'], geo:[50.11, 8.68]})
+], [
+  {id:'down', at:1, type:'l7', label:'cloudflared is stopped', short:'ERROR 1033', title:'The edge has no tunnel to send the request through', resp:{title:'HTTP 530 (Cloudflare error 1033)', hdr:[['error', 'Argo Tunnel error: tunnel not connected'], ['edge', 'reached and working'], ['origin', 'no active tunnel connection']]}, body:'DNS and the edge are fine, but the cloudflared process on the origin is down or cannot reach the edge, so there is nothing to forward the request to.', user:'$ curl -I https://app.example.com\nHTTP/2 530\n$ systemctl status cloudflared\nActive: failed', d:['cftun']},
+  {id:'access', at:1, type:'l7', label:'Access policy denies the user', short:'403', title:'The Access policy blocks the request at the edge', resp:{title:'HTTP 403 (Access denied)', hdr:[['policy', 'allow emails ending @example.com'], ['identity', 'user@gmail.com'], ['origin', 'never contacted']]}, body:'The origin is healthy; the edge refused the request because the identity does not satisfy the Access policy. The origin never sees the request.', user:'$ curl -I https://app.example.com\nHTTP/2 403\ncf-access: denied', d:['cftun']},
+  {id:'ingress', at:3, type:'l7', label:'Hostname not in ingress rules', short:'404 catch-all', title:'cloudflared answers with the catch-all rule', resp:{title:'HTTP 404 (http_status:404)', hdr:[['matched rule', 'catch-all'], ['hostname', 'app.example.com'], ['hint', 'add an ingress rule for this hostname']]}, body:'The tunnel is connected and the request arrives, but the ingress list has no rule for this hostname, so the catch-all returns 404 before the app is contacted.', user:'$ cloudflared tunnel ingress validate\nOK\n$ cloudflared tunnel ingress rule https://app.example.com\nUsing rule: http_status:404', d:['cftun']}
+]),
+
+cdn: J('Edge & CDN', 'CDN cache hit or miss', 'Cache key · freshness', 'Visitor → CDN edge cache → origin', ['rfc9111', 'cfcache', 'rfc9110'], [
+  N('Visitor', 'PC', 'host', 'Home', 'ORIGIN', 0, '192.168.1.23', 'A browser requests /app.js. The CDN has copies of static files in hundreds of locations, so a nearby edge may answer without touching the origin.',
+    {set:{ipSrc:'192.168.1.23', ipDst:'104.18.20.10', sport:52790, dport:443}, docs:['rfc9111'], geo:[12.97, 77.59]}),
+  N('ISP', 'ISP', 'router', 'ISP', 'L3 FORWARD', 9, '100.72.0.1', 'Normal forwarding to the nearest CDN location.', {router:true, geo:[13.08, 80.27], docs:['rfc1812']}),
+  N('CDN edge', 'EDGE', 'proxy', 'CDN edge', 'CACHE LOOKUP', 14, '104.18.20.10', 'The edge builds a cache key (URL, host, sometimes cookies and headers) and checks freshness. On a miss it fetches from the origin and stores the response according to Cache-Control.',
+    {reset:true, set:{ipSrc:'172.68.20.5', ipDst:'203.0.113.90', sport:44012}, geo:[13.08, 80.27], docs:['rfc9111', 'cfcache'], x:[TBL('Cache lookup', ['Key', 'State', 'Age'], [['GET /app.js', 'MISS', '-'], ['GET /logo.png', 'HIT', '3412 s']], [0], 'A cookie or query string in the key can split one file into many cache entries.', {hit:[1], stale:[1]})]}),
+  N('Origin shield', 'SH', 'proxy', 'CDN regional hub', 'SECOND CACHE LAYER', 90, '172.68.200.9', 'A regional hub caches for all edges, so many edge misses become one request to the origin.', {reset:true, geo:[1.29, 103.85], docs:['cfcache']}),
+  N('Origin', 'SRV', 'server', 'Origin datacenter', 'DELIVERED · ORIGIN FETCH', 160, '203.0.113.90', 'Only a miss reaches the origin. The response carries Cache-Control, ETag and Last-Modified, which tell every cache layer how long it can reuse the copy.', {geo:[50.11, 8.68], docs:['rfc9111']})
+], [
+  {id:'hit', at:2, type:'l7', label:'Cache HIT (the fast path)', short:'HIT', title:'Served from the edge: the origin is never contacted', resp:{title:'HTTP/2 200 (cf-cache-status: HIT)', hdr:[['cf-cache-status', 'HIT'], ['age', '3412'], ['cache-control', 'public, max-age=14400'], ['origin', 'not contacted']]}, body:'The edge had a fresh copy, so it answered immediately. This is the case the CDN exists for: lower latency for the visitor and zero load on the origin.', user:'$ curl -sI https://example.com/logo.png | grep -i cache\ncf-cache-status: HIT\nage: 3412', d:['rfc9111', 'cfcache']},
+  {id:'stale', at:2, type:'l7', label:'Old content after a deploy', short:'STALE', title:'The edge keeps serving the previous version', resp:{title:'HTTP/2 200 (cf-cache-status: HIT, old file)', hdr:[['cf-cache-status', 'HIT'], ['age', '82010'], ['cache-control', 'public, max-age=86400'], ['etag', '"v1-old"']]}, body:'The file was replaced on the origin, but the edge still has a fresh copy for another day. Fix with versioned file names (app.v2.js), a purge, or shorter max-age for files that change.', user:'$ curl -sI https://example.com/app.js | egrep -i "age|etag"\nage: 82010\netag: "v1-old"', d:['rfc9111', 'cfcache']}
+]),
+
+/* ================================================================ Linux internals */
+netfilter: J('Linux internals', 'Linux router: netfilter chains', 'PREROUTING · FORWARD · POSTROUTING', 'LAN client → Linux router (kernel hooks) → internet', ['nfhooks', 'nf', 'ctools', 'kipsys'], [
+  N('LAN client', 'PC', 'host', 'LAN', 'ORIGIN', 0, '10.0.0.20', 'A client behind a Linux router opens a connection to a public server. Its default gateway is the router\'s LAN address.',
+    {set:{ipSrc:'10.0.0.20', ipDst:'203.0.113.10', sport:45212, dport:443}, docs:['nfhooks']}),
+  N('eth0 ingress', 'NIC', 'switch', 'Linux router (kernel)', 'NIC · RP_FILTER', 0.1, 'eth0 10.0.0.1', 'The frame arrives on eth0. Before netfilter sees it, the kernel can already drop it: reverse path filtering (rp_filter) discards packets whose source address would not be routed back out of the same interface.',
+    {docs:['kipsys'], x:[TBL('Interface checks', ['Setting', 'Value'], [['net.ipv4.conf.eth0.rp_filter', '1 (strict)'], ['source 10.0.0.20 routed via', 'eth0 (match)']], [0], 'With asymmetric routing, strict rp_filter drops legitimate packets silently.', {rp:[0, 1]})]}),
+  N('PREROUTING', 'PRE', 'nat', 'Linux router (kernel)', 'CONNTRACK · NAT (DNAT)', 0.2, 'raw → mangle → nat', 'The first netfilter hook. conntrack creates a NEW entry for this flow. The nat table\'s PREROUTING chain can rewrite the destination (DNAT, port forwarding). Here nothing matches, so the packet continues unchanged.',
+    {set:{ethSrc:MKM(10), ethDst:MKM(11)}, docs:['nfhooks', 'ctools'], x:[{kind:'flow', title:'Hook order (forwarded packet)', items:['PREROUTING', 'routing decision', 'FORWARD', 'POSTROUTING'], hit:[0], note:'Locally generated packets use OUTPUT instead of PREROUTING and FORWARD.'}, TBL('conntrack -L', ['Proto', 'Original', 'State'], [['tcp', '10.0.0.20:45212 → 203.0.113.10:443', 'SYN_SENT']], [0], 'conntrack remembers the flow so replies are matched automatically.')]}),
+  N('Routing decision', 'RT', 'router', 'Linux router (kernel)', 'IP FORWARDING', 0.3, 'ip route', 'The kernel looks up the destination: not a local address, so it is forwarded. Forwarding must be enabled (net.ipv4.ip_forward=1). The TTL is decremented here.',
+    {router:true, set:{ethSrc:MKM(10), ethDst:MKM(11)}, docs:['kipsys'], x:[TBL('Forwarding', ['Setting', 'Value'], [['net.ipv4.ip_forward', '1'], ['route', 'default via 198.51.100.1 dev eth1']], [0, 1], 'ip_forward=0 turns the box into a host: forwarded packets are dropped.', {ipfwd:[0]})]}),
+  N('FORWARD (filter)', 'FWD', 'switch', 'Linux router (kernel)', 'FILTER TABLE · FIREWALL', 0.4, 'iptables -L FORWARD', 'The filter table\'s FORWARD chain decides whether routed traffic is allowed. A default policy of DROP with no ACCEPT rule for this flow blocks everything. ESTABLISHED,RELATED rules let replies back in.',
+    {docs:['nfhooks', 'nf'], x:[TBL('FORWARD chain', ['#', 'Rule', 'Target'], [['1', 'ctstate ESTABLISHED,RELATED', 'ACCEPT'], ['2', 'iif eth0 oif eth1', 'ACCEPT'], ['-', 'policy', 'DROP']], [1], 'Remove rule 2 and new LAN connections are dropped here.', {fwd:[2]})]}),
+  N('POSTROUTING', 'POST', 'nat', 'Linux router (kernel)', 'MASQUERADE (SNAT)', 0.5, 'nat POSTROUTING', 'The last hook before the packet leaves. MASQUERADE rewrites the private source address to the outgoing interface\'s address and records the translation in conntrack so replies can be reversed.',
+    {set:{ipSrc:'198.51.100.77', sport:45212, ethSrc:'02:00:5E:00:00:21', ethDst:'A4:7B:2C:00:19:77'}, nat:{mode:'src', a:'10.0.0.20:45212', b:'198.51.100.77:45212'}, docs:['nfhooks', 'nf'], x:[TBL('nat POSTROUTING', ['Rule', 'Target'], [['oif eth1', 'MASQUERADE']], [0], 'Without it the packet leaves with a private source and the upstream drops it.', {masq:[]})]}),
+  N('ISP edge', 'ISP', 'router', 'ISP', 'BOGON / URPF FILTER', 5, '198.51.100.1', 'The ISP drops packets with private or spoofed source addresses (ingress filtering). A router that forgets MASQUERADE reveals itself right here.',
+    {router:true, set:{ethSrc:'A4:7B:2C:00:19:77', ethDst:'A4:7B:2C:00:19:90'}, docs:['rfc1812']}),
+  N('Web server', 'SRV', 'server', 'Internet', 'DELIVERED', 11, '203.0.113.10', 'The server replies to the router\'s public address. conntrack matches the reply to the original flow and reverses the translation before forwarding it to the client.', {docs:['ctools']})
+], [
+  {id:'rp', at:1, type:'drop', label:'Strict rp_filter drops the packet', short:'RP_FILTER', title:'Reverse path filtering rejects the source address', body:'The kernel would route replies to the packet\'s source out of a different interface, so strict reverse path filtering discards it before netfilter. Common with multi-homed hosts and asymmetric routing.', user:'$ sysctl net.ipv4.conf.all.rp_filter\nnet.ipv4.conf.all.rp_filter = 1\n$ nstat -az | grep IPReversePathFilter\nTcpExtIPReversePathFilter 42', d:['kipsys']},
+  {id:'ipfwd', at:3, type:'drop', label:'IP forwarding is disabled', short:'ip_forward=0', title:'The kernel refuses to forward the packet', body:'net.ipv4.ip_forward is 0, so the machine behaves like a host: packets not addressed to it are discarded. NAT rules look perfect, but traffic never gets that far.', user:'$ sysctl net.ipv4.ip_forward\nnet.ipv4.ip_forward = 0\n$ sudo sysctl -w net.ipv4.ip_forward=1', d:['kipsys']},
+  {id:'fwd', at:4, type:'drop', label:'FORWARD policy DROP, no ACCEPT rule', short:'FORWARD DROP', title:'The FORWARD chain drops new connections', body:'The chain\'s default policy is DROP and no rule accepts LAN to WAN traffic. Docker, ufw or a hardening script often set this. Packet counters on the policy line grow with each blocked connection.', user:'$ sudo iptables -L FORWARD -v -n\nChain FORWARD (policy DROP 318 packets, 19080 bytes)\n$ sudo nft list ruleset | grep -A5 forward', d:['nfhooks', 'nf']},
+  {id:'masq', at:6, type:'drop', label:'No MASQUERADE: upstream drops private source', short:'PRIVATE SRC', title:'The packet leaves with a private source and is dropped upstream', body:'The POSTROUTING masquerade rule is missing, so the packet keeps source 10.0.0.20. The ISP\'s ingress filter drops it. A capture on eth1 shows the request leaving but no reply ever returning.', user:'$ sudo tcpdump -ni eth1 host 203.0.113.10\nIP 10.0.0.20.45212 > 203.0.113.10.443: Flags [S]\n(no reply)\n$ sudo iptables -t nat -S POSTROUTING', d:['nf', 'nfhooks']}
+])
+
+});
+
+Object.assign(FMETA, {
+  'quic/udpblock':{sym:['timeout', 'scope'], cmd:['curl --http3 -I https://example.com', 'curl --http2 -I https://example.com', 'nc -u -vz example.com 443']},
+  'quic/mtu':{sym:['big', 'timeout'], cmd:['ping -M do -s 1252 example.com', 'tracepath -n example.com', 'ip link | grep mtu']},
+  'quic/nattimeout':{sym:['timeout'], cmd:['sudo conntrack -L -p udp | grep 443', 'sudo tcpdump -ni any udp port 443']},
+  'wg/allowed':{sym:['timeout', 'scope'], cmd:['sudo wg show wg0', 'ip route get 10.20.0.15', 'ip -4 route show table all | grep wg0']},
+  'wg/keepalive':{sym:['timeout'], cmd:['sudo wg show wg0 latest-handshakes', 'sudo tcpdump -ni any udp port 51820']},
+  'wg/mtu':{sym:['big'], cmd:['ping -M do -s 1392 10.20.0.15', 'ip link show wg0 | grep mtu', 'sudo ip link set mtu 1380 dev wg0']},
+  'bgpflap/withdraw':{sym:['timeout', 'trace'], cmd:['mtr -rwc 20 203.0.113.80', 'show bgp ipv4 unicast 203.0.113.0/24', 'show bfd neighbors']},
+  'bgpflap/damp':{sym:['timeout', 'trace'], cmd:['show bgp ipv4 unicast dampening flap-statistics', 'show bgp ipv4 unicast 203.0.113.0/24']},
+  'dohj/blocked':{sym:['dns', 'timeout'], cmd:['curl -sv "https://cloudflare-dns.com/dns-query?name=example.com" -H "accept: application/dns-json"', 'dig example.com @1.1.1.1']},
+  'dohj/splith':{sym:['dns', 'scope'], cmd:['dig intranet.corp.example', 'dig intranet.corp.example @1.1.1.1', 'resolvectl status']},
+  'dhcp/nohelper':{sym:['timeout', 'cross'], cmd:['sudo tcpdump -ni eth0 port 67 or port 68', 'show running-config interface vlan20 | include helper', 'dhclient -v eth0']},
+  'dhcp/snoop':{sym:['timeout', 'scope'], cmd:['show ip dhcp snooping', 'show ip dhcp snooping statistics', 'show ip dhcp snooping binding']},
+  'dhcp/pool':{sym:['timeout'], cmd:['sudo journalctl -u isc-dhcp-server | tail', 'dhcp-lease-list', 'show ip dhcp pool']},
+  'mesh/mtls':{sym:['refused'], cmd:['kubectl get peerauthentication -A', 'istioctl x describe pod POD', 'istioctl proxy-config listeners POD --port 15006']},
+  'mesh/authz':{sym:['http', 'scope'], cmd:['kubectl get authorizationpolicy -A -o yaml', 'istioctl x authz check POD', 'kubectl logs POD -c istio-proxy | grep RBAC']},
+  'mesh/noep':{sym:['http'], cmd:['istioctl proxy-config endpoints POD', 'kubectl get endpoints payments', 'kubectl get pods -l app=payments']},
+  'gcpnat/fw':{sym:['timeout', 'scope'], cmd:['gcloud compute firewall-rules list --filter="direction=EGRESS"', 'gcloud compute instances describe VM --format="get(tags.items)"']},
+  'gcpnat/noroute':{sym:['timeout'], cmd:['gcloud compute routes list --filter="destRange=0.0.0.0/0"', 'gcloud compute routers get-status ROUTER --region REGION']},
+  'gcpnat/ports':{sym:['timeout', 'scope'], cmd:['gcloud logging read \'resource.type="nat_gateway" AND jsonPayload.allocation_status="DROPPED"\' --limit 20', 'gcloud compute routers nats describe NAT --router ROUTER --region REGION']},
+  'gcplb/hc':{sym:['http'], cmd:['gcloud compute backend-services get-health BACKEND --global', 'gcloud compute firewall-rules list --filter="sourceRanges:35.191.0.0/16"']},
+  'gcplb/timeout':{sym:['http'], cmd:['gcloud compute backend-services describe BACKEND --global --format="get(timeoutSec)"', 'curl -w "%{time_total}\\n" -o /dev/null -s https://www.example.com/slow']},
+  'cftun/down':{sym:['http'], cmd:['cloudflared tunnel info TUNNEL', 'systemctl status cloudflared', 'cloudflared tunnel run --loglevel debug TUNNEL']},
+  'cftun/access':{sym:['http', 'scope'], cmd:['curl -I https://app.example.com', 'cloudflared access login https://app.example.com']},
+  'cftun/ingress':{sym:['http'], cmd:['cloudflared tunnel ingress validate', 'cloudflared tunnel ingress rule https://app.example.com']},
+  'cdn/hit':{sym:[], cmd:['curl -sI https://example.com/logo.png | grep -iE "cache|age"']},
+  'cdn/stale':{sym:['http'], cmd:['curl -sI https://example.com/app.js | grep -iE "age|etag|cache-control"', 'curl -sI -H "Cache-Control: no-cache" https://example.com/app.js']},
+  'netfilter/rp':{sym:['timeout', 'scope'], cmd:['sysctl net.ipv4.conf.all.rp_filter', 'nstat -az | grep ReversePath', 'ip route get 10.0.0.20 from 203.0.113.10 iif eth1']},
+  'netfilter/ipfwd':{sym:['timeout', 'cross'], cmd:['sysctl net.ipv4.ip_forward', 'sudo sysctl -w net.ipv4.ip_forward=1']},
+  'netfilter/fwd':{sym:['timeout', 'cross'], cmd:['sudo iptables -L FORWARD -v -n', 'sudo nft list ruleset', 'sudo iptables -I FORWARD -i eth0 -o eth1 -j ACCEPT']},
+  'netfilter/masq':{sym:['timeout'], cmd:['sudo tcpdump -ni eth1 host 203.0.113.10', 'sudo iptables -t nat -S POSTROUTING', 'sudo conntrack -L | grep 203.0.113.10']}
+});
+
+/* ================= data5.js: story text and geography ================= */
+const STORY = {
+  web:[
+    ['Your laptop decides who to ask','The laptop wants a web page. The server is far outside your home network, so it does not ask the server directly. It hands the packet to the one neighbour it knows: your router.'],
+    ['The home router swaps your name tag','Your laptop only has a private address, which means nothing on the internet. The router writes its own public-facing address on the packet and remembers who asked, like a receptionist logging a call.'],
+    ['Your ISP does it again','Your ISP has too few addresses, so many homes share one. Another swap, another note in a ledger. This is why hosting something at home is hard on some connections.'],
+    ['Out onto the backbone','Now the packet is just freight. The router reads the destination, picks the best next road and moves on. It does not care what is inside.'],
+    ['Handing over at the exchange','Networks meet at internet exchanges and hand traffic across. Most of the distance, and most of the delay, is behind us.'],
+    ['The front door picks a server','The company has many servers behind one address. The load balancer chooses a healthy one and rewrites the destination to point at it.'],
+    ['Arrival','The right machine, the right door, something listening. It answers, and the reply retraces every step, undoing each swap using the notes left on the way in.']
+  ],
+  dns:[
+    ['A question, not a download','Before anything loads, the laptop has to turn a name into a number. It sends a tiny question over UDP: what is the address of this name?'],
+    ['Router remembers the asker','The router rewrites the sender so the answer can find its way back, and keeps a short-lived note of who asked.'],
+    ['The ISP translates again','A second swap by the carrier. The question is still only a few dozen bytes.'],
+    ['Across the backbone','Plain routing. Each router lowers the hop counter by one and passes it on.'],
+    ['The resolver answers','The public resolver looks the name up or finds it in its memory, and replies with the address you needed. The first of many steps to a web page.']
+  ],
+  ping:[
+    ['The shortest message','A ping is the smallest possible question: are you there? It carries no application at all, only an echo request.'],
+    ['Home router','The router forwards it and rewrites the sender, just like any other traffic.'],
+    ['ISP','Another translation, another note in the ledger.'],
+    ['Backbone','Routers count down the hop limit as the request passes.'],
+    ['Exchange','Another network, another hand-off.'],
+    ['The server answers','It echoes the same bytes back. The time between send and return is the round-trip time you see in the terminal.']
+  ],
+  aws:[
+    ['An instance with a private address','The instance only knows its private VPC address. It sends toward its subnet router.'],
+    ['The VPC router','Route tables decide where the packet goes. A route to the internet gateway is the line between a private and a public subnet.'],
+    ['NAT gateway','Private instances share one public address through the NAT gateway, which tracks each conversation.'],
+    ['Internet gateway','The doorway between the VPC and the public internet, which swaps private and public addresses.'],
+    ['The internet server','Delivered. The reply returns the same way and each translation is undone.']
+  ],
+  k8s:[
+    ['One pod calls another','A pod talks to a service as if it were a normal server, with no idea the target lives on a different machine.'],
+    ['The node rewrites the destination','iptables rules on the node swap the service address for a real pod address, chosen from the available backends.'],
+    ['Wrapped for the trip','The packet is placed inside another packet so it can cross the physical network between nodes.'],
+    ['The underlay','The data centre network only sees node-to-node traffic. It has no idea pods exist.'],
+    ['Unwrapped','The receiving node strips the outer wrapper and finds the original packet intact.'],
+    ['The target pod','Delivered to the right pod. The reply takes the same path home.']
+  ],
+  api:[
+    ['An app calls an API','A client sends a request. Behind that, it is the same packet journey as any other.'],
+    ['Home router','NAT as usual before heading out.'],
+    ['The CDN edge','The nearest edge location catches the request first. It can answer from cache or pass it on.'],
+    ['The firewall','The web application firewall inspects the request and blocks anything that looks like an attack.'],
+    ['The API gateway','Authentication, rate limits and routing happen here before any service sees the request.'],
+    ['The service','The real work happens here. The answer returns along the same chain.']
+  ],
+  quic:[
+    ['One round trip, not three','QUIC rides on UDP and folds the transport and security handshakes together. The first packet already carries a cryptographic hello.'],
+    ['Home router','The router tracks the UDP flow with a short timer. Lose that entry and the connection looks new.'],
+    ['ISP','Another translation. UDP flows live as long as the NAT remembers them.'],
+    ['A firewall that may say no','Some networks block UDP 443 altogether, and the browser quietly falls back to TCP.'],
+    ['Backbone','Plain forwarding.'],
+    ['The CDN answers','The server completes the handshake and the page starts flowing sooner than with TCP plus TLS.']
+  ],
+  wg:[
+    ['Inside the tunnel','Traffic for the office is wrapped before it leaves the laptop. The ISP sees only a small UDP stream.'],
+    ['The WireGuard peer','Each peer is known by a key. Only addresses on its allowed list may pass.'],
+    ['Home NAT','The router sees ordinary UDP and translates it. Keepalives hold the mapping open.'],
+    ['The internet','Everything between you and the office sees encrypted packets only.'],
+    ['The office gateway','The outer wrapper comes off and the inner packet is routed.'],
+    ['The internal server','Delivered, as if you were sitting in the office.']
+  ],
+  dhcp:[
+    ['A shout into the room','The laptop has no address yet, so it broadcasts: is there a DHCP server out there?'],
+    ['The switch','A switch forwards a broadcast to every port in the LAN.'],
+    ['The relay','Broadcasts do not cross routers. The relay forwards the request to the server as a normal packet.'],
+    ['The DHCP server','It picks a free address and offers it, along with a gateway and DNS servers.']
+  ],
+  netfilter:[
+    ['A packet arrives','Inside the Linux box, the story starts at the network card.'],
+    ['The NIC','The frame is checked and handed to the kernel.'],
+    ['PREROUTING','Destination rewrites happen first, before the kernel decides where the packet goes.'],
+    ['The routing decision','Is it for me, or for someone else? The routing table answers.'],
+    ['FORWARD','Filter rules decide whether transit traffic is allowed.'],
+    ['POSTROUTING','Source rewrites (masquerade) happen last, on the way out.'],
+    ['The uplink','The packet leaves with a new source address.'],
+    ['The server','Delivered. The reply is matched to the connection tracking entry.']
+  ],
+  cdn:[
+    ['A visitor asks for a page','The visitor wants a file. The nearest CDN edge location catches the request first.'],
+    ['The ISP','Normal transit, nothing special.'],
+    ['The edge cache','If the file is cached and fresh, it is returned right here. Otherwise the edge asks further back.'],
+    ['The shield tier','A second cache layer protects the origin from the whole world asking at once.'],
+    ['The origin','Only a miss reaches the origin. The result flows back and is cached for the next visitor.']
+  ],
+  cftun:[
+    ['A visitor asks for a private app','The app has no public address and no open port. The visitor reaches the nearest edge instead.'],
+    ['The edge','The edge checks the visitor against policy before anything else.'],
+    ['The tunnel','The connector inside the private network dialled out to the edge earlier, so traffic can flow back in over that connection.'],
+    ['The connector','It looks up the hostname in its ingress rules to find the local service.'],
+    ['The private app','Delivered, without ever opening an inbound port.']
+  ]
+};
+const GEOMASK = {"W":144,"H":64,"LAT0":82,"LAT1":-58,"b64":"AAAAAC/7///AAAAAAAYAAAAAAAAAEz/P//8ABwAAAADAAAAAAAABiP8P//4AAAAAMAD4AAAAAAADAAAAf/8AAAACAD/wAAAAAAADfY/AP/wAAAAEGf//4PAAAf4QfyN4P/4AAPAAG/////8Ig///1v5cH+AAA/8v+///////d/////g6HwPAB7z/////////Ef////AcHgAAH3//////////A////8BgDgAAPn////////74AeD//8ByAAAAPn///////4SAAKAf//B+AAACFv///////gOAAgAP//7/gAAHEP///////AOAAAAH//5/wAALv////////4IAAAAH///9AAACf////////0AAAAAD///84AAD/////////wAAAAAD////AAAA//Xn/////gAAAAAD///wAAAB6+Dv/////EAAAAAD///wAAAPhOZz////8AAAAAAD///AAAAPEp/3////IIAAAAAB//+AAAAOBB/z////kQAAAAAA///AAAAH8Af/////BwAAAAAAf/8AAAAP+IP/////CAAAAAAAH/4AAAAP/v//////gAAAAAAAP4EAAAAf///v////gAAAAAAAD4EAAAA///3z////AAAAAAAAB4AAAAA///3+H//+gAAAAAAAA4CAAAB///7/D/f4AAAAAAAAA4gQAAB///7+B8fAAAAAAAAAAfgAAAA///58B4PggAAAAAAAAB4AAAB///94AwHwgAAAAAAAAAYAAAB////AAwHwwAAAAAAAAAI4AAA///+QAwFgAAAAAAAAAAF/AAAf///wAAEAIAAAAAAAAAB/gAAP///wAICAIAAAAAAAAAB/4AAAL//gAAKCAAAAAAAAAAB/8AAAD//AAAFOAAAAAAAAAAD/8AAAD/+AAADOAAAAAAAAAAD//AAAD/8AAADOhQAAAAAAAAH//4AAB/8AAABAA8AAAAAAAAD//8AAB/8AAAAoAeAAAAAAAAD//8AAB/8AAAAAoIAAAAAAAAB//4AAB/8AAAAAAAAAAAAAAAB//4AAB/8AAAAADgAAAAAAAAA//wAAB/8QAAAAPEAAAAAAAAAf/wAAB/4wAAAAf8AAAAAAAAAP/wAAB/wwAAAA/+AAAAAAAAAP/wAAA/xgAAAD//AgAAAAAAAP+AAAA/xgAAAH//gAAAAAAAAP+AAAA/gAAAAH//gAAAAAAAAf8AAAA/gAAAAD//gAAAAAAAAf8AAAAfAAAAAD//gAAAAAAAAf4AAAAeAAAAADw/gAAAAAAAAfgAAAAAAAAAAAAfAAAAAAAAAfgAAAAAAAAAAAAPAAAAAAAAAeAAAAAAAAAAAAAAACAAAAAAA8AAAAAAAAAAAAACAEAAAAAAAcAAAAAAAAAAAAAAAIAAAAAAA4AAAAAAAAAAAAAAAQAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"};
+(function geoPatch(){
+  const G = {
+    web:[[12.97,77.59],[12.97,77.59],[13.08,80.27],[1.35,103.82],[1.35,103.82],[37.42,-122.08],[37.42,-122.08]],
+    dns:[[12.97,77.59],[12.97,77.59],[13.08,80.27],[19.08,72.88],[19.08,72.88]],
+    ping:[[12.97,77.59],[12.97,77.59],[13.08,80.27],[19.08,72.88],[50.11,8.68],[50.11,8.68]]
+  };
+  for (const k in G) G[k].forEach((g, i) => { if (SC[k] && SC[k].nodes[i] && !SC[k].nodes[i].geo) SC[k].nodes[i].geo = g; });
+})();
+
+"use strict";
 /* ================= helpers ================= */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -1404,7 +1849,7 @@ function retState(S, f, g, j){
     Object.assign(st, {proto:'icmp', type:11, code:0, id:0, seq:0, payload:lp.bytes.slice(14, 42), payName:'Quoted original packet'});
     st.ipSrc = S.nodes[g.R].addr;
     delete st.sport; delete st.dport; delete st.flags;
-  } else Object.assign(st, S.reply || {});
+  } else { Object.assign(st, S.reply || {}); if (f && f.rep) Object.assign(st, f.rep); }
   st.ttl = ttlRet(S, g.R, j); st.rev = true;
   return st;
 }
@@ -1597,7 +2042,7 @@ function drawWhy(){
     + `<button class="sym ${!sy ? 'on' : ''}" data-sym="">All faults</button></div>`;
   if (sy) h += `<p class="symhint">${esc(SYMPTOMS.find(x => x.id === sy).h)}</p>`;
   const rows = [];
-  Object.entries(SC).forEach(([jk, J]) => J.faults.forEach(f => { const m = FMETA[jk + '/' + f.id] || {}; if (!sy || (m.sym || []).includes(sy)) rows.push({jk, J, f, m}); }));
+  Object.entries(SC).forEach(([jk, J]) => J.faults.filter(f => f.id !== 'wi').forEach(f => { const m = FMETA[jk + '/' + f.id] || {}; if (!sy || (m.sym || []).includes(sy)) rows.push({jk, J, f, m}); }));
   h += `<div class="fcount">${rows.length} fault${rows.length === 1 ? '' : 's'}${sy ? '' : ' in ' + Object.keys(SC).length + ' journeys'}</div><div class="fgrid">`;
   h += rows.map(r => `<div class="fcard"><div class="fh"><b>${esc(r.f.label)}</b><small>${esc(r.J.group)} · ${esc(r.J.short)}</small></div>
     <p>${esc(r.f.body.split('. ')[0])}.</p>${cmdBlock((r.m.cmd || []).slice(0, 3))}
@@ -1915,7 +2360,7 @@ function bindPcap(){
 
 "use strict";
 /* ================= fx.js: motion, sound, tour, overlays, empty states ================= */
-const FXD = {lat:1, q:1, cam:1, snd:0, amb:0};
+const FXD = {lat:1, q:1, cam:1, atm:1, snd:0, amb:0};
 function loadFx(){ app.fx = Object.assign({}, FXD); try{ Object.assign(app.fx, JSON.parse(localStorage.getItem('hbh-fx') || '{}')); }catch(_){} app.fx.amb = 0; }
 function saveFx(){ try{ const o = Object.assign({}, app.fx); delete o.amb; localStorage.setItem('hbh-fx', JSON.stringify(o)); }catch(_){} }
 function fxUI(){ $$('#fxPop [data-fx]').forEach(c => { c.checked = !!app.fx[c.dataset.fx]; }); }
@@ -2240,6 +2685,288 @@ function bindFx(){
 }
 
 "use strict";
+/* ================= fx2.js: atmosphere, world view, device card, bloom, layer timeline, what-if, story ================= */
+
+/* ---------- zone atmosphere ---------- */
+function rng(seed){ let s = seed * 9301 + 49297; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
+function atmKind(n){
+  if (/home|office|lan\b|vlan|cafe|coffee|customer|campus|private network/i.test(n)) return 'home';
+  if (/node|rack|datacenter|datacentre|compute|server|origin|services|pod\b|kernel|linux/i.test(n)) return 'dc';
+  if (/vpc|cloud|aws|azure|gcp|google|region|subnet|vnet|tenant|cluster|kubernetes|mesh|managed/i.test(n)) return 'cloud';
+  return 'net';
+}
+function atmosphere(zg, z, zi){
+  const kind = atmKind(z.name), r = rng(zi + 3), g = SV('g', {class:'atm atm-' + kind}, zg);
+  const pt = () => Pj(z.x0 + 12 + r() * Math.max(8, z.x1 - z.x0 - 24), z.y0 + 12 + r() * Math.max(8, z.y1 - z.y0 - 24), -5);
+  if (kind === 'net'){ for (let i = 0; i < 9; i++){ const [x, y] = pt(); SV('circle', {cx:x, cy:y, r:(1.5 + r() * 1.5).toFixed(1), class:'ad', style:`animation-delay:${(r() * 7).toFixed(2)}s;animation-duration:${(5 + r() * 5).toFixed(1)}s`}, g); } }
+  else if (kind === 'cloud'){ for (let i = 0; i < 3; i++){ const [x, y] = pt(); SV('ellipse', {cx:x, cy:y, rx:12, ry:6.9, class:'ar', style:`animation-delay:${(i * 1.4).toFixed(1)}s`}, g); } }
+  else if (kind === 'dc'){ const n = 12; for (let i = 0; i < n; i++){ const [x, y] = Pj(z.x0 + 14 + i * ((z.x1 - z.x0 - 28) / (n - 1)), z.y0 + 9, -5); SV('rect', {x:x - 1.5, y:y - 1.5, width:3, height:3, rx:0.6, class:'al', style:`animation-delay:${(r() * 3).toFixed(2)}s`}, g); } }
+  else { const [cx, cy] = Pj((z.x0 + z.x1) / 2, (z.y0 + z.y1) / 2, -5), rx = ((z.x1 - z.x0) + (z.y1 - z.y0)) * K * 0.38; SV('ellipse', {cx, cy, rx, ry:rx * 0.5, class:'ah'}, g); }
+}
+
+/* ---------- celebration without confetti ---------- */
+function bloom(k, big){
+  const fx = $('#fx'); if (!fx || !scene) return; const [x, y] = scene.scr[k], g = SV('g', {class:'bloom' + (big ? ' big' : '')}, fx);
+  [0, 0.25, 0.5].forEach(d => SV('ellipse', {cx:x, cy:y - 2, rx:36, ry:20.5, class:'blr', style:`animation-delay:${d}s`}, g));
+  const c = SV('g', {transform:`translate(${x},${y - PZ - 56})`, class:'blc'}, g); SV('circle', {r:12, class:'blb'}, c); SV('path', {d:'M-5.5 0.5 L-1.5 4.5 L6 -4', class:'blk'}, c);
+  const p = $('.prog'); if (p){ p.classList.remove('pulse'); void p.offsetWidth; p.classList.add('pulse'); }
+}
+
+/* ---------- device "open up" card ---------- */
+let devT = null, devK = -1;
+function devCardHtml(k){
+  const g = geom(), nd = g.S.nodes[k], x = (nd.x || [])[0], f = g.f; let body = '';
+  if (x && x.kind === 'table'){
+    const hit = (x.hitF && f && x.hitF[f.id]) || x.hit || [];
+    body = `<div class="dt">${esc(x.title)}</div><table>${x.rows.slice(0, 5).map((r, i) => `<tr class="${hit.includes(i) ? 'hit' : ''}">${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</table>`;
+  } else if (x && x.kind === 'flow'){
+    body = `<div class="dt">${esc(x.title)}</div><div class="dfl">${x.items.map((it, i) => `<span class="${(x.hit || []).includes(i) ? 'hit' : ''}">${esc(it)}</span>`).join('<i>→</i>')}</div>`;
+  } else body = `<p>${esc(nd.does.length > 170 ? nd.does.slice(0, 167) + '…' : nd.does)}</p>`;
+  return `<div class="dh"><b>${esc(nd.name)}</b><span>${esc(nd.tag)}</span></div>${body}<div class="dk">Click to jump here</div>`;
+}
+function devShow(k, ng){
+  const c = $('#devcard'), w = $('.stagewrap'); if (!c || !w || app.view !== 'map') return;
+  devK = k; c.innerHTML = devCardHtml(k); ng.classList.add('lift');
+  const r = ng.getBoundingClientRect(), s = w.getBoundingClientRect(), cw = 270;
+  let left = r.left - s.left + r.width / 2 - cw / 2; left = Math.max(8, Math.min(s.width - cw - 8, left));
+  const above = r.top - s.top > 190; c.style.left = left + 'px'; c.style.top = (above ? r.top - s.top - 8 : r.bottom - s.top + 8) + 'px'; c.style.width = cw + 'px';
+  c.classList.toggle('below', !above); c.classList.add('on');
+}
+function devHide(){ clearTimeout(devT); const c = $('#devcard'); if (c) c.classList.remove('on'); $$('#map .node.lift').forEach(n => n.classList.remove('lift')); devK = -1; }
+function bindDev(){
+  const m = $('#map'); if (!m) return;
+  m.addEventListener('pointerover', e => { if (e.pointerType === 'touch') return; const ng = e.target.closest('.node'); if (!ng) return; const k = +ng.id.slice(2); if (k === devK) { clearTimeout(devT); return; } clearTimeout(devT); devT = setTimeout(() => devShow(k, ng), 140); });
+  m.addEventListener('pointerout', e => { const ng = e.target.closest('.node'); if (!ng || (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('#nd' + ng.id.slice(2)))) return; clearTimeout(devT); devT = setTimeout(devHide, 90); });
+  m.addEventListener('focusin', e => { const ng = e.target.closest && e.target.closest('.node'); if (ng) devShow(+ng.id.slice(2), ng); });
+  m.addEventListener('focusout', devHide);
+}
+
+/* ---------- world view: day and night ---------- */
+const GEO = {base:null, pts:null, nodes:null, off:null};
+const rad = d => d * Math.PI / 180;
+function sunPos(d){
+  const n = (Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(d.getUTCFullYear(), 0, 0)) / 864e5, decl = rad(-23.44 * Math.cos(2 * Math.PI / 365 * (n + 10))), B = 2 * Math.PI * (n - 81) / 365;
+  const eqt = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B), utc = d.getUTCHours() + d.getUTCMinutes() / 60; let lon = -15 * (utc - 12 + eqt / 60); lon = ((lon + 540) % 360) - 180;
+  return {decl, lon};
+}
+const geoDate = () => { const d = new Date(); if (GEO.off != null){ d.setUTCHours(0, 0, 0, 0); d.setTime(d.getTime() + GEO.off * 60000); } return d; };
+function geoMask(){ if (GEO.mask) return GEO.mask; const bin = atob(GEOMASK.b64), bits = []; for (let i = 0; i < bin.length; i++){ const b = bin.charCodeAt(i); for (let j = 7; j >= 0; j--) bits.push((b >> j) & 1); } return (GEO.mask = bits); }
+const geoEl = (lat, lon, sp) => Math.sin(rad(lat)) * Math.sin(sp.decl) + Math.cos(rad(lat)) * Math.cos(sp.decl) * Math.cos(rad(lon - sp.lon));
+function geoBase(){
+  const W = GEOMASK.W, H = GEOMASK.H, cw = 8, ch = 7, mask = geoMask(), cv = GEO.base || (GEO.base = document.createElement('canvas')); cv.width = W * cw; cv.height = H * ch;
+  const c = cv.getContext('2d'), cs = getComputedStyle(document.documentElement), dayC = cs.getPropertyValue('--chg').trim() || '#6cc3e6', dimC = cs.getPropertyValue('--dim').trim() || '#8f9bba', light = app.theme === 'light', sp = sunPos(geoDate());
+  GEO.sp = sp;
+  for (let r = 0; r < H; r++){
+    const lat = GEOMASK.LAT0 - (r + 0.5) * (GEOMASK.LAT0 - GEOMASK.LAT1) / H;
+    for (let q = 0; q < W; q++){
+      const lon = -180 + (q + 0.5) * 360 / W, el = geoEl(lat, lon, sp), night = el < 0, land = mask[r * W + q];
+      if (night){ c.fillStyle = light ? 'rgba(40,60,120,.16)' : 'rgba(0,0,10,.32)'; c.fillRect(q * cw, r * ch, cw, ch); }
+      else if (el < 0.12){ c.fillStyle = light ? 'rgba(255,160,60,.10)' : 'rgba(255,170,70,.07)'; c.fillRect(q * cw, r * ch, cw, ch); }
+      if (land){ c.globalAlpha = night ? 0.55 : 1; c.fillStyle = night ? dimC : dayC; c.beginPath(); c.arc(q * cw + cw / 2, r * ch + ch / 2, 2.2, 0, 6.3); c.fill(); c.globalAlpha = 1; }
+    }
+  }
+  GEO.stamp = Date.now();
+}
+function geoSetup(){
+  const S = SCN(), box = $('#secGeo'); if (!box) return; const n = S.nodes.length, pts = new Array(n).fill(null);
+  S.nodes.forEach((nd, i) => { if (nd.geo) pts[i] = nd.geo; });
+  const known = pts.map((p, i) => p ? i : -1).filter(i => i >= 0);
+  if (known.length < 2){ box.hidden = true; GEO.pts = null; return; }
+  for (let i = 0; i < n; i++){ if (pts[i]) continue; const a = known.filter(k => k < i).pop(), b = known.find(k => k > i); if (a == null) pts[i] = pts[b]; else if (b == null) pts[i] = pts[a]; else { const f = (i - a) / (b - a); pts[i] = [pts[a][0] + (pts[b][0] - pts[a][0]) * f, pts[a][1] + (pts[b][1] - pts[a][1]) * f]; } }
+  GEO.pts = pts; GEO.known = known; box.hidden = false; GEO.base = null;
+}
+function geoU(t, g){ const s0 = Math.max(0, Math.min(g.count - 1, Math.floor(t))), s1 = Math.min(g.count - 1, s0 + 1), a = nodePos(s0, g), b = nodePos(s1, g); return a + (b - a) * Math.max(0, Math.min(1, t - s0)); }
+function geoAt(u){ const P = GEO.pts, i = Math.max(0, Math.min(P.length - 1, Math.floor(u))), j = Math.min(P.length - 1, i + 1), f = u - i; return [P[i][0] + (P[j][0] - P[i][0]) * f, P[i][1] + (P[j][1] - P[i][1]) * f]; }
+function geoDraw(){
+  const box = $('#secGeo'), cv = $('#geoC'); if (!GEO.pts || !box || box.hidden || !box.open || !cv) return;
+  if (!GEO.base || Date.now() - GEO.stamp > 300000) geoBase();
+  const ctx = cv.getContext('2d'), W = GEO.base.width, H = GEO.base.height; if (cv.width !== W){ cv.width = W; cv.height = H; }
+  ctx.clearRect(0, 0, W, H); ctx.drawImage(GEO.base, 0, 0);
+  const P = ([la, lo]) => [(lo + 180) / 360 * W, (GEOMASK.LAT0 - la) / (GEOMASK.LAT0 - GEOMASK.LAT1) * H], g = geom(), u = geoU(app.t, g), cs = getComputedStyle(document.documentElement), acc = cs.getPropertyValue('--accent').trim() || '#f0b24a', ok = cs.getPropertyValue('--ok').trim() || '#5fd1a0', txt = cs.getPropertyValue('--text').trim() || '#fff';
+  const pts = GEO.pts.map(P);
+  ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.strokeStyle = acc; ctx.globalAlpha = 0.28; ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke();
+  ctx.globalAlpha = 1; ctx.strokeStyle = acc; ctx.beginPath(); const fu = Math.floor(u); pts.slice(0, fu + 1).forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); const cur = P(geoAt(u)); ctx.lineTo(cur[0], cur[1]); ctx.stroke();
+  GEO.known.forEach(i => { const p = pts[i]; ctx.fillStyle = txt; ctx.beginPath(); ctx.arc(p[0], p[1], 4, 0, 6.3); ctx.fill(); ctx.fillStyle = acc; ctx.beginPath(); ctx.arc(p[0], p[1], 2, 0, 6.3); ctx.fill(); });
+  const ph = (performance.now() % 1400) / 1400; ctx.strokeStyle = ok; ctx.globalAlpha = 1 - ph; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cur[0], cur[1], 7 + ph * 14, 0, 6.3); ctx.stroke(); ctx.globalAlpha = 1;
+  ctx.fillStyle = ok; ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cur[0], cur[1], 6, 0, 6.3); ctx.fill(); ctx.stroke();
+  const ll = geoAt(u), d = geoDate(), local = new Date(d.getTime() + ll[1] / 15 * 3600000), hh = String(local.getUTCHours()).padStart(2, '0') + ':' + String(local.getUTCMinutes()).padStart(2, '0'), day = geoEl(ll[0], ll[1], GEO.sp) > 0;
+  const nm = g.S.nodes[Math.max(0, Math.min(g.S.nodes.length - 1, Math.round(u)))].name, note = $('#geoNote'); if (note) note.textContent = `${nm} · ${hh} local · ${day ? 'daytime' : 'night'}`;
+}
+function bindGeo(){
+  const d = $('#secGeo'); if (!d) return;
+  d.addEventListener('toggle', () => { if (d.open) geoDraw(); });
+  $('#geoT').addEventListener('input', e => { GEO.off = +e.target.value; GEO.base = null; $('#geoTl').textContent = String(Math.floor(GEO.off / 60)).padStart(2, '0') + ':' + String(GEO.off % 60).padStart(2, '0') + ' UTC'; geoDraw(); });
+  $('#geoNow').addEventListener('click', () => { GEO.off = null; GEO.base = null; geoNowUI(); geoDraw(); });
+  geoNowUI(); setInterval(() => { if (!reduced && !document.hidden && app.page === 'journey' && GEO.pts && !app.playing && raf == null) geoDraw(); }, 140);
+}
+function geoNowUI(){ const n = new Date(); $('#geoT').value = n.getUTCHours() * 60 + n.getUTCMinutes(); $('#geoTl').textContent = 'now'; }
+
+/* ---------- layer timeline (swimlanes) ---------- */
+const LANE_ROWS = ['L7', 'L4', 'L3', 'L2'], LANE_NAME = {L7:'Application', L4:'Transport', L3:'Network', L2:'Link'};
+function laneInfo(s){
+  const g = geom(), o = view(s), p = s ? view(s - 1) : null, nd = g.S.nodes[o.info.j], v = o.pk.v, pv = p && p.pk.v, ty = LAYERS[nd.type] || [], out = {L2:null, L3:null, L4:null, L7:null}, F = g.F;
+  if (pv && (pv.ethSrc !== v.ethSrc || pv.ethDst !== v.ethDst)) out.L2 = {t:'new MAC pair', k:'chg'}; else if (nd.type === 'switch') out.L2 = {t:'switches frame', k:'pass'};
+  if (pv && (pv.outer || '') !== (v.outer || '')) out.L2 = {t:v.outer ? 'encapsulates' : 'decapsulates', k:'tun'};
+  if (pv){
+    const c = []; if (pv.ttl !== v.ttl) c.push('TTL ' + pv.ttl + '→' + v.ttl); if (pv.ipSrc !== v.ipSrc) c.push('source rewritten'); if (pv.ipDst !== v.ipDst) c.push('destination rewritten');
+    if (c.length) out.L3 = {t:c.join(', '), k:(pv.ipSrc !== v.ipSrc || pv.ipDst !== v.ipDst) ? 'chg' : 'pass'}; else if (ty.includes('L3') && nd.type !== 'host' && nd.type !== 'server' && nd.type !== 'pod') out.L3 = {t:'routes', k:'pass'};
+    const c4 = []; if (pv.sport !== v.sport || pv.dport !== v.dport) c4.push('ports rewritten'); if (pv.flags !== v.flags && v.flags != null) c4.push(pv.flags + '→' + v.flags);
+    if (c4.length) out.L4 = {t:c4.join(', '), k:'chg'}; else if (nd.type === 'nat') out.L4 = {t:'tracks the flow', k:'pass'};
+  } else { out.L3 = {t:'builds IP header', k:'act'}; out.L4 = {t:'builds ' + protoName(o.st), k:'act'}; out.L2 = {t:'frames it', k:'act'}; }
+  if (nd.type === 'proxy' || nd.type === 'lb'){ if (ty.includes('L7')) out.L7 = {t:'reads the request', k:'act'}; if (!out.L4) out.L4 = {t:'ends the connection', k:'act'}; }
+  if ((nd.type === 'host' || nd.type === 'server' || nd.type === 'pod') && (s === 0 || s === F || s === g.count - 1)) out.L7 = {t:s === F && o.info.dir === 'f' ? 'application receives' : s === 0 ? 'application sends' : 'application gets reply', k:'act'};
+  if (g.f && s === g.F) out.L3 = Object.assign({}, out.L3 || {}, {t:g.f.short, k:'bad'});
+  return out;
+}
+let lanesKey = '';
+function drawLanes(){
+  const g = geom(), el = $('#lanes'), key = [app.j, app.f, app.lang].join('|');
+  if (key !== lanesKey || !el.firstChild){
+    lanesKey = key; let h = '<div class="lgrid" style="--n:' + g.count + '"><div class="lc lh"></div>';
+    for (let s = 0; s < g.count; s++){ const o = view(s), nd = g.S.nodes[o.info.j]; h += `<button class="lc lh ${o.info.dir === 'r' ? 'r' : ''}" data-s="${s}" style="--i:${s}"><b>${s + 1}</b><span>${esc(nd.code)}</span></button>`; }
+    LANE_ROWS.forEach(L => {
+      h += `<div class="lc ll"><span class="lay ${L}">${L}</span><small>${LANE_NAME[L]}</small></div>`;
+      for (let s = 0; s < g.count; s++){ const c = laneInfo(s)[L], o = view(s); h += c ? `<button class="lc lcell ${c.k} ${o.info.dir === 'r' ? 'r' : ''}" data-s="${s}" style="--i:${s}" title="Step ${s + 1}: ${esc(c.t)}"><span>${esc(c.t)}</span></button>` : `<div class="lc lempty ${o.info.dir === 'r' ? 'r' : ''}" data-s="${s}"></div>`; }
+    });
+    el.innerHTML = h + '</div>';
+  }
+  $$('#lanes [data-s]').forEach(e => { const s = +e.dataset.s; e.classList.toggle('cur', s === app.s); e.classList.toggle('past', s < app.s); });
+  const cur = $('#lanes .lh.cur'); if (cur && cur.scrollIntoView) cur.scrollIntoView({block:'nearest', inline:'center', behavior:reduced ? 'auto' : 'smooth'});
+}
+
+/* ---------- what if ---------- */
+const WI = {ttl:64, mtu:1500, size:1500, df:1, node:2, act:'drop'};
+const nodeOpts = (from, sel) => SCN().nodes.map((n, k) => k >= from && k < SCN().nodes.length - 1 ? `<option value="${k}" ${k === sel ? 'selected' : ''}>${k}. ${esc(n.name)}</option>` : '').join('');
+function wiTtl(T){
+  const S = SCN(); let t = T; const trail = [T];
+  for (let k = 1; k < S.nodes.length; k++){ const n = S.nodes[k]; if (n.reset) t = S.ttl; else if (n.router){ const d = n.dec || 1; if (t - d <= 0) return {die:k, trail}; t -= d; } trail.push(t); }
+  return {die:null, left:t, trail};
+}
+function wiTtlHtml(){
+  const S = SCN(), r = wiTtl(+WI.ttl);
+  const chips = S.nodes.map((n, k) => { const v = r.trail[k]; const dead = r.die === k, gone = r.die != null && k > r.die; return `<span class="wc ${dead ? 'bad' : gone ? 'gone' : ''}"><i>${esc(n.code)}</i><b>${dead ? '✕' : gone ? '·' : v}</b></span>`; }).join('');
+  const msg = r.die ? `Expires at hop ${r.die} (${esc(S.nodes[r.die].name)}). That router drops it and sends back ICMP Time Exceeded. This is exactly how traceroute finds each hop.` : `Arrives with TTL ${r.left} left. Healthy.`;
+  return `<div class="wc-row">${chips}</div><p class="wo ${r.die ? 'bad' : 'ok'}">${msg}</p>${r.die ? '<button class="btn" data-wi-go="ttl">Replay this on the map</button>' : ''}`;
+}
+function wiMtuCalc(){
+  const S = SCN(), k = Math.min(+WI.node, S.nodes.length - 2), st = fwdState(S, null, k), ov = (st.outer || '').match(/\+(\d+) B/), over = ov ? +ov[1] : 0, eff = +WI.mtu - over, size = +WI.size;
+  return {k, over, eff, size, big:size > eff};
+}
+function wiMtuHtml(){
+  const S = SCN(), c = wiMtuCalc(); let msg, cls = 'ok', go = false;
+  if (!c.big) msg = `A ${c.size}-byte packet fits (effective MTU ${c.eff}${c.over ? ', after ' + c.over + ' bytes of encapsulation' : ''}). Nothing happens.`;
+  else if (+WI.df){ cls = 'bad'; go = true; msg = `${c.size} bytes does not fit through ${esc(S.nodes[c.k].name)} (effective MTU ${c.eff}${c.over ? ', after ' + c.over + ' bytes of encapsulation' : ''}). With Don't Fragment set the router drops it and should send ICMP "fragmentation needed". If that ICMP is filtered, the connection hangs: a PMTUD black hole.`; }
+  else { const per = Math.floor((c.eff - 20) / 8) * 8, n = Math.ceil((c.size - 20) / per); cls = 'warn'; msg = `Without DF the router fragments it into ${n} pieces. It works, but every piece must arrive, and fragments are often dropped by firewalls.`; }
+  return `<label class="wl">Narrowest link MTU <b id="wiMtuV">${WI.mtu}</b><input type="range" data-wi="mtu" min="576" max="9000" step="2" value="${WI.mtu}"></label>
+    <label class="wl">Packet size <b id="wiSizeV">${WI.size}</b> bytes<input type="range" data-wi="size" min="200" max="9000" step="2" value="${WI.size}"></label>
+    <div class="wrow"><label>At <select data-wi="node">${nodeOpts(1, +WI.node)}</select></label><label><input type="checkbox" data-wi="df" ${+WI.df ? 'checked' : ''}> Don't Fragment</label></div>
+    <p class="wo ${cls}" id="wiMtuOut">${msg}</p>${go ? '<button class="btn" data-wi-go="mtu">Replay this on the map</button>' : ''}`;
+}
+function wiFwHtml(){
+  const S = SCN(), k = Math.min(+WI.node, S.nodes.length - 2), rtt = Math.max(1, S.nodes[k].ms * 2), tcp = S.base && S.base.proto === 'tcp';
+  const drop = WI.act === 'drop' || !tcp;
+  const msg = drop ? `The packet vanishes at ${esc(S.nodes[k].name)}. The sender waits and retries: ${tcp ? 'SYN again after 1 s, 3 s, 7 s, 15 s... The app sees "timed out" after about 2 minutes (or whatever its own timeout is). It looks like a network outage, and nothing tells you where.' : 'nothing ever comes back, so the app waits for its own timeout.'}`
+    : `${esc(S.nodes[k].name)} answers immediately with a TCP reset. The app sees "Connection refused" after about ${rtt.toFixed(0)} ms. The failure is instant and points straight at the device that said no.`;
+  return `<div class="wrow"><label>At <select data-wi="node">${nodeOpts(1, +WI.node)}</select></label>
+    <label><input type="radio" name="wact" data-wi="act" value="drop" ${drop ? 'checked' : ''}> DROP (silent)</label><label class="${tcp ? '' : 'dis'}"><input type="radio" name="wact" data-wi="act" value="reject" ${!drop ? 'checked' : ''} ${tcp ? '' : 'disabled'}> REJECT (reset)</label></div>
+    <p class="wo ${drop ? 'bad' : 'warn'}" id="wiFwOut">${msg}</p><button class="btn" data-wi-go="fw">Replay this on the map</button>`;
+}
+function drawWhatIf(){
+  const S = SCN();
+  return `<p class="hint">Change a number and see what would happen to this packet. Then replay it on the map.</p>
+    <div class="wcard"><h4>Starting TTL <b id="wiTtlV">${WI.ttl}</b></h4><input type="range" data-wi="ttl" min="1" max="${S.ttl}" value="${Math.min(WI.ttl, S.ttl)}"><div id="wiTtl">${wiTtlHtml()}</div></div>
+    <div class="wcard"><h4>Path MTU</h4><div id="wiMtu">${wiMtuHtml()}</div></div>
+    <div class="wcard"><h4>A firewall says no</h4><div id="wiFw">${wiFwHtml()}</div></div>`;
+}
+function wiUpdate(which){
+  if (which === 'ttl'){ $('#wiTtlV').textContent = WI.ttl; $('#wiTtl').innerHTML = wiTtlHtml(); }
+  else if (which === 'mtu' || which === 'size' || which === 'df'){ $('#wiMtu').innerHTML = wiMtuHtml(); if (which !== 'df'){ const e = $(`[data-wi=${which}]`); if (e) e.focus(); } }
+  else { $('#wiMtu').innerHTML = wiMtuHtml(); $('#wiFw').innerHTML = wiFwHtml(); }
+}
+function wiReplay(kind){
+  const S = SCN(); let f;
+  if (kind === 'ttl'){ const r = wiTtl(+WI.ttl); if (!r.die) return; f = {id:'wi', at:r.die, type:'ttl', label:'What-if: starting TTL ' + WI.ttl, short:'TTL EXPIRED', title:'TTL runs out at ' + S.nodes[r.die].name, body:`With a starting TTL of ${WI.ttl} the counter reaches zero here. The router drops the packet and returns ICMP Time Exceeded to the sender.`, user:'', d:['rfc792']}; }
+  else if (kind === 'mtu'){ const c = wiMtuCalc(); if (!c.big || !+WI.df) return; f = {id:'wi', at:c.k, type:'mtu', label:'What-if: MTU ' + WI.mtu, short:'MTU', title:'A ' + c.size + '-byte packet does not fit', body:`Effective MTU after ${c.over} bytes of encapsulation is ${c.eff}. The packet is too large and Don't Fragment is set, so it is dropped.`, user:'', d:['rfc1191']}; }
+  else { const k = Math.min(+WI.node, S.nodes.length - 2), tcp = S.base && S.base.proto === 'tcp', rej = WI.act === 'reject' && tcp;
+    f = rej ? {id:'wi', at:k, type:'l7', label:'What-if: REJECT at ' + S.nodes[k].name, short:'RST', title:S.nodes[k].name + ' rejects the connection', resp:{title:'TCP reset (REJECT)', hdr:[['Flags', 'RST, ACK'], ['App sees', 'Connection refused, instantly']]}, rep:{flags:0x14, seq:0, ack:(S.base.seq + 1) >>> 0}, body:'A REJECT rule answers with a reset. The sender learns immediately that something said no.', user:'', d:['rfc9293']}
+      : {id:'wi', at:k, type:'drop', label:'What-if: DROP at ' + S.nodes[k].name, short:'DROP', title:S.nodes[k].name + ' silently drops it', body:'A DROP rule discards the packet without telling anyone. The sender retries and eventually times out.', user:'', d:['rfc9293']}; }
+  const J = SC[app.j]; J.faults = J.faults.filter(x => x.id !== 'wi').concat([f]);
+  stopPlay(); app.f = 'wi'; CACHE.clear(); drawMap(); app.s = 0; app.t = 0; renderAll(false); startPlay();
+}
+function purgeWi(){ Object.values(SC).forEach(j => { if (j.faults.some(f => f.id === 'wi')) j.faults = j.faults.filter(f => f.id !== 'wi'); }); }
+function bindWhatIf(){
+  const b = $('#ibody');
+  b.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.wi; if (!k || e.target.type === 'radio' || e.target.tagName === 'SELECT') return; WI[k] = e.target.type === 'checkbox' ? (e.target.checked ? 1 : 0) : +e.target.value; if (k === 'ttl') wiUpdate('ttl'); else wiUpdate(k); });
+  b.addEventListener('change', e => { const k = e.target.dataset && e.target.dataset.wi; if (!k) return; if (k === 'node'){ WI.node = +e.target.value; wiUpdate('node'); } else if (k === 'act'){ WI.act = e.target.value; wiUpdate('act'); } });
+  b.addEventListener('click', e => { const g = e.target.closest('[data-wi-go]'); if (g) wiReplay(g.dataset.wiGo); });
+}
+
+/* ---------- story mode ---------- */
+let storySaved = null;
+const firstSent = x => { const i = x.search(/[.!?](\s|$)/); return i > 0 ? x.slice(0, i + 1) : x; };
+function storyEntry(s){
+  const g = geom(), o = view(s), nd = g.S.nodes[o.info.j], arr = (typeof STORY !== 'undefined' && STORY[app.j]) || [];
+  if (g.f && s === g.F) return {k:'Where it goes wrong', t:g.f.title, h:g.f.body, bad:true};
+  if (o.info.dir === 'r'){
+    if (s === g.count - 1) return {k:'Round trip complete', t:'Home again', h:'The reply made it all the way back. Every translation on the way out was undone on the way in.'};
+    return {k:'The way back', t:'The reply passes ' + nd.name, h:nd.nat ? nd.name + ' finds its notes from the trip out and undoes the translation, so the reply reaches the right sender.' : 'Same road in reverse: new addresses at each link, and the hop counter ticks down once more.'};
+  }
+  const e = arr[o.info.j];
+  return {k:`Chapter ${o.info.j + 1} of ${g.F + 1}`, t:e ? e[0] : nd.name, h:e ? e[1] : firstSent(nd.does)};
+}
+function storyDelay(){ const e = storyEntry(app.s), w = (e.t + ' ' + e.h).split(/\s+/).length; return Math.max(2800, 1600 + w * 260) / app.speed; }
+function drawStory(){
+  if (!app.story) return; const g = geom(), e = storyEntry(app.s);
+  $('#sKick').textContent = e.k; $('#sTitle').textContent = e.t; $('#sText').textContent = e.h; $('#storycap').classList.toggle('bad', !!e.bad);
+  const c = $('#storycap'); c.classList.remove('swap'); void c.offsetWidth; c.classList.add('swap');
+  $('#sPips').innerHTML = Array.from({length:g.count}, (_, s) => `<i class="${s === app.s ? 'on' : s < app.s ? 'past' : ''}${s > g.F ? ' r' : ''}"></i>`).join('');
+  $('#sAuto').textContent = app.playing ? 'Pause' : 'Auto'; $('#sPrev').disabled = app.s <= 0; $('#sNext').disabled = app.s >= g.count - 1;
+}
+function storyOn(){
+  if (app.story) return; stopPlay(); ambStop();
+  storySaved = {zoom:app.zoom, view:app.view, page:app.page}; app.story = true; app.page = 'journey'; app.view = 'map'; app.zoom = 'follow';
+  document.body.classList.add('story'); $('#storycap').hidden = false; closeMenu(); app.s = 0; app.t = 0; renderAll(false); $('#bStory').classList.add('on');
+}
+function storyOff(){
+  if (!app.story) return; stopPlay(); app.story = false; document.body.classList.remove('story'); $('#storycap').hidden = true; $('#bStory').classList.remove('on');
+  if (storySaved){ app.zoom = storySaved.zoom; app.view = storySaved.view; } renderAll(false);
+}
+function bindStory(){
+  $('#bStory').addEventListener('click', () => app.story ? storyOff() : storyOn());
+  $('#sExit').addEventListener('click', storyOff);
+  $('#sPrev').addEventListener('click', () => { stopPlay(); goto(app.s - 1); });
+  $('#sNext').addEventListener('click', () => { stopPlay(); goto(app.s + 1); });
+  $('#sAuto').addEventListener('click', () => { if (app.playing) stopPlay(); else startPlay(); drawStory(); });
+  document.addEventListener('keydown', e => { if (app.story && e.key === 'Escape' && TI < 0) storyOff(); });
+}
+
+let celT = null;
+function celebrate(){
+  clearTimeout(celT); const g = geom(), s = app.s;
+  celT = setTimeout(() => { if (app.s !== s || app.page !== 'journey' || !scene) return; const fx = $('#fx');
+    if (!g.f && s === g.F && g.count > 1) bloom(g.F, true); else if (!g.f && s === g.count - 1 && g.count > 1) bloom(0, false);
+    setTimeout(() => $$('#fx .bloom').forEach(b => b.remove()), 2600); }, reduced ? 0 : 650);
+}
+/* ---------- explode labels ---------- */
+function layerLabel(l, v, o){
+  const st = o.st;
+  if (l.c === 'sl-out') return 'Tunnel · ' + ((v.outer || '').split(' · ')[1] || 'outer header');
+  if (l.c === 'sl-eth') return 'Ethernet · ' + String(v.ethDst || '').slice(-8);
+  if (l.c === 'sl-ip') return `IPv4 · ${v.ipSrc} → ${v.ipDst}`;
+  if (l.c === 'sl-l4') return st.proto === 'icmp' ? 'ICMP · type ' + st.type : `${st.proto.toUpperCase()} · ${v.sport} → ${v.dport}`;
+  return 'Payload · ' + (o.st.payName || 'data');
+}
+function bindFx2(){
+  bindDev(); bindGeo(); bindWhatIf(); bindStory();
+  $('#lanes').addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b){ stopPlay(); goto(+b.dataset.s); } });
+  $('#bExplode').addEventListener('click', () => toggleExplode());
+}
+function toggleExplode(v){
+  app.explode = v == null ? !app.explode : !!v; $('#bExplode').classList.toggle('on', app.explode); scene.ex = app.explode;
+  if (app.page === 'journey' && app.view === 'map'){ const o = view(app.s), prev = app.s > 0 ? view(app.s - 1) : null; drawPacketBody(o, prev, true); placePacket(); }
+}
+
+"use strict";
 /* ================= isometric scene ================= */
 const K = 0.866, NS = 'http://www.w3.org/2000/svg';
 const Pj = (x, y, z = 0) => [(x - y) * K, (x + y) * 0.5 - z];
@@ -2291,6 +3018,7 @@ function drawMap(){
   zones.forEach((z, zi) => {
     const zg = SV('g', {style:`--zc:${ZC[zi % ZC.length]}`, id:'Z' + zi, class:'zg'}, root);
     boxAt(zg, (z.x0 + z.x1) / 2, (z.y0 + z.y1) / 2, z.x1 - z.x0, z.y1 - z.y0, 6, -6, 'zp');
+    if (app.fx.atm) atmosphere(zg, z, zi);
     const [lx, ly] = Pj(z.x0, z.y1, 0); const tx = SV('text', {x:lx + 16, y:ly - 6, class:'zl'}, zg); tx.textContent = z.name;
   });
   const maxD = Math.max(...S.nodes.map((nd, k) => k ? nd.ms - S.nodes[k - 1].ms : 0), 1);
@@ -2309,7 +3037,7 @@ function drawMap(){
     const nm = SV('text', {x:sx, y:sy + 36, class:'nname'}, ng); nm.textContent = nd.name;
     const ad = SV('text', {x:sx, y:sy + 49, class:'naddr'}, ng); ad.textContent = nd.addr || '';
     if (QTYPES.includes(nd.type)){ const q = SV('g', {class:'q', id:'Q' + k}, ng); for (let i = 0; i < 6; i++) SV('rect', {x:sx + 27 + i * 5, y:sy - 2, width:3.4, height:8, rx:1, class:'qc'}, q); const qp = SV('text', {x:sx + 27, y:sy - 6, class:'qpop'}, q); qp.textContent = 'tail-drop'; }
-    ng.addEventListener('click', () => goto(nodeFirstStep(k)));
+    ng.addEventListener('click', () => { devHide(); goto(nodeFirstStep(k)); });
     ng.addEventListener('keydown', e => { if (e.key === 'Enter') goto(nodeFirstStep(k)); });
   });
   SV('g', {id:'fx'}, svg); SV('g', {id:'tag'}, svg); const tr = SV('g', {id:'trail'}, svg); for (let q = 0; q < TRAILN; q++) SV('circle', {r:3, class:'trl', cx:-999, cy:-999}, tr); trailPts = [];
@@ -2317,7 +3045,7 @@ function drawMap(){
   const pk = SV('g', {id:'pkt'}, svg); SV('g', {id:'pbody', class:'pk'}, pk); SV('text', {id:'ptxt', class:'ptxt', x:0, y:-4}, pk); SV('text', {id:'pms', class:'pms', x:0, y:15}, pk); PREV_LAYERS = [];
   const zoneOf = []; zones.forEach((z, zi) => { for (let k = z.i; k <= z.j; k++) zoneOf[k] = zi; });
   scene = {pts, scr, zones, fit, vb:Object.assign({}, fit), zoneOf, maxD, cam:null, camT:null, slow:false};
-  svg.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`);
+  svg.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`); scene.ex = !!app.explode; geoSetup();
   // minimap
   const mi = $('#mini'); mi.innerHTML = ''; mi.setAttribute('viewBox', `${fit.x} ${fit.y} ${fit.w} ${fit.h}`);
   scr.forEach((s, k) => SV('circle', {cx:s[0], cy:s[1], r:9, class:'mn', id:'mn' + k}, mi));
@@ -2359,7 +3087,8 @@ function drawPacketBody(o, prev, animate){
     }
     boxAt(gg, 0, 0, l.w, l.d, 4.5, z, 'sl ' + l.c + (l.f ? ' flash' : ''));
     if (animate && prev && old && l.f){ const gh = SV('g', {class:'slab ghost'}, pb); boxAt(gh, 0, 0, l.w, l.d, 4.5, z, 'sl ' + l.c); }
-    cur.push({c:l.c, w:l.w, d:l.d, z}); z += 5.5;
+    if (app.explode){ const tx = SV('text', {x:l.w + 14, y:-(z + 3), class:'xl'}, gg); tx.textContent = layerLabel(l, v, o); }
+    cur.push({c:l.c, w:l.w, d:l.d, z}); z += app.explode ? 17 : 5.5;
   });
   PL.forEach(x => { if (!cur.find(y => y.c === x.c)){ const gh = SV('g', {class:'slab leave'}, pb); boxAt(gh, 0, 0, x.w, x.d, 4.5, x.z, 'sl ' + x.c); } });
   PREV_LAYERS = cur;
@@ -2375,10 +3104,10 @@ function placePacket(){
   const a = scene.scr[nodePos(s0, g)], b = scene.scr[nodePos(s1, g)];
   const rev = Math.round(t0) > g.F, x = a[0] + (b[0] - a[0]) * fr + (rev ? 10 : 0), y = a[1] + (b[1] - a[1]) * fr - PZ + (rev ? 12 : 0);
   $('#pkt').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
-  pushTrail(x, y, rev);
+  pushTrail(x, y, rev); if (GEO.pts) geoDraw();
   const f = scene.fit; let vb = f;
-  const kz = app.zoom === 'follow' ? (scene.slow ? 0.34 : 0.46) : (scene.slow && app.fx.cam ? 0.62 : 0);
-  if (kz){ const w = f.w * kz, h = f.h * kz; vb = {x:Math.max(f.x, Math.min(f.x + f.w - w, x - w / 2)), y:Math.max(f.y, Math.min(f.y + f.h - h, y + 30 - h / 2)), w, h}; }
+  const kz = app.zoom === 'follow' ? (app.story ? 0.7 : scene.slow ? 0.34 : 0.46) : (scene.slow && app.fx.cam ? 0.62 : 0);
+  if (kz){ const w = f.w * kz, h = f.h * kz; vb = {x:Math.max(f.x, Math.min(f.x + f.w - w, x - w / 2)), y:Math.max(f.y, Math.min(f.y + f.h - h, y + (app.story ? 90 : 30) - h / 2)), w, h}; }
   camTo(vb);
   const pm = $('#pms'); if (pm) pm.textContent = '+' + msAt(t0, g).toFixed(1) + ' ms';
   $('#scrub').value = t0;
@@ -2441,6 +3170,7 @@ function updateMap(animate){
   }
   drawPacketBody(o, prev, animate); applyLod(); updateQueues(g, pos);
   if (animate) fxOnStep(g, o, prev, pos);
+  if (animate) celebrate();
   if (animate) kick(); else { app.t = app.s; placePacket(); }
 }
 function stepAnim(now){
@@ -2565,9 +3295,9 @@ function drawDocsTab(){
   return `<p class="hint" style="margin:0 0 8px">Only official sources are linked: standards bodies, project and cloud-vendor documentation.</p><div class="dl">${ids.map(id => { const d = DOCS[id]; return `<a href="${d.u}" target="_blank" rel="noopener"><span>${esc(d.l)}</span><em>${d.k}</em><small>${esc(d.s ? d.s + ' · ' : '')}${esc(d.u.replace(/^https?:\/\//, ''))}</small></a>`; }).join('')}</div>`;
 }
 function drawInspector(){
-  const tabs = [['passport', t('passport')], ['l7', t('l7')], ['how', t('how')], ['xray', t('xray')], ['docs', t('docs')]];
+  const tabs = [['passport', t('passport')], ['l7', t('l7')], ['how', t('how')], ['xray', t('xray')], ['whatif', 'What if…'], ['docs', t('docs')]];
   $('#itabs').innerHTML = tabs.map(([k, l]) => `<button data-t="${k}" class="${app.itab === k ? 'on' : ''}">${esc(l)}</button>`).join('');
-  const _h = app.itab === 'passport' ? drawPassport() : app.itab === 'l7' ? drawL7() : app.itab === 'how' ? drawHow() : app.itab === 'xray' ? drawXray() : drawDocsTab();
+  const _h = app.itab === 'passport' ? drawPassport() : app.itab === 'l7' ? drawL7() : app.itab === 'how' ? drawHow() : app.itab === 'xray' ? drawXray() : app.itab === 'whatif' ? drawWhatIf() : drawDocsTab();
   $('#ibody').innerHTML = _h;
   if (ROLL){ ROLL = false; $$('#ibody .fr.chg .n, #ibody .fr.der .n, #ibody .ci-v b').forEach(e => rollEl(e)); }
 }
@@ -2615,11 +3345,11 @@ function drawHeader(){
   $('#progPct').textContent = Math.round(done / keys.length * 100) + '%';
   $('#progBar').innerHTML = keys.map(k => `<i class="${(app.prog[k] || {}).done ? 'done' : (app.prog[k] || {}).max > 0 ? 'prog' : ''}"></i>`).join('');
   $('#progTxt').textContent = `${done}/${keys.length} ${t('complete')} · ${prog} ${t('inProgress')}`;
-  $('#viewSel').innerHTML = [['map', t('map')], ['seq', t('sequence')]].map(([k, l]) => `<button data-v="${k}" class="${app.view === k ? 'on' : ''}">${l}</button>`).join('');
+  $('#viewSel').innerHTML = [['map', t('map')], ['seq', t('sequence')], ['lanes', 'Layers']].map(([k, l]) => `<button data-v="${k}" class="${app.view === k ? 'on' : ''}">${l}</button>`).join('');
   $('#zoomSel').innerHTML = [['fit', t('fit')], ['follow', t('follow')]].map(([k, l]) => `<button data-z="${k}" class="${app.zoom === k ? 'on' : ''}">${l}</button>`).join('');
   $('#detSel').innerHTML = [[0, 'Simple'], [1, 'Detailed']].map(([k, l]) => `<button data-d="${k}" class="${(+app.detail) === k ? 'on' : ''}">${l}</button>`).join('');
   $('#zoomSel').style.visibility = app.view === 'map' ? 'visible' : 'hidden';
-  $('#stage').style.display = app.view === 'map' ? '' : 'none'; $('#seq').style.display = app.view === 'seq' ? 'block' : 'none';
+  $('#stage').style.display = app.view === 'map' ? '' : 'none'; $('#seq').style.display = app.view === 'seq' ? 'block' : 'none'; $('#lanes').style.display = app.view === 'lanes' ? 'block' : 'none'; $('#bExplode').style.display = app.view === 'map' ? '' : 'none';
   $('#mini').style.display = app.view === 'map' && app.zoom === 'follow' ? '' : 'none';
   const sf = $('#selF'); sf.innerHTML = `<option value="none">${t('noFault')}</option>` + g.S.faults.map(f => `<option value="${f.id}">${esc(f.label)}</option>`).join(''); sf.value = app.f;
 }
@@ -2653,7 +3383,7 @@ function syncHash(){ if (!app.touched) return; const h = hashParams(false); try{
 function shareURL(){ return location.href.split('#')[0] + '#' + hashParams(true); }
 function renderPanels(){
   drawHeader(); drawRail(); drawNarration(); drawFault(); drawInspector(); drawHops(); drawBytes();
-  if (app.view === 'seq') drawSeq();
+  if (app.view === 'seq') drawSeq(); if (app.view === 'lanes') drawLanes(); if (app.story) drawStory();
   syncHash();
 }
 const PAGES = {why:'Why is it failing?', pcap:'PCAP viewer', trace:'Traceroute decoder'};
@@ -2672,9 +3402,9 @@ function renderAll(animate){
 }
 function goto(s){ const g = geom(); app.s = Math.max(0, Math.min(g.count - 1, s)); markProg(); renderAll(true); }
 function stopPlay(){ app.playing = false; clearTimeout(playTimer); if (app.page === 'journey') drawNarration(); }
-function playTick(){ if (!app.playing) return; const g = geom(); if (app.s >= g.count - 1){ stopPlay(); return; } goto(app.s + 1); playTimer = setTimeout(playTick, 1800 / app.speed); }
+function playTick(){ if (!app.playing) return; const g = geom(); if (app.s >= g.count - 1){ stopPlay(); return; } goto(app.s + 1); playTimer = setTimeout(playTick, app.story ? storyDelay() : 1800 / app.speed); }
 function startPlay(){ ovStop(); const g = geom(); if (app.s >= g.count - 1){ app.s = 0; app.t = 0; } app.playing = true; playTick(); }
-function setJourney(j){ stopPlay(); ovStop(); app.j = j; app.f = 'none'; app.s = 0; app.t = 0; app.sel = null; app.page = 'journey'; CACHE.clear(); drawMap(); markProg(); renderAll(false); }
+function setJourney(j){ stopPlay(); ovStop(); purgeWi(); devHide(); app.j = j; app.f = 'none'; app.s = 0; app.t = 0; app.sel = null; app.page = 'journey'; CACHE.clear(); drawMap(); markProg(); renderAll(false); }
 function setFault(f){ stopPlay(); app.f = f; const g = geom(); app.s = f === 'none' ? 0 : Math.min(g.F, app.s); CACHE.clear(); drawMap(); renderAll(false); if (f !== 'none') goto(g.F); }
 
 /* ================= export PNG ================= */
@@ -2694,7 +3424,7 @@ function exportPNG(){
 }
 function applyDetail(){ const a = $('#secHops'), b = $('#secBytes'); if (a) a.open = app.detail; if (b) b.open = app.detail; }
 const THEMES = ['dark', 'light', 'hc'], TNAME = {dark:'Dark', light:'Light', hc:'Contrast'};
-function setTheme(t){ app.theme = t; document.documentElement.dataset.theme = t; try{ localStorage.setItem('hbh-theme', t); }catch(_){} const b = $('#bTheme'); if (b){ b.textContent = TNAME[t]; b.title = 'Theme: ' + TNAME[t] + ' (click to change)'; } }
+function setTheme(t){ app.theme = t; document.documentElement.dataset.theme = t; GEO.base = null; if (typeof geoDraw === 'function' && GEO.pts) setTimeout(geoDraw, 30); try{ localStorage.setItem('hbh-theme', t); }catch(_){} const b = $('#bTheme'); if (b){ b.textContent = TNAME[t]; b.title = 'Theme: ' + TNAME[t] + ' (click to change)'; } }
 function setDetail(v){ app.detail = !!v; try{ localStorage.setItem('hbh-detail', v ? '1' : '0'); }catch(_){} applyDetail(); if (app.page === 'journey') renderPanels(); }
 function closeMenu(){ $('#rail').classList.remove('open'); }
 function toast(m){ const e = $('#toast'); e.textContent = m; e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 1600); }
@@ -2799,7 +3529,7 @@ function bind(){
   $('#detSel').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (b) setDetail(b.dataset.d === '1'); });
   $('#lang').addEventListener('change', e => { app.lang = e.target.value; try{ localStorage.setItem('hbh-lang', app.lang); }catch(_){} renderAll(false); });
   $('#tin').addEventListener('input', drawTrace);
-  bindPcap(); bindFx();
+  bindPcap(); bindFx(); bindFx2();
   $('#bMenu').addEventListener('click', () => $('#rail').classList.toggle('open'));
   $('#whypane').addEventListener('click', e => {
     const sy = e.target.closest('[data-sym]'), rj = e.target.closest('[data-rj]');
@@ -2816,6 +3546,8 @@ function bind(){
     else if (e.key === ' '){ e.preventDefault(); if (app.playing) stopPlay(); else startPlay(); }
     else if (e.key.toLowerCase() === 'd'){ setDetail(!app.detail); }
     else if (e.key.toLowerCase() === 'a'){ if (app.fx.amb) ambStop(); else ambStart(); }
+    else if (e.key.toLowerCase() === 's'){ app.story ? storyOff() : storyOn(); }
+    else if (e.key.toLowerCase() === 'e'){ toggleExplode(); }
     else if (e.key.toLowerCase() === 'x'){ app.itab = 'xray'; drawInspector(); }
   });
 }
@@ -2830,9 +3562,9 @@ function bind(){
   if (SC[q.get('j')]) app.j = q.get('j');
   if (I18N[q.get('g')]) app.lang = q.get('g');
   if (SCN().faults.some(f => f.id === q.get('f'))) app.f = q.get('f');
-  if (['map', 'seq'].includes(q.get('v'))) app.view = q.get('v');
+  if (['map', 'seq', 'lanes'].includes(q.get('v'))) app.view = q.get('v');
   if (['all', 'L2', 'L3', 'L4', 'L7'].includes(q.get('l'))) app.layer = q.get('l');
-  if (['passport', 'l7', 'how', 'xray', 'docs'].includes(q.get('i'))) app.itab = q.get('i');
+  if (['passport', 'l7', 'how', 'xray', 'whatif', 'docs'].includes(q.get('i'))) app.itab = q.get('i');
   if (['fit', 'follow'].includes(q.get('z'))) app.zoom = q.get('z');
   if (['trace', 'why', 'pcap'].includes(q.get('p'))) app.page = q.get('p');
   if (!q.get('z') && matchMedia('(max-width:860px)').matches) app.zoom = 'follow';

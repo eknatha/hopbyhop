@@ -1,6 +1,6 @@
 "use strict";
 /* ================= fx.js: motion, sound, tour, overlays, empty states ================= */
-const FXD = {lat:1, q:1, cam:1, snd:0, amb:0};
+const FXD = {lat:1, q:1, cam:1, atm:1, snd:0, amb:0};
 function loadFx(){ app.fx = Object.assign({}, FXD); try{ Object.assign(app.fx, JSON.parse(localStorage.getItem('hbh-fx') || '{}')); }catch(_){} app.fx.amb = 0; }
 function saveFx(){ try{ const o = Object.assign({}, app.fx); delete o.amb; localStorage.setItem('hbh-fx', JSON.stringify(o)); }catch(_){} }
 function fxUI(){ $$('#fxPop [data-fx]').forEach(c => { c.checked = !!app.fx[c.dataset.fx]; }); }

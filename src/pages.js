@@ -12,7 +12,7 @@ function drawWhy(){
     + `<button class="sym ${!sy ? 'on' : ''}" data-sym="">All faults</button></div>`;
   if (sy) h += `<p class="symhint">${esc(SYMPTOMS.find(x => x.id === sy).h)}</p>`;
   const rows = [];
-  Object.entries(SC).forEach(([jk, J]) => J.faults.forEach(f => { const m = FMETA[jk + '/' + f.id] || {}; if (!sy || (m.sym || []).includes(sy)) rows.push({jk, J, f, m}); }));
+  Object.entries(SC).forEach(([jk, J]) => J.faults.filter(f => f.id !== 'wi').forEach(f => { const m = FMETA[jk + '/' + f.id] || {}; if (!sy || (m.sym || []).includes(sy)) rows.push({jk, J, f, m}); }));
   h += `<div class="fcount">${rows.length} fault${rows.length === 1 ? '' : 's'}${sy ? '' : ' in ' + Object.keys(SC).length + ' journeys'}</div><div class="fgrid">`;
   h += rows.map(r => `<div class="fcard"><div class="fh"><b>${esc(r.f.label)}</b><small>${esc(r.J.group)} · ${esc(r.J.short)}</small></div>
     <p>${esc(r.f.body.split('. ')[0])}.</p>${cmdBlock((r.m.cmd || []).slice(0, 3))}
